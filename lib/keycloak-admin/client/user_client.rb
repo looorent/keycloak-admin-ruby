@@ -43,6 +43,13 @@ module KeycloakAdmin
       user_id
     end
 
+    def impersonate(user_id)
+      response = execute_http do
+        RestClient.post(impersonation_url(user_id), {}.to_json, headers)
+      end
+      ImpersonationRepresentation.from_response(response)
+    end
+
     def users_url(id=nil)
       if id
         "#{@realm_client.realm_admin_url}/users/#{id}"
@@ -54,6 +61,11 @@ module KeycloakAdmin
     def reset_password_url(user_id)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
       "#{users_url(user_id)}/reset-password"
+    end
+
+    def impersonation_url(user_id)
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
+      "#{users_url(user_id)}/impersonation"
     end
 
     private

@@ -12,7 +12,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "0.2"
+gem "keycloak-admin", "0.3"
 ```
 
 ## Login
@@ -37,7 +37,8 @@ Using a service account to use the REST Admin API does not require to create a d
 * In Keycloak 
   * Make your client `confidential`
   * Check its toggle `Service Accounts Enabled`
-  * A Redirect URL is required, set it to `*`
+  * Disable both `Standard Flow Enabled` and `Implicit Flow Enabled `
+  * Enable `Direct Access Grants Enabled`
   * After saving this client, open the `Service Account Roles` and add relevant `realm-management.` client's roles. For instance: `view-users` if you want to search for users using this gem.
 * In this gem's configuration
   * Set `use_service_account` to `true`
@@ -84,6 +85,7 @@ exit
 * Create a user
 * Reset credentials
 * Delete a user
+* Impersonate a user
 
 ### Get an access token
 
@@ -126,7 +128,16 @@ KeycloakAdmin.realm("a_realm").users.create!(username, email, password, email_ve
 ```ruby
 user_id      = "95985b21-d884-4bbd-b852-cb8cd365afc2"
 new_password = "coco"
-KeycloakAdmin.realm("commuty").users.update_password(user_id, new_password)
+KeycloakAdmin.realm("a_realm").users.update_password(user_id, new_password)
+```
+
+### Impersonate a password
+
+Returns an instance of `KeycloakAdmin::ImpersonationRepresentation`.
+
+```ruby
+user_id      = "95985b21-d884-4bbd-b852-cb8cd365afc2"
+KeycloakAdmin.realm("a_realm").users.impersonate(user_id)
 ```
 
 ## How to execute library tests
