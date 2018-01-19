@@ -4,11 +4,11 @@ require "byebug"
 
 def configure
   KeycloakAdmin.configure do |config|
-    config.server_url       = "http://auth.service.io/auth"
-    config.client_id        = "admin-cli"
-    config.user_realm_name  = "master2"
-    config.username         = "bobby"
-    config.password         = "coucou"
+    config.server_url          = "http://auth.service.io/auth"
+    config.client_id           = "admin-cli"
+    config.client_secret       = "aaaaaaaa"
+    config.client_realm_name   = "master2"
+    config.use_service_account = true
   end 
 end
 

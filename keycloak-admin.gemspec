@@ -15,6 +15,6 @@ Gem::Specification.new do |spec|
   spec.files = `git ls-files -z`.split("\x0")
   spec.require_paths = ["lib"]
   
-  spec.add_development_dependency "rspec",   "3.7.0"
+  spec.add_development_dependency "rspec",  "3.7.0"
   spec.add_development_dependency "byebug", "9.1.0"
 end

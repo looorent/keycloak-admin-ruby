@@ -15,17 +15,10 @@ module KeycloakAdmin
     end
 
     def get
-      response = RestClient.post(token_url,
-        username: @configuration.username,
-        password: @configuration.password,
-        grant_type: "password",
-        client_id: @configuration.client_id
-      )
-      if response.code == 200
-        TokenRepresentation.from_json(response.body)
-      else
-        error(response)
+      response = execute_http do
+        RestClient.post(token_url, @configuration.body_for_token_retrieval, @configuration.headers_for_token_retrieval)
       end
+      TokenRepresentation.from_json(response.body)
     end
   end
 end

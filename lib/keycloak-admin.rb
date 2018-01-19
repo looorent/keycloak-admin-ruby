@@ -31,12 +31,13 @@ module KeycloakAdmin
 
   def self.load_configuration
     configure do |config|
-      config.server_url      = nil
-      config.user_realm_name = ""
-      config.client_id       = "admin-cli"
-      config.logger          = ::Logger.new(STDOUT)
-      config.username        = nil
-      config.password        = nil
+      config.server_url          = nil
+      config.client_realm_name   = ""
+      config.client_id           = "admin-cli"
+      config.logger              = ::Logger.new(STDOUT)
+      config.use_service_account = true
+      config.username            = nil
+      config.password            = nil
     end
   end
 

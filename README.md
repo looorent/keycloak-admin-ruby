@@ -9,10 +9,39 @@ _Warning: This beta gem is currently used for personal used. Most Keycloak Admin
 ## Install
 
 This gem *does not* require Rails.
+For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin"
+gem "keycloak-admin", "0.2"
 ```
+
+## Login
+
+You can choose your login process between two different login methods: `username/password` and `Account Service`.
+
+### Login with username/password
+
+Using this login method requires to create a user (and her credentials).
+* In Keycloak 
+  * Make your client `confidential` or `public`
+  * Do not check `Service Accounts Enabled`
+* In this gem's configuration
+  * Set `use_service_account` to `false`
+  * Setup `username` and `password`
+  * Setup `client_secret` if your client is `confidential`
+
+### Login with an Account Service
+
+Using a service account to use the REST Admin API does not require to create a dedicated user (http://www.keycloak.org/docs/2.5/server_admin/topics/clients/oidc/service-accounts.html).
+
+* In Keycloak 
+  * Make your client `confidential`
+  * Check its toggle `Service Accounts Enabled`
+  * A Redirect URL is required, set it to `*`
+  * After saving this client, open the `Service Account Roles` and add relevant `realm-management.` client's roles. For instance: `view-users` if you want to search for users using this gem.
+* In this gem's configuration
+  * Set `use_service_account` to `true`
+  * Setup `client_secret`
 
 ## Configuration
 
@@ -20,12 +49,13 @@ To configure this gem, call `KeycloakAdmin.configure`.
 For instance, to configure this gem based on environment variables, write (and load if required) a `keycloak_admin.rb`:
 ```ruby
 KeycloakAdmin.configure do |config|
-  config.server_url       = ENV["KEYCLOAK_SERVER_URL"]
-  config.client_id        = ENV["KEYCLOAK_ADMIN_CLIENT_ID"]
-  config.user_realm_name  = ENV["KEYCLOAK_REALM_ID"]
-  config.username         = ENV["KEYCLOAK_ADMIN_USER"]
-  config.password         = ENV["KEYCLOAK_ADMIN_PASSWORD"]
-  config.logger           = Rails.logger
+  config.use_service_account = false
+  config.server_url          = ENV["KEYCLOAK_SERVER_URL"]
+  config.client_id           = ENV["KEYCLOAK_ADMIN_CLIENT_ID"]
+  config.client_realm_name   = ENV["KEYCLOAK_REALM_ID"]
+  config.username            = ENV["KEYCLOAK_ADMIN_USER"]
+  config.password            = ENV["KEYCLOAK_ADMIN_PASSWORD"]
+  config.logger              = Rails.logger
 end
 ```
 This example is autoloaded in a Rails environment.
@@ -37,10 +67,12 @@ All options have a default value. However, all of them can be changed in your in
 | Option | Default Value | Type | Required? | Description  | Example |
 | ---- | ----- | ------ | ----- | ------ | ----- |
 | `server_url` | `nil`| String | Required | The base url where your Keycloak server is located. This value can be retrieved in your Keycloak client configuration. | `auth:8080/auth` |
-| `user_realm_name` | `""`| String | Required | Name of the realm that contain the admin client and user. | `master` |
+| `client_realm_name` | `""`| String | Required | Name of the realm that contain the admin client. | `master` |
 | `client_id` | `admin-cli`| String | Required | Client that should be used to access admin capabilities. | `api-cli` |
-| `username` | `nil`| String | Required | Username that access to the Admin REST API | `mummy` |
-| `password` | `nil`| String | Required | Clear password that access to the Admin REST API | `bobby` |
+| `client_secret` | `nil`| String | Optional | If your client is `confidential`, this parameter must be specified. | `4e3c481c-f823-4a6a-b8a7-bf8c86e3eac3` |
+| `use_service_account` | `true` | Boolean | Required | `true` if the connection to the client uses a Service Account. `false` if the connetio nto the client uses a username/password credential | `false` | 
+| `username` | `nil`| String | Optional | Username that access to the Admin REST API. Recommended if `user_service_account` is set to `false`. | `mummy` |
+| `password` | `nil`| String | Optional | Clear password that access to the Admin REST API. Recommended if `user_service_account` is set to `false`. | `bobby` |
 | `logger` | `Logger.new(STDOUT)`| Logger | Optional | The logger used by `keycloak-admin` | `Rails.logger` | 
 
 
@@ -105,3 +137,7 @@ From the `keycloak-admin-api` directory:
   $ docker build . -t keycloak-admin:test
   $ docker run -v `pwd`:/usr/src/app/ keycloak-admin:test bundle exec rspec spec
 ```
+
+## Future work
+
+* Allow authentication using JWT assertions

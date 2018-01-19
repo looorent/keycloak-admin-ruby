@@ -10,7 +10,7 @@ module KeycloakAdmin
     end
 
     def token
-      @token ||= KeycloakAdmin.realm(@configuration.user_realm_name).token.get
+      @token ||= KeycloakAdmin.realm(@configuration.client_realm_name).token.get
     end
 
     def headers
@@ -21,9 +21,15 @@ module KeycloakAdmin
       }
     end
 
+    def execute_http
+      yield
+    rescue RestClient::ExceptionWithResponse => e
+      http_error(e.response)
+    end
+
     private
 
-    def error(response)
+    def http_error(response)
       raise "Keycloak: The request failed with response code #{response.code} and message: #{response.body}"
     end
   end

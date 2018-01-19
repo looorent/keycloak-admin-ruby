@@ -12,39 +12,35 @@ module KeycloakAdmin
     end
 
     def save(user_representation)
-      response = RestClient.post(users_url, user_representation.to_json, headers)
-      if response.code == 201
-        user_representation
-      else
-        error(response)
+      execute_http do
+        RestClient.post(users_url, user_representation.to_json, headers)
       end
+      user_representation
     end
 
     def search(query)
-      response = RestClient.get(users_url, headers.merge({params: { search: query }}))
-      if response.code == 200
-        JSON.parse(response).map { |user_as_hash| UserRepresentation.from_hash(user_as_hash) }
-      else
-        error(response)
+      response = execute_http do
+        RestClient.get(users_url, headers.merge({params: { search: query }}))
       end
+      JSON.parse(response).map { |user_as_hash| UserRepresentation.from_hash(user_as_hash) }
     end
 
     def delete(user_id)
-      response = RestClient.delete(users_url(user_id), headers)
-      response.code == 204 || error(response)
+      execute_http do
+        RestClient.delete(users_url(user_id), headers)
+      end
+      true
     end
 
     def update_password(user_id, new_password)
-      response = RestClient.put(reset_password_url(user_id), {
-        type: "password",
-        value: new_password,
-        temporary: false
-      }.to_json, headers)
-      if response.code == 204
-        user_id
-      else
-        error(response)
+      execute_http do
+        RestClient.put(reset_password_url(user_id), {
+          type: "password",
+          value: new_password,
+          temporary: false
+        }.to_json, headers)
       end
+      user_id
     end
 
     def users_url(id=nil)
