@@ -2,7 +2,7 @@ require "base64"
 
 module KeycloakAdmin
   class Configuration
-    attr_accessor :server_url, :client_id, :client_secret, :client_realm_name, :use_service_account, :username, :password, :logger
+    attr_accessor :server_url, :server_domain, :client_id, :client_secret, :client_realm_name, :use_service_account, :username, :password, :logger
 
     def body_for_token_retrieval
       if use_service_account

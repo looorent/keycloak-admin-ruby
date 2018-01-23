@@ -52,6 +52,7 @@ For instance, to configure this gem based on environment variables, write (and l
 KeycloakAdmin.configure do |config|
   config.use_service_account = false
   config.server_url          = ENV["KEYCLOAK_SERVER_URL"]
+  config.server_domain       = ENV["KEYCLOAK_SERVER_DOMAIN"]
   config.client_id           = ENV["KEYCLOAK_ADMIN_CLIENT_ID"]
   config.client_realm_name   = ENV["KEYCLOAK_REALM_ID"]
   config.username            = ENV["KEYCLOAK_ADMIN_USER"]
@@ -67,7 +68,7 @@ All options have a default value. However, all of them can be changed in your in
 
 | Option | Default Value | Type | Required? | Description  | Example |
 | ---- | ----- | ------ | ----- | ------ | ----- |
-| `server_url` | `nil`| String | Required | The base url where your Keycloak server is located. This value can be retrieved in your Keycloak client configuration. | `auth:8080/auth` |
+| `server_url` | `nil`| String | Required | The base url where your Keycloak server is located. This value can be retrieved in your Keycloak client configuration. | `server_domain` | `nil`| String | Required | Public domain that identify your authentication cookies. | `auth.service.io` |
 | `client_realm_name` | `""`| String | Required | Name of the realm that contain the admin client. | `master` |
 | `client_id` | `admin-cli`| String | Required | Client that should be used to access admin capabilities. | `api-cli` |
 | `client_secret` | `nil`| String | Optional | If your client is `confidential`, this parameter must be specified. | `4e3c481c-f823-4a6a-b8a7-bf8c86e3eac3` |

@@ -1,7 +1,7 @@
 RSpec.describe KeycloakAdmin::ImpersonationRepresentation do
   describe "#parse_set_cookie_string" do
 
-    let(:origin)            { "https://auth.service.io" }
+    let(:origin)            { "http://auth.service.io" }
     let(:set_cookie_string) { "" }
 
     before(:each) do

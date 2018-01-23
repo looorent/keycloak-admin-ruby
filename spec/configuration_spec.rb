@@ -10,6 +10,7 @@ RSpec.describe KeycloakAdmin::RealmClient do
   before(:each) do
     @configuration                     = KeycloakAdmin::Configuration.new
     @configuration.server_url          = "http://auth.service.io/auth"
+    @configuration.server_domain       = "auth.service.io"
     @configuration.client_id           = client_id
     @configuration.client_secret       = client_secret
     @configuration.client_realm_name   = client_realm_name

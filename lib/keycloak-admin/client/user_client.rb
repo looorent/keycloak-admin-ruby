@@ -48,11 +48,11 @@ module KeycloakAdmin
       response = execute_http do
         RestClient.post(impersonation.impersonation_url, impersonation.body.to_json, impersonation.headers)
       end
-      ImpersonationRepresentation.from_response(response, @configuration.server_url)
+      ImpersonationRepresentation.from_response(response, @configuration.server_domain)
     end
 
     def get_redirect_impersonation(user_id)
-      ::KeycloakAdmin::ImpersonationRedirectionRepresentation.from_url(impersonation_url(user_id), headers)
+      ImpersonationRedirectionRepresentation.from_url(impersonation_url(user_id), headers)
     end
 
     def users_url(id=nil)

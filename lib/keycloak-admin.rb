@@ -34,6 +34,7 @@ module KeycloakAdmin
   def self.load_configuration
     configure do |config|
       config.server_url          = nil
+      config.server_domain       = nil
       config.client_realm_name   = ""
       config.client_id           = "admin-cli"
       config.logger              = ::Logger.new(STDOUT)
