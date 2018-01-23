@@ -12,7 +12,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "0.3"
+gem "keycloak-admin", "0.4"
 ```
 
 ## Login
@@ -131,13 +131,22 @@ new_password = "coco"
 KeycloakAdmin.realm("a_realm").users.update_password(user_id, new_password)
 ```
 
-### Impersonate a password
+### Impersonate a password directly
 
 Returns an instance of `KeycloakAdmin::ImpersonationRepresentation`.
 
 ```ruby
-user_id      = "95985b21-d884-4bbd-b852-cb8cd365afc2"
+user_id = "95985b21-d884-4bbd-b852-cb8cd365afc2"
 KeycloakAdmin.realm("a_realm").users.impersonate(user_id)
+```
+
+### Impersonate a password indirectly
+
+To have enough information to execute an impersonation by yourself, `get_redirect_impersonation` returns an instance of `KeycloakAdmin::ImpersonationRedirectionRepresentation`.
+
+```ruby
+user_id = "95985b21-d884-4bbd-b852-cb8cd365afc2"
+KeycloakAdmin.realm("a_realm").users.get_redirect_impersonation(user_id)
 ```
 
 ## How to execute library tests
