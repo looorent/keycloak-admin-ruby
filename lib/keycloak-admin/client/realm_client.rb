@@ -25,6 +25,10 @@ module KeycloakAdmin
       TokenClient.new(@configuration, self)
     end
 
+    def configurable_token
+      ConfigurableTokenClient.new(@configuration, self)
+    end
+
     def users
       UserClient.new(@configuration, self)
     end

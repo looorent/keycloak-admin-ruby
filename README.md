@@ -12,7 +12,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "0.4"
+gem "keycloak-admin", "0.5"
 ```
 
 ## Login
@@ -87,6 +87,7 @@ exit
 * Reset credentials
 * Delete a user
 * Impersonate a user
+* Exchange a configurable token
 
 ### Get an access token
 
@@ -148,6 +149,17 @@ To have enough information to execute an impersonation by yourself, `get_redirec
 ```ruby
 user_id = "95985b21-d884-4bbd-b852-cb8cd365afc2"
 KeycloakAdmin.realm("a_realm").users.get_redirect_impersonation(user_id)
+```
+
+### Exchange a configurable token
+
+*Requires your Keycloak server to have deployed the Custom REST API `configurable-token`* (https://github.com/looorent/keycloak-configurable-token-api)
+Returns an instance of `KeycloakAdmin::TokenRepresentation`.
+
+```ruby
+user_access_token         = "abqsdofnqdsogn"
+token_lifespan_in_seconds = 20
+KeycloakAdmin.realm("a_realm").configurable_token.exchange_with(user_access_token, token_lifespan_in_seconds)
 ```
 
 ## How to execute library tests
