@@ -12,7 +12,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "0.5"
+gem "keycloak-admin", "0.6"
 ```
 
 ## Login
@@ -113,7 +113,7 @@ Returns the provided `user`, which must be of type `KeycloakAdmin::UserRepresent
 KeycloakAdmin.realm("a_realm").users.save(user)
 ```
 
-### Create and save a user with password
+### Create and save a user with password and a locale
 
 Returns the created user of type `KeycloakAdmin::UserRepresentation`.
 
@@ -122,7 +122,8 @@ username       = "pioupioux"
 email          = "pioupioux@email.com"
 password       = "acme0"
 email_verified = true
-KeycloakAdmin.realm("a_realm").users.create!(username, email, password, email_verified)
+locale         = "en"
+KeycloakAdmin.realm("a_realm").users.create!(username, email, password, email_verified, locale)
 ```
 
 ### Reset a password

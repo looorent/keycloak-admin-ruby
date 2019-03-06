@@ -6,8 +6,8 @@ module KeycloakAdmin
       @realm_client = realm_client
     end
 
-    def create!(username, email, password, email_verified)
-      user = save(build(username, email, password, email_verified))
+    def create!(username, email, password, email_verified, locale)
+      user = save(build(username, email, password, email_verified, locale))
       search(user.email)&.first
     end
 
@@ -75,12 +75,14 @@ module KeycloakAdmin
 
     private
 
-    def build(username, email, password, email_verified)
-      user                = UserRepresentation.new
-      user.email          = email
-      user.username       = username
-      user.email_verified = email_verified
-      user.enabled        = true
+    def build(username, email, password, email_verified, locale)
+      user                     = UserRepresentation.new
+      user.email               = email
+      user.username            = username
+      user.email_verified      = email_verified
+      user.enabled             = true
+      user.attributes          = {}
+      user.attributes[:locale] = locale if locale
       user.add_credential(CredentialRepresentation.from_password(password))
       user
     end
