@@ -18,6 +18,10 @@ module KeycloakAdmin
       user_representation
     end
 
+    def update(user_id, user_representation_body)
+      RestClient.put(users_url(user_id), user_representation.to_json, headers)
+    end
+
     def search(query)
       response = execute_http do
         RestClient.get(users_url, headers.merge({params: { search: query }}))
