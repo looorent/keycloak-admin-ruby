@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    keycloak-admin (0.6.2)
+    keycloak-admin (0.6.5)
       http-cookie (~> 1.0, >= 1.0.3)
 
 GEM

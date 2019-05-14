@@ -12,7 +12,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "0.6.1"
+gem "keycloak-admin", "0.6.5"
 ```
 
 ## Login
@@ -83,7 +83,7 @@ All options have a default value. However, all of them can be changed in your in
 ### Supported features
 
 * Get an access token
-* Create/update a user
+* Create/update/get a user
 * Reset credentials
 * Delete a user
 * Impersonate a user
@@ -95,6 +95,15 @@ Returns an instance of `KeycloakAdmin::TokenRepresentation`.
 
 ```ruby
 KeycloakAdmin.realm("a_realm").token.get
+```
+
+### Get a user from its idenfier
+
+Returns an instance of `KeycloakAdmin::UserRepresentation` or `nil` when this user does not exist.
+
+```ruby
+user_id = "95985b21-d884-4bbd-b852-cb8cd365afc2"
+KeycloakAdmin.realm("a_realm").users.get(user_id)
 ```
 
 ### Search for users
