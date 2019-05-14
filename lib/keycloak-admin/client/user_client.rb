@@ -19,7 +19,7 @@ module KeycloakAdmin
     end
 
     def update(user_id, user_representation_body)
-      RestClient.put(users_url(user_id), user_representation.to_json, headers)
+      RestClient.put(users_url(user_id), user_representation_body.to_json, headers)
     end
 
     def search(query)

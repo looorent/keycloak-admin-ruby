@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    keycloak-admin (0.6.1)
+    keycloak-admin (0.6.2)
       http-cookie (~> 1.0, >= 1.0.3)
 
 GEM
@@ -28,7 +28,7 @@ GEM
     rspec-support (3.7.0)
     unf (0.1.4)
       unf_ext
-    unf_ext (0.0.7.6)
+    unf_ext (0.0.7.5)
 
 PLATFORMS
   ruby
