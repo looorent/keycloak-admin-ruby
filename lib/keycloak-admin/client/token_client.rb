@@ -1,3 +1,5 @@
+require 'rest-client'
+
 module KeycloakAdmin
   class TokenClient < Client
     def initialize(configuration, realm_client)
