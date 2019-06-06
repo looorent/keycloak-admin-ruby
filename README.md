@@ -132,6 +132,12 @@ KeycloakAdmin.realm("a_realm").users.update("05c135c6-5ad8-4e17-b1fa-635fc089fd7
 })
 ```
 
+### Delete a user
+
+```ruby
+KeycloakAdmin.realm("a_realm").users.delete(user_id)
+```
+
 ### Create and save a user with password and a locale
 
 Returns the created user of type `KeycloakAdmin::UserRepresentation`.

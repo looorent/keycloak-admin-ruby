@@ -125,4 +125,31 @@ RSpec.describe KeycloakAdmin::TokenClient do
       expect(user.username).to eq 'test_username'
     end
   end
+
+  describe "#delete" do
+    let(:realm_name) { "valid-realm" }
+    before(:each) do
+      @user_client = KeycloakAdmin.realm("a_realm").users
+
+      allow_any_instance_of(KeycloakAdmin::TokenClient).to receive(:get).and_return KeycloakAdmin::TokenRepresentation.new(
+        'test_access_token', 'token_type', 'expires_in', 'refresh_token',
+        'refresh_expires_in', 'id_token', 'not_before_policy', 'session_state'
+      )
+      allow_any_instance_of(RestClient::Resource).to receive(:delete)
+    end
+
+    it "parses the response" do
+      @user_client.delete('test_user_id')
+    end
+
+    it "passes rest client options" do
+      rest_client_options = {verify_ssl: OpenSSL::SSL::VERIFY_NONE}
+      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
+
+      expect(RestClient::Resource).to receive(:new).with(
+        "http://auth.service.io/auth/admin/realms/a_realm/users/test_user_id", rest_client_options).and_call_original
+
+      @user_client.delete('test_user_id')
+    end
+  end
 end

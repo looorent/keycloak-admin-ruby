@@ -38,7 +38,7 @@ module KeycloakAdmin
 
     def delete(user_id)
       execute_http do
-        RestClient.delete(users_url(user_id), headers)
+        RestClient::Resource.new(users_url(user_id), @configuration.rest_client_options).delete(headers)
       end
       true
     end
