@@ -30,8 +30,24 @@ RSpec.describe KeycloakAdmin::TokenClient do
       @built_url = KeycloakAdmin.realm(realm_name).token.token_url
     end
 
-    it "return a proper url" do
+    it "returns a proper url" do
       expect(@built_url).to eq "http://auth.service.io/auth/realms/valid-realm/protocol/openid-connect/token"
+    end
+  end
+
+  describe "#get" do
+    let(:realm_name) { "valid-realm" }
+    before(:each) do
+      @token_client = KeycloakAdmin.realm(realm_name).token
+    end
+
+    it "parses the response" do
+      response = double
+      allow(response).to receive(:body).and_return '{"access_token":"test_access_token"}'
+      allow(RestClient).to receive(:post).and_return response
+
+      token = @token_client.get
+      expect(token.access_token).to eq 'test_access_token'
     end
   end
 end
