@@ -32,10 +32,15 @@ module KeycloakAdmin
     end
 
     def search(query)
+      derived_headers = query ? headers.merge({params: { search: query }}) : headers
       response = execute_http do
-        RestClient::Resource.new(users_url, @configuration.rest_client_options).get(headers.merge({params: { search: query }}))
+        RestClient::Resource.new(users_url, @configuration.rest_client_options).get(derived_headers)
       end
       JSON.parse(response).map { |user_as_hash| UserRepresentation.from_hash(user_as_hash) }
+    end
+
+    def list
+      search(nil)
     end
 
     def delete(user_id)

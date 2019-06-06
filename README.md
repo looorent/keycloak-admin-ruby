@@ -114,6 +114,14 @@ Returns an array of `KeycloakAdmin::UserRepresentation`.
 KeycloakAdmin.realm("a_realm").users.search("a_username_or_an_email")
 ```
 
+### List all users in a realm
+
+Returns an array of `KeycloakAdmin::UserRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").users.list
+```
+
 ### Save a user
 
 Returns the provided `user`, which must be of type `KeycloakAdmin::UserRepresentation`.
