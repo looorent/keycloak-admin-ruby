@@ -97,7 +97,7 @@ Returns an instance of `KeycloakAdmin::TokenRepresentation`.
 KeycloakAdmin.realm("a_realm").token.get
 ```
 
-### Get a user from its idenfier
+### Get a user from its identifier
 
 Returns an instance of `KeycloakAdmin::UserRepresentation` or `nil` when this user does not exist.
 

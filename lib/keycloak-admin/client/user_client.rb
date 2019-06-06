@@ -24,11 +24,9 @@ module KeycloakAdmin
 
     def get(user_id)
       response = execute_http do
-        RestClient.get(users_url(user_id), headers)
+        RestClient::Resource.new(users_url(user_id), @configuration.rest_client_options).get(headers)
       end
       UserRepresentation.from_hash(JSON.parse(response))
-    rescue
-      nil
     end
 
     def search(query)
