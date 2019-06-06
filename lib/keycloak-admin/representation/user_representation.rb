@@ -1,7 +1,7 @@
 module KeycloakAdmin
   class UserRepresentation < Representation
     attr_accessor :id,
-      :created_at,
+      :created_timestamp,
       :attributes,
       :origin,
       :username,
@@ -13,18 +13,18 @@ module KeycloakAdmin
       :credentials
 
     def self.from_hash(hash)
-      user                = new
-      user.id             = hash["id"]
-      user.created_at     = Time.at(hash["createdTimestamp"] / 1000).to_datetime
-      user.origin         = hash["origin"]
-      user.username       = hash["username"]
-      user.email          = hash["email"]
-      user.enabled        = hash["enabled"]
-      user.email_verified = hash["emailVerified"]
-      user.first_name     = hash["firstName"]
-      user.last_name      = hash["lastName"]
-      user.attributes     = hash["attributes"]
-      user.credentials    = hash["credentials"]&.map{ |hash| CredentialRepresentation.from_hash(hash) } || []
+      user                   = new
+      user.id                = hash["id"]
+      user.created_timestamp = hash["createdTimestamp"]
+      user.origin            = hash["origin"]
+      user.username          = hash["username"]
+      user.email             = hash["email"]
+      user.enabled           = hash["enabled"]
+      user.email_verified    = hash["emailVerified"]
+      user.first_name        = hash["firstName"]
+      user.last_name         = hash["lastName"]
+      user.attributes        = hash["attributes"]
+      user.credentials       = hash["credentials"]&.map{ |hash| CredentialRepresentation.from_hash(hash) } || []
       user
     end
 

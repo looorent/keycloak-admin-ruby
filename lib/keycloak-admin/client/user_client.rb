@@ -13,7 +13,9 @@ module KeycloakAdmin
 
     def save(user_representation)
       execute_http do
-        RestClient.post(users_url, user_representation.to_json, headers)
+        RestClient::Resource.new(users_url, @configuration.rest_client_options).post(
+          user_representation.to_json, headers
+        )
       end
       user_representation
     end
@@ -31,7 +33,7 @@ module KeycloakAdmin
 
     def search(query)
       response = execute_http do
-        RestClient.get(users_url, headers.merge({params: { search: query }}))
+        RestClient::Resource.new(users_url, @configuration.rest_client_options).get(headers.merge({params: { search: query }}))
       end
       JSON.parse(response).map { |user_as_hash| UserRepresentation.from_hash(user_as_hash) }
     end
