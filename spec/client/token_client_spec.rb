@@ -42,12 +42,27 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
 
     it "parses the response" do
-      response = double
-      allow(response).to receive(:body).and_return '{"access_token":"test_access_token"}'
-      allow(RestClient).to receive(:post).and_return response
+      stub_post
 
       token = @token_client.get
       expect(token.access_token).to eq 'test_access_token'
+    end
+
+    it "passes rest client options" do
+      rest_client_options = {verify_ssl: OpenSSL::SSL::VERIFY_NONE}
+      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
+      stub_post
+
+      expect(RestClient::Resource).to receive(:new).with(
+        "http://auth.service.io/auth/realms/valid-realm/protocol/openid-connect/token", rest_client_options).and_call_original
+
+      @token_client.get
+    end
+
+    def stub_post
+      response = double
+      allow(response).to receive(:body).and_return '{"access_token":"test_access_token"}'
+      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return response
     end
   end
 end

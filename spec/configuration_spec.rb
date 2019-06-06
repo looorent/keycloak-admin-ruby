@@ -6,6 +6,7 @@ RSpec.describe KeycloakAdmin::RealmClient do
   let(:use_service_account) { true }
   let(:username)            { "a" }
   let(:password)            { "b" }
+  let(:rest_client_options) { {verify_ssl: OpenSSL::SSL::VERIFY_NONE} }
 
   before(:each) do
     @configuration                     = KeycloakAdmin::Configuration.new
@@ -17,6 +18,7 @@ RSpec.describe KeycloakAdmin::RealmClient do
     @configuration.use_service_account = use_service_account
     @configuration.username            = username
     @configuration.password            = password
+    @configuration.rest_client_options = rest_client_options
   end
 
   describe "#headers_for_token_retrieval" do
