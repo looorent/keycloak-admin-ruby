@@ -23,6 +23,8 @@ module KeycloakAdmin
 
     def execute_http
       yield
+    rescue RestClient::Exceptions::Timeout => e
+      raise
     rescue RestClient::ExceptionWithResponse => e
       http_error(e.response)
     end

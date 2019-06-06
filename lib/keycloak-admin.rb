@@ -42,6 +42,7 @@ module KeycloakAdmin
       config.use_service_account = true
       config.username            = nil
       config.password            = nil
+      config.rest_client_options = nil
     end
   end
 

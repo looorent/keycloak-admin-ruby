@@ -4,7 +4,7 @@
 Ruby client that acts as a client for the Keycloak REST API.
 This gem basically acts as an url builder using `http-client` to get responses and serialize them into _representation_ objects.
 
-_Warning: This beta gem is currently used for personal used. Most Keycloak Admin features are not implemented yet._
+_Warning: This beta gem is currently used for personal use. Most Keycloak Admin features are not implemented yet._
 
 ## Install
 
@@ -69,12 +69,12 @@ All options have a default value. However, all of them can be changed in your in
 | Option | Default Value | Type | Required? | Description  | Example |
 | ---- | ----- | ------ | ----- | ------ | ----- |
 | `server_url` | `nil`| String | Required | The base url where your Keycloak server is located. This value can be retrieved in your Keycloak client configuration. | `server_domain` | `nil`| String | Required | Public domain that identify your authentication cookies. | `auth.service.io` |
-| `client_realm_name` | `""`| String | Required | Name of the realm that contain the admin client. | `master` |
+| `client_realm_name` | `""`| String | Required | Name of the realm that contains the admin client. | `master` |
 | `client_id` | `admin-cli`| String | Required | Client that should be used to access admin capabilities. | `api-cli` |
 | `client_secret` | `nil`| String | Optional | If your client is `confidential`, this parameter must be specified. | `4e3c481c-f823-4a6a-b8a7-bf8c86e3eac3` |
-| `use_service_account` | `true` | Boolean | Required | `true` if the connection to the client uses a Service Account. `false` if the connetio nto the client uses a username/password credential | `false` | 
-| `username` | `nil`| String | Optional | Username that access to the Admin REST API. Recommended if `user_service_account` is set to `false`. | `mummy` |
-| `password` | `nil`| String | Optional | Clear password that access to the Admin REST API. Recommended if `user_service_account` is set to `false`. | `bobby` |
+| `use_service_account` | `true` | Boolean | Required | `true` if the connection to the client uses a Service Account. `false` if the connection to the client uses a username/password credential. | `false` | 
+| `username` | `nil`| String | Optional | Username to access the Admin REST API. Recommended if `user_service_account` is set to `false`. | `mummy` |
+| `password` | `nil`| String | Optional | Clear password to access the Admin REST API. Recommended if `user_service_account` is set to `false`. | `bobby` |
 | `logger` | `Logger.new(STDOUT)`| Logger | Optional | The logger used by `keycloak-admin` | `Rails.logger` | 
 
 
@@ -97,7 +97,7 @@ Returns an instance of `KeycloakAdmin::TokenRepresentation`.
 KeycloakAdmin.realm("a_realm").token.get
 ```
 
-### Get a user from its idenfier
+### Get a user from its identifier
 
 Returns an instance of `KeycloakAdmin::UserRepresentation` or `nil` when this user does not exist.
 
@@ -130,6 +130,12 @@ If you want to update its entire entity. To update some specific attributes, pro
 KeycloakAdmin.realm("a_realm").users.update("05c135c6-5ad8-4e17-b1fa-635fc089fd71", {
   email: "hello@gmail.com"
 })
+```
+
+### Delete a user
+
+```ruby
+KeycloakAdmin.realm("a_realm").users.delete(user_id)
 ```
 
 ### Create and save a user with password and a locale
