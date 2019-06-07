@@ -11,6 +11,7 @@ require_relative "keycloak-admin/representation/representation"
 require_relative "keycloak-admin/representation/token_representation"
 require_relative "keycloak-admin/representation/impersonation_redirection_representation"
 require_relative "keycloak-admin/representation/impersonation_representation"
+require_relative "keycloak-admin/representation/realm_representation"
 require_relative "keycloak-admin/representation/credential_representation"
 require_relative "keycloak-admin/representation/user_representation"
 

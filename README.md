@@ -196,6 +196,12 @@ token_lifespan_in_seconds = 20
 KeycloakAdmin.realm("a_realm").configurable_token.exchange_with(user_access_token, token_lifespan_in_seconds)
 ```
 
+### Get list of realms
+
+```ruby
+KeycloakAdmin.realm("master").list
+```
+
 ## How to execute library tests
 
 From the `keycloak-admin-api` directory:

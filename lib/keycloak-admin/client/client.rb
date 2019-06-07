@@ -9,13 +9,13 @@ module KeycloakAdmin
       @configuration.server_url
     end
 
-    def token
-      @token ||= KeycloakAdmin.realm(@configuration.client_realm_name).token.get
+    def current_token
+      @current_token ||= KeycloakAdmin.realm(@configuration.client_realm_name).token.get
     end
 
     def headers
       {
-        Authorization: "Bearer #{token.access_token}",
+        Authorization: "Bearer #{current_token.access_token}",
         content_type: :json,
         accept:       :json
       }
