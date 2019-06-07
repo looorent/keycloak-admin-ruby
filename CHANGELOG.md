@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.x.y] - Next version
 
 * List users
+* List roles
 * List and delete realms
 * Support passing rest client options for user save and search
 * Support using gem without ActiveSupport

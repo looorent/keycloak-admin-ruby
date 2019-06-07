@@ -58,6 +58,7 @@ KeycloakAdmin.configure do |config|
   config.username            = ENV["KEYCLOAK_ADMIN_USER"]
   config.password            = ENV["KEYCLOAK_ADMIN_PASSWORD"]
   config.logger              = Rails.logger
+  config.rest_client_options = { verify_ssl: OpenSSL::SSL::VERIFY_NONE }
 end
 ```
 This example is autoloaded in a Rails environment.
@@ -76,6 +77,7 @@ All options have a default value. However, all of them can be changed in your in
 | `username` | `nil`| String | Optional | Username to access the Admin REST API. Recommended if `user_service_account` is set to `false`. | `mummy` |
 | `password` | `nil`| String | Optional | Clear password to access the Admin REST API. Recommended if `user_service_account` is set to `false`. | `bobby` |
 | `logger` | `Logger.new(STDOUT)`| Logger | Optional | The logger used by `keycloak-admin` | `Rails.logger` | 
+| `rest_client_options` | `{}`| Hash | Optional | Options to pass to `RestClient` | `{ verify_ssl: OpenSSL::SSL::VERIFY_NONE }` | 
 
 
 ## Use Case
@@ -84,10 +86,13 @@ All options have a default value. However, all of them can be changed in your in
 
 * Get an access token
 * Create/update/get a user
+* Get list of users, search for user(s)
 * Reset credentials
 * Delete a user
 * Impersonate a user
 * Exchange a configurable token
+* Get list of roles
+* Get list of realms, delete a realm
 
 ### Get an access token
 
@@ -198,6 +203,8 @@ KeycloakAdmin.realm("a_realm").configurable_token.exchange_with(user_access_toke
 
 ### Get list of realms
 
+Returns an array of `KeycloakAdmin::RealmRepresentation`.
+
 ```ruby
 KeycloakAdmin.realm("master").list
 ```
@@ -206,6 +213,14 @@ KeycloakAdmin.realm("master").list
 
 ```ruby
 KeycloakAdmin.realm("a_realm").delete
+```
+
+### Get list of roles in a realm
+
+Returns an array of `KeycloakAdmin::RoleRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").roles.list
 ```
 
 ## How to execute library tests

@@ -51,6 +51,10 @@ module KeycloakAdmin
       UserClient.new(@configuration, self)
     end
 
+    def roles
+      RoleClient.new(@configuration, self)
+    end
+
     def name_defined?
       !@realm_name.nil?
     end
