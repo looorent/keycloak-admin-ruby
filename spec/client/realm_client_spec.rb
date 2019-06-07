@@ -46,12 +46,6 @@ RSpec.describe KeycloakAdmin::RealmClient do
   end
 
   describe "#list" do
-    let(:realm_name) { "valid-realm" }
-    let(:user) { KeycloakAdmin::UserRepresentation.from_hash(
-      "username" => "test_username",
-      "createdTimestamp" => Time.now.to_i,
-    )}
-
     before(:each) do
       @realm_client = KeycloakAdmin.realm('master')
 
@@ -75,6 +69,31 @@ RSpec.describe KeycloakAdmin::RealmClient do
       realms = @realm_client.list
       expect(realms.length).to eq 1
       expect(realms[0].realm).to eq "test_realm"
+    end
+  end
+
+  describe "#delete" do
+    let(:realm_name) { "valid-realm" }
+
+    before(:each) do
+      @realm_client = KeycloakAdmin.realm(realm_name)
+
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:delete)
+    end
+
+    it "delete realm" do
+      expect(@realm_client.delete).to be_truthy
+    end
+
+    it "passes rest client options" do
+      rest_client_options = {verify_ssl: OpenSSL::SSL::VERIFY_NONE}
+      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
+
+      expect(RestClient::Resource).to receive(:new).with(
+        "http://auth.service.io/auth/admin/realms/valid-realm", rest_client_options).and_call_original
+
+      expect(@realm_client.delete).to be_truthy
     end
   end
 end

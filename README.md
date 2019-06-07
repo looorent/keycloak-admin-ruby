@@ -202,6 +202,12 @@ KeycloakAdmin.realm("a_realm").configurable_token.exchange_with(user_access_toke
 KeycloakAdmin.realm("master").list
 ```
 
+### Delete a realm
+
+```ruby
+KeycloakAdmin.realm("a_realm").delete
+```
+
 ## How to execute library tests
 
 From the `keycloak-admin-api` directory:

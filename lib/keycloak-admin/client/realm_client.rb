@@ -12,6 +12,13 @@ module KeycloakAdmin
       JSON.parse(response).map { |realm_as_hash| RealmRepresentation.from_hash(realm_as_hash) }
     end
 
+    def delete
+      response = execute_http do
+        RestClient::Resource.new(realm_admin_url, @configuration.rest_client_options).delete(headers)
+      end
+      true
+    end
+
     def realm_url
       if @realm_name
         "#{server_url}/realms/#{@realm_name}"
