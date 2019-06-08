@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * List users
 * List clients
-* List groups
+* List groups, create/save a group
 * List roles
 * List, update and delete realms
 * Support passing rest client options for user save and search

@@ -91,7 +91,7 @@ All options have a default value. However, all of them can be changed in your in
 * Impersonate a user
 * Exchange a configurable token
 * Get list of clients
-* Get list of groups
+* Get list of groups, create/save a group
 * Get list of roles
 * Get list of realms, update/delete a realm
 
@@ -240,6 +240,24 @@ Returns an array of `KeycloakAdmin::GroupRepresentation`.
 
 ```ruby
 KeycloakAdmin.realm("a_realm").groups.list
+```
+
+### Save a group
+
+Returns the id of saved `group` provided, which must be of type `KeycloakAdmin::GroupRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").groups.save(group)
+```
+
+### Create and save a group with a name and path
+
+Returns the id of created group.
+
+```ruby
+group_name = "test"
+group_path = "/top"
+group_id = KeycloakAdmin.realm("a_realm").groups.create!(group_name, group_path)
 ```
 
 ### Get list of roles in a realm
