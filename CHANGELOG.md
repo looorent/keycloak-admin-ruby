@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * List clients
 * List groups
 * List roles
-* List and delete realms
+* List, update and delete realms
 * Support passing rest client options for user save and search
 * Support using gem without ActiveSupport
 

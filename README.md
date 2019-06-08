@@ -85,16 +85,15 @@ All options have a default value. However, all of them can be changed in your in
 ### Supported features
 
 * Get an access token
-* Create/update/get a user
+* Create/update/get/delete a user
 * Get list of users, search for user(s)
 * Reset credentials
-* Delete a user
 * Impersonate a user
 * Exchange a configurable token
 * Get list of clients
 * Get list of groups
 * Get list of roles
-* Get list of realms, delete a realm
+* Get list of realms, update/delete a realm
 
 ### Get an access token
 
@@ -209,6 +208,16 @@ Returns an array of `KeycloakAdmin::RealmRepresentation`.
 
 ```ruby
 KeycloakAdmin.realm("master").list
+```
+
+### Update a realm
+
+If you want to update its entire entity. To update some specific attributes, provide an object implementing `to_json`, such as a `Hash`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").update({
+  smtpServer: { host: 'test_host' }
+})
 ```
 
 ### Delete a realm

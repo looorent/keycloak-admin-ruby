@@ -19,6 +19,14 @@ module KeycloakAdmin
       true
     end
 
+    def update(realm_representation_body)
+      response = execute_http do
+        RestClient::Resource.new(realm_admin_url, @configuration.rest_client_options).put(
+          realm_representation_body.to_json, headers
+        )
+      end
+    end
+
     def realm_url
       if @realm_name
         "#{server_url}/realms/#{@realm_name}"
