@@ -1,4 +1,4 @@
-RSpec.describe KeycloakAdmin::RealmClient do
+RSpec.describe KeycloakAdmin::RoleClient do
   describe "#roles_url" do
     let(:realm_name) { "valid-realm" }
     let(:role_id)    { nil }

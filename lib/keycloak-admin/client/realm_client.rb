@@ -47,12 +47,16 @@ module KeycloakAdmin
       ConfigurableTokenClient.new(@configuration, self)
     end
 
-    def users
-      UserClient.new(@configuration, self)
+    def groups
+      GroupClient.new(@configuration, self)
     end
 
     def roles
       RoleClient.new(@configuration, self)
+    end
+
+    def users
+      UserClient.new(@configuration, self)
     end
 
     def name_defined?

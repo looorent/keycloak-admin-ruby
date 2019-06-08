@@ -92,6 +92,7 @@ All options have a default value. However, all of them can be changed in your in
 * Impersonate a user
 * Exchange a configurable token
 * Get list of roles
+* Get list of groups
 * Get list of realms, delete a realm
 
 ### Get an access token
@@ -213,6 +214,14 @@ KeycloakAdmin.realm("master").list
 
 ```ruby
 KeycloakAdmin.realm("a_realm").delete
+```
+
+### Get list of groups in a realm
+
+Returns an array of `KeycloakAdmin::GroupRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").groups.list
 ```
 
 ### Get list of roles in a realm
