@@ -47,6 +47,10 @@ module KeycloakAdmin
       ConfigurableTokenClient.new(@configuration, self)
     end
 
+    def clients
+      ClientClient.new(@configuration, self)
+    end
+
     def groups
       GroupClient.new(@configuration, self)
     end

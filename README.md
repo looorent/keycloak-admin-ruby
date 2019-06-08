@@ -91,8 +91,9 @@ All options have a default value. However, all of them can be changed in your in
 * Delete a user
 * Impersonate a user
 * Exchange a configurable token
-* Get list of roles
+* Get list of clients
 * Get list of groups
+* Get list of roles
 * Get list of realms, delete a realm
 
 ### Get an access token
@@ -214,6 +215,14 @@ KeycloakAdmin.realm("master").list
 
 ```ruby
 KeycloakAdmin.realm("a_realm").delete
+```
+
+### Get list of clients in a realm
+
+Returns an array of `KeycloakAdmin::ClientRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").clients.list
 ```
 
 ### Get list of groups in a realm
