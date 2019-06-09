@@ -98,7 +98,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
     end
 
     it "creates a group" do
-      stub_net_http_res(Net::HTTPCreated)
+      stub_net_http_res(Net::HTTPCreated, 201, 'Created')
 
       group_id = @group_client.create!("test_group_name")
       expect(group_id).to eq 'be061c48-6edd-4783-a726-1a57d4bfa22b'
@@ -112,7 +112,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       )
     end
 
-    def stub_net_http_res(res_class, code = 200, message = 'OK')
+    def stub_net_http_res(res_class, code, message)
       net_http_res = double
       allow(net_http_res).to receive(:message).and_return message
       allow(net_http_res).to receive(:code).and_return code
