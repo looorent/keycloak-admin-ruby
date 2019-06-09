@@ -92,7 +92,7 @@ All options have a default value. However, all of them can be changed in your in
 * Exchange a configurable token
 * Get list of clients
 * Get list of groups, create/save a group
-* Get list of roles
+* Get list of roles, save a role
 * Get list of realms, update/delete a realm
 
 ### Get an access token
@@ -266,6 +266,14 @@ Returns an array of `KeycloakAdmin::RoleRepresentation`.
 
 ```ruby
 KeycloakAdmin.realm("a_realm").roles.list
+```
+
+### Save a role
+
+Takes `role`, which must be of type `KeycloakAdmin::RoleRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").roles.save(role)
 ```
 
 ## How to execute library tests
