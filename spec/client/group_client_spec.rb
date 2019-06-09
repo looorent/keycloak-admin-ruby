@@ -104,18 +104,18 @@ RSpec.describe KeycloakAdmin::GroupClient do
       expect(group_id).to eq 'be061c48-6edd-4783-a726-1a57d4bfa22b'
     end
 
-    it "detects failure to create a group" do
-      stub_net_http_res(Net::HTTPBadRequest, 400, 'Bad Request')
+    it "detects unexpected response to create a group" do
+      stub_net_http_res(Net::HTTPOK, 200, 'OK')
 
       expect{ @group_client.create!("test_group_name") }.to raise_error(
-        'Create method returned status Error (Code: 400); expected status: Created (201)'
+        'Create method returned status OK (Code: 200); expected status: Created (201)'
       )
     end
 
     def stub_net_http_res(res_class, code = 200, message = 'OK')
       net_http_res = double
-      allow(net_http_res).to receive(:message).and_return 'Error'
-      allow(net_http_res).to receive(:code).and_return 400
+      allow(net_http_res).to receive(:message).and_return message
+      allow(net_http_res).to receive(:code).and_return code
       allow(net_http_res).to receive(:is_a?) do |target_class|
         target_class == res_class
       end
