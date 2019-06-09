@@ -69,8 +69,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
     end
 
     it "saves a group" do
-      group_id = @group_client.save(group)
-      expect(group_id).to eq 'be061c48-6edd-4783-a726-1a57d4bfa22b'
+      expect{ @group_client.save(group) }.not_to raise_error
     end
 
     it "passes rest client options" do
@@ -80,8 +79,47 @@ RSpec.describe KeycloakAdmin::GroupClient do
       expect(RestClient::Resource).to receive(:new).with(
         "http://auth.service.io/auth/admin/realms/valid-realm/groups", rest_client_options).and_call_original
 
-      group_id = @group_client.save(group)
+      expect{ @group_client.save(group) }.not_to raise_error
+    end
+  end
+
+  describe "#create" do
+    let(:realm_name) { "valid-realm" }
+
+    before(:each) do
+      @group_client = KeycloakAdmin.realm(realm_name).groups
+
+      stub_token_client
+      @response = double
+      allow(@response).to receive(:headers).and_return(
+        { location: 'http://auth.service.io/auth/admin/realms/valid-realm/groups/be061c48-6edd-4783-a726-1a57d4bfa22b' }
+      )
+      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return @response
+    end
+
+    it "creates a group" do
+      stub_net_http_res(Net::HTTPCreated)
+
+      group_id = @group_client.create!("test_group_name")
       expect(group_id).to eq 'be061c48-6edd-4783-a726-1a57d4bfa22b'
+    end
+
+    it "detects failure to create a group" do
+      stub_net_http_res(Net::HTTPBadRequest, 400, 'Bad Request')
+
+      expect{ @group_client.create!("test_group_name") }.to raise_error(
+        'Create method returned status Error (Code: 400); expected status: Created (201)'
+      )
+    end
+
+    def stub_net_http_res(res_class, code = 200, message = 'OK')
+      net_http_res = double
+      allow(net_http_res).to receive(:message).and_return 'Error'
+      allow(net_http_res).to receive(:code).and_return 400
+      allow(net_http_res).to receive(:is_a?) do |target_class|
+        target_class == res_class
+      end
+      allow(@response).to receive(:net_http_res).and_return net_http_res
     end
   end
 end

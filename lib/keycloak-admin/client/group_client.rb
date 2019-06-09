@@ -14,16 +14,16 @@ module KeycloakAdmin
     end
 
     def create!(name, path = nil)
-      save(build(name, path))
+      response = save(build(name, path))
+      created_id(response)
     end
 
     def save(group_representation)
-      response = execute_http do
+      execute_http do
         RestClient::Resource.new(groups_url, @configuration.rest_client_options).post(
           group_representation.to_json, headers
         )
       end
-      group_id = response.headers[:location].rpartition('/')[2]
     end
 
     def groups_url(id=nil)

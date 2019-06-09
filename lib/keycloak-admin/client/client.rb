@@ -29,6 +29,14 @@ module KeycloakAdmin
       http_error(e.response)
     end
 
+    def created_id(response)
+      unless response.net_http_res.is_a? Net::HTTPCreated
+        raise "Create method returned status #{response.net_http_res.message} (Code: #{response.net_http_res.code}); expected status: Created (201)"
+      end
+      (_head, _separator, id) = response.headers[:location].rpartition('/')
+      id
+    end
+
     private
 
     def http_error(response)
