@@ -50,4 +50,34 @@ RSpec.describe KeycloakAdmin::RoleClient do
       expect(roles[0].name).to eq "test_role_name"
     end
   end
+
+  describe "#save" do
+    let(:realm_name) { "valid-realm" }
+    let(:role) { KeycloakAdmin::RoleRepresentation.from_hash(
+      "name" => "test_role_name",
+      "composite" => false,
+      "clientRole" => false
+    )}
+
+    before(:each) do
+      @role_client = KeycloakAdmin.realm(realm_name).roles
+
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:post)
+    end
+
+    it "saves a role" do
+      expect{ @role_client.save(role) }.not_to raise_error
+    end
+
+    it "passes rest client options" do
+      rest_client_options = {verify_ssl: OpenSSL::SSL::VERIFY_NONE}
+      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
+
+      expect(RestClient::Resource).to receive(:new).with(
+        "http://auth.service.io/auth/admin/realms/valid-realm/roles", rest_client_options).and_call_original
+
+      expect{ @role_client.save(role) }.not_to raise_error
+    end
+  end
 end

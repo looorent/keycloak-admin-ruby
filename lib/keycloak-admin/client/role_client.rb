@@ -13,6 +13,14 @@ module KeycloakAdmin
       JSON.parse(response).map { |role_as_hash| RoleRepresentation.from_hash(role_as_hash) }
     end
 
+    def save(role_representation)
+      execute_http do
+        RestClient::Resource.new(roles_url, @configuration.rest_client_options).post(
+          role_representation.to_json, headers
+        )
+      end
+    end
+
     def roles_url(id=nil)
       if id
         "#{@realm_client.realm_admin_url}/roles/#{id}"
