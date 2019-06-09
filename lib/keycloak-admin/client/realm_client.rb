@@ -13,14 +13,22 @@ module KeycloakAdmin
     end
 
     def delete
-      response = execute_http do
+      execute_http do
         RestClient::Resource.new(realm_admin_url, @configuration.rest_client_options).delete(headers)
       end
       true
     end
 
+    def save(realm_representation)
+      execute_http do
+        RestClient::Resource.new(realm_list_url, @configuration.rest_client_options).post(
+          realm_representation.to_json, headers
+        )
+      end
+    end
+
     def update(realm_representation_body)
-      response = execute_http do
+      execute_http do
         RestClient::Resource.new(realm_admin_url, @configuration.rest_client_options).put(
           realm_representation_body.to_json, headers
         )

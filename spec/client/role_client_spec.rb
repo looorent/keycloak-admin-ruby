@@ -63,11 +63,11 @@ RSpec.describe KeycloakAdmin::RoleClient do
       @role_client = KeycloakAdmin.realm(realm_name).roles
 
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:post)
+      expect_any_instance_of(RestClient::Resource).to receive(:post).with(role.to_json, anything)
     end
 
     it "saves a role" do
-      expect{ @role_client.save(role) }.not_to raise_error
+      @role_client.save(role)
     end
 
     it "passes rest client options" do
@@ -77,7 +77,7 @@ RSpec.describe KeycloakAdmin::RoleClient do
       expect(RestClient::Resource).to receive(:new).with(
         "http://auth.service.io/auth/admin/realms/valid-realm/roles", rest_client_options).and_call_original
 
-      expect{ @role_client.save(role) }.not_to raise_error
+      @role_client.save(role)
     end
   end
 end

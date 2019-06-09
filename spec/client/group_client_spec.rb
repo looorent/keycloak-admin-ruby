@@ -65,11 +65,11 @@ RSpec.describe KeycloakAdmin::GroupClient do
       allow(response).to receive(:headers).and_return(
         { location: 'http://auth.service.io/auth/admin/realms/valid-realm/groups/be061c48-6edd-4783-a726-1a57d4bfa22b' }
       )
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return response
+      expect_any_instance_of(RestClient::Resource).to receive(:post).with(group.to_json, anything).and_return response
     end
 
     it "saves a group" do
-      expect{ @group_client.save(group) }.not_to raise_error
+      @group_client.save(group)
     end
 
     it "passes rest client options" do
@@ -79,7 +79,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       expect(RestClient::Resource).to receive(:new).with(
         "http://auth.service.io/auth/admin/realms/valid-realm/groups", rest_client_options).and_call_original
 
-      expect{ @group_client.save(group) }.not_to raise_error
+      @group_client.save(group)
     end
   end
 

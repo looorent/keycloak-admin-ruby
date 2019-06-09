@@ -93,7 +93,7 @@ All options have a default value. However, all of them can be changed in your in
 * Get list of clients
 * Get list of groups, create/save a group
 * Get list of roles, save a role
-* Get list of realms, update/delete a realm
+* Get list of realms, save/update/delete a realm
 
 ### Get an access token
 
@@ -208,6 +208,14 @@ Returns an array of `KeycloakAdmin::RealmRepresentation`.
 
 ```ruby
 KeycloakAdmin.realm("master").list
+```
+
+### Save a realm
+
+Takes `realm` of type `KeycloakAdmin::RealmRepresentation`, or an object implementing `to_json`, such as a `Hash`.
+
+```ruby
+KeycloakAdmin.realm(nil).save(realm)
 ```
 
 ### Update a realm
