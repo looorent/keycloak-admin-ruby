@@ -58,6 +58,7 @@ KeycloakAdmin.configure do |config|
   config.username            = ENV["KEYCLOAK_ADMIN_USER"]
   config.password            = ENV["KEYCLOAK_ADMIN_PASSWORD"]
   config.logger              = Rails.logger
+  config.rest_client_options = { verify_ssl: OpenSSL::SSL::VERIFY_NONE }
 end
 ```
 This example is autoloaded in a Rails environment.
@@ -76,6 +77,7 @@ All options have a default value. However, all of them can be changed in your in
 | `username` | `nil`| String | Optional | Username to access the Admin REST API. Recommended if `user_service_account` is set to `false`. | `mummy` |
 | `password` | `nil`| String | Optional | Clear password to access the Admin REST API. Recommended if `user_service_account` is set to `false`. | `bobby` |
 | `logger` | `Logger.new(STDOUT)`| Logger | Optional | The logger used by `keycloak-admin` | `Rails.logger` | 
+| `rest_client_options` | `{}`| Hash | Optional | Options to pass to `RestClient` | `{ verify_ssl: OpenSSL::SSL::VERIFY_NONE }` | 
 
 
 ## Use Case
@@ -83,11 +85,16 @@ All options have a default value. However, all of them can be changed in your in
 ### Supported features
 
 * Get an access token
-* Create/update/get a user
+* Create/update/get/delete a user
+* Get list of users, search for user(s)
 * Reset credentials
-* Delete a user
 * Impersonate a user
 * Exchange a configurable token
+* Get list of clients
+* Get list of groups, create/save a group
+* Get list of roles, save a role
+* Get list of realms, save/update/delete a realm
+* Get list of client role mappings for a user
 
 ### Get an access token
 
@@ -112,6 +119,14 @@ Returns an array of `KeycloakAdmin::UserRepresentation`.
 
 ```ruby
 KeycloakAdmin.realm("a_realm").users.search("a_username_or_an_email")
+```
+
+### List all users in a realm
+
+Returns an array of `KeycloakAdmin::UserRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").users.list
 ```
 
 ### Save a user
@@ -186,6 +201,98 @@ Returns an instance of `KeycloakAdmin::TokenRepresentation`.
 user_access_token         = "abqsdofnqdsogn"
 token_lifespan_in_seconds = 20
 KeycloakAdmin.realm("a_realm").configurable_token.exchange_with(user_access_token, token_lifespan_in_seconds)
+```
+
+### Get list of realms
+
+Returns an array of `KeycloakAdmin::RealmRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("master").list
+```
+
+### Save a realm
+
+Takes `realm` of type `KeycloakAdmin::RealmRepresentation`, or an object implementing `to_json`, such as a `Hash`.
+
+```ruby
+KeycloakAdmin.realm(nil).save(realm)
+```
+
+### Update a realm
+
+If you want to update its entire entity. To update some specific attributes, provide an object implementing `to_json`, such as a `Hash`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").update({
+  smtpServer: { host: 'test_host' }
+})
+```
+
+### Delete a realm
+
+```ruby
+KeycloakAdmin.realm("a_realm").delete
+```
+
+### Get list of clients in a realm
+
+Returns an array of `KeycloakAdmin::ClientRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").clients.list
+```
+
+### Get list of groups in a realm
+
+Returns an array of `KeycloakAdmin::GroupRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").groups.list
+```
+
+### Save a group
+
+Returns the id of saved `group` provided, which must be of type `KeycloakAdmin::GroupRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").groups.save(group)
+```
+
+### Create and save a group with a name and path
+
+Returns the id of created group.
+
+```ruby
+group_name = "test"
+group_path = "/top"
+group_id = KeycloakAdmin.realm("a_realm").groups.create!(group_name, group_path)
+```
+
+### Get list of roles in a realm
+
+Returns an array of `KeycloakAdmin::RoleRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").roles.list
+```
+
+### Save a role
+
+Takes `role`, which must be of type `KeycloakAdmin::RoleRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").roles.save(role)
+```
+
+### Get list of client role mappings for a user
+
+Returns an array of `KeycloakAdmin::RoleRepresentation`.
+
+```ruby
+user_id   = "95985b21-d884-4bbd-b852-cb8cd365afc2"
+client_id = "1869e876-71b4-4de2-849e-66540db3a098"
+KeycloakAdmin.realm("a_realm").user(user_id).client_role_mappings(client_id).list_available
 ```
 
 ## How to execute library tests

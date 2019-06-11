@@ -9,13 +9,13 @@ module KeycloakAdmin
       @configuration.server_url
     end
 
-    def token
-      @token ||= KeycloakAdmin.realm(@configuration.client_realm_name).token.get
+    def current_token
+      @current_token ||= KeycloakAdmin.realm(@configuration.client_realm_name).token.get
     end
 
     def headers
       {
-        Authorization: "Bearer #{token.access_token}",
+        Authorization: "Bearer #{current_token.access_token}",
         content_type: :json,
         accept:       :json
       }
@@ -27,6 +27,14 @@ module KeycloakAdmin
       raise
     rescue RestClient::ExceptionWithResponse => e
       http_error(e.response)
+    end
+
+    def created_id(response)
+      unless response.net_http_res.is_a? Net::HTTPCreated
+        raise "Create method returned status #{response.net_http_res.message} (Code: #{response.net_http_res.code}); expected status: Created (201)"
+      end
+      (_head, _separator, id) = response.headers[:location].rpartition('/')
+      id
     end
 
     private
