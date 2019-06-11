@@ -12,7 +12,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "0.7.0"
+gem "keycloak-admin", "0.7.1"
 ```
 
 ## Login
@@ -95,6 +95,7 @@ All options have a default value. However, all of them can be changed in your in
 * Get list of roles, save a role
 * Get list of realms, save/update/delete a realm
 * Get list of client role mappings for a user
+* Save client role mappings for a user
 
 ### Get an access token
 
@@ -293,6 +294,16 @@ Returns an array of `KeycloakAdmin::RoleRepresentation`.
 user_id   = "95985b21-d884-4bbd-b852-cb8cd365afc2"
 client_id = "1869e876-71b4-4de2-849e-66540db3a098"
 KeycloakAdmin.realm("a_realm").user(user_id).client_role_mappings(client_id).list_available
+```
+
+### Save list of client role mappings for a user
+
+Takes `roles`, which must be an array of type `KeycloakAdmin::RoleRepresentation`.
+
+```ruby
+user_id   = "95985b21-d884-4bbd-b852-cb8cd365afc2"
+client_id = "1869e876-71b4-4de2-849e-66540db3a098"
+KeycloakAdmin.realm("a_realm").user(user_id).client_role_mappings(client_id).save(roles)
 ```
 
 ## How to execute library tests
