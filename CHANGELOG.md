@@ -5,7 +5,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.x.y] - Next version
+## [0.7.1] - Next version
+
+Thanks to @vlad-ro:
 
 * List users
 * List clients
@@ -16,9 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Support passing rest client options for user save and search
 * Support using gem without ActiveSupport
 
-## [0.7.0] - 2019-06-06
+## [0.7.0] - 2019-06-11
 
-Thanks to @vlad-ro
+Thanks to @vlad-ro:
 
 * Support passing rest client options
 * More documentation
