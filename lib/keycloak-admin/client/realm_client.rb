@@ -79,6 +79,10 @@ module KeycloakAdmin
       UserClient.new(@configuration, self)
     end
 
+    def user(user_id)
+      UserResource.new(@configuration, self, user_id)
+    end
+
     def name_defined?
       !@realm_name.nil?
     end

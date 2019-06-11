@@ -94,6 +94,7 @@ All options have a default value. However, all of them can be changed in your in
 * Get list of groups, create/save a group
 * Get list of roles, save a role
 * Get list of realms, save/update/delete a realm
+* Get list of client role mappings for a user
 
 ### Get an access token
 
@@ -282,6 +283,16 @@ Takes `role`, which must be of type `KeycloakAdmin::RoleRepresentation`.
 
 ```ruby
 KeycloakAdmin.realm("a_realm").roles.save(role)
+```
+
+### Get list of client role mappings for a user
+
+Returns an array of `KeycloakAdmin::RoleRepresentation`.
+
+```ruby
+user_id   = "95985b21-d884-4bbd-b852-cb8cd365afc2"
+client_id = "1869e876-71b4-4de2-849e-66540db3a098"
+KeycloakAdmin.realm("a_realm").user(user_id).client_role_mappings(client_id).list_available
 ```
 
 ## How to execute library tests

@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * List groups, create/save a group
 * List roles, save a role
 * List realms, save/update/delete a realm
+* Get list of client role mappings for a user
 * Support passing rest client options for user save and search
 * Support using gem without ActiveSupport
 

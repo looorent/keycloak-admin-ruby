@@ -3,6 +3,7 @@ require "logger"
 require_relative "keycloak-admin/configuration"
 require_relative "keycloak-admin/client/client"
 require_relative "keycloak-admin/client/client_client"
+require_relative "keycloak-admin/client/client_role_mappings_client"
 require_relative "keycloak-admin/client/group_client"
 require_relative "keycloak-admin/client/realm_client"
 require_relative "keycloak-admin/client/role_client"
@@ -20,6 +21,7 @@ require_relative "keycloak-admin/representation/credential_representation"
 require_relative "keycloak-admin/representation/realm_representation"
 require_relative "keycloak-admin/representation/role_representation"
 require_relative "keycloak-admin/representation/user_representation"
+require_relative "keycloak-admin/resource/user_resource"
 
 module KeycloakAdmin
 
