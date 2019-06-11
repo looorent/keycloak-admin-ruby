@@ -14,5 +14,9 @@ module KeycloakAdmin
     def client_role_mappings(client_id)
       ClientRoleMappingsClient.new(@configuration, self, client_id)
     end
+
+    def role_mapper
+      RoleMapperClient.new(@configuration, self)
+    end
   end
 end

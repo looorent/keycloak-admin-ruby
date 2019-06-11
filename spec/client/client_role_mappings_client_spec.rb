@@ -50,7 +50,7 @@ RSpec.describe KeycloakAdmin::ClientRoleMappingsClient do
     let(:realm_name) { "valid-realm" }
     let(:user_id)    { "test_user" }
     let(:client_id)  { "test_client" }
-    let(:roles) { [
+    let(:role_list) { [
       KeycloakAdmin::RoleRepresentation.from_hash(
         "name" => "test_role_name",
         "composite" => false,
@@ -62,11 +62,11 @@ RSpec.describe KeycloakAdmin::ClientRoleMappingsClient do
       @client_role_mappings_client = KeycloakAdmin.realm(realm_name).user(user_id).client_role_mappings(client_id)
 
       stub_token_client
-      expect_any_instance_of(RestClient::Resource).to receive(:post).with(roles.to_json, anything)
+      expect_any_instance_of(RestClient::Resource).to receive(:post).with(role_list.to_json, anything)
     end
 
     it "saves client role mappings" do
-      @client_role_mappings_client.save(roles)
+      @client_role_mappings_client.save(role_list)
     end
 
     it "passes rest client options" do
@@ -76,7 +76,7 @@ RSpec.describe KeycloakAdmin::ClientRoleMappingsClient do
       expect(RestClient::Resource).to receive(:new).with(
         "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/clients/test_client", rest_client_options).and_call_original
 
-      @client_role_mappings_client.save(roles)
+      @client_role_mappings_client.save(role_list)
     end
   end
 end
