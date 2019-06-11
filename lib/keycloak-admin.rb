@@ -22,6 +22,8 @@ require_relative "keycloak-admin/representation/credential_representation"
 require_relative "keycloak-admin/representation/realm_representation"
 require_relative "keycloak-admin/representation/role_representation"
 require_relative "keycloak-admin/representation/user_representation"
+require_relative "keycloak-admin/resource/base_role_containing_resource"
+require_relative "keycloak-admin/resource/group_resource"
 require_relative "keycloak-admin/resource/user_resource"
 
 module KeycloakAdmin

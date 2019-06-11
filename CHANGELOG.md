@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.x] - Next version
 
-* Save list of client role mappings for a user
-* Save list of realm-level role mappings for a user
+* Get list of client role mappings for a group
+* Save client role mappings for a user/group
+* Save realm-level role mappings for a user/group
 
 ## [0.7.1] - 2019-06-11
 

@@ -94,9 +94,9 @@ All options have a default value. However, all of them can be changed in your in
 * Get list of groups, create/save a group
 * Get list of roles, save a role
 * Get list of realms, save/update/delete a realm
-* Get list of client role mappings for a user
-* Save client role mappings for a user
-* Save realm-level role mappings for a user
+* Get list of client role mappings for a user/group
+* Save client role mappings for a user/group
+* Save realm-level role mappings for a user/group
 
 ### Get an access token
 
@@ -287,7 +287,7 @@ Takes `role`, which must be of type `KeycloakAdmin::RoleRepresentation`.
 KeycloakAdmin.realm("a_realm").roles.save(role)
 ```
 
-### Get list of client role mappings for a user
+### Get list of client role mappings for a user/group
 
 Returns an array of `KeycloakAdmin::RoleRepresentation`.
 
@@ -296,8 +296,14 @@ user_id   = "95985b21-d884-4bbd-b852-cb8cd365afc2"
 client_id = "1869e876-71b4-4de2-849e-66540db3a098"
 KeycloakAdmin.realm("a_realm").user(user_id).client_role_mappings(client_id).list_available
 ```
+or
+```ruby
+group_id  = "3a63b5c0-ef8a-47fd-86ed-b5fead18d9b8"
+client_id = "1869e876-71b4-4de2-849e-66540db3a098"
+KeycloakAdmin.realm("a_realm").group(group_id).client_role_mappings(client_id).list_available
+```
 
-### Save list of client role mappings for a user
+### Save list of client role mappings for a user/group
 
 Takes `role_list`, which must be an array of type `KeycloakAdmin::RoleRepresentation`.
 
@@ -306,14 +312,25 @@ user_id   = "95985b21-d884-4bbd-b852-cb8cd365afc2"
 client_id = "1869e876-71b4-4de2-849e-66540db3a098"
 KeycloakAdmin.realm("a_realm").user(user_id).client_role_mappings(client_id).save(role_list)
 ```
+or
+```ruby
+group_id  = "3a63b5c0-ef8a-47fd-86ed-b5fead18d9b8"
+client_id = "1869e876-71b4-4de2-849e-66540db3a098"
+KeycloakAdmin.realm("a_realm").group(group_id).client_role_mappings(client_id).save(role_list)
+```
 
-### Save list of realm-level role mappings for a user
+### Save list of realm-level role mappings for a user/group
 
 Takes `role_list`, which must be an array of type `KeycloakAdmin::RoleRepresentation`.
 
 ```ruby
 user_id   = "95985b21-d884-4bbd-b852-cb8cd365afc2"
 KeycloakAdmin.realm("a_realm").user(user_id).role_mapper.save_realm_level(role_list)
+```
+or
+```ruby
+group_id  = "3a63b5c0-ef8a-47fd-86ed-b5fead18d9b8"
+KeycloakAdmin.realm("a_realm").group(group_id).role_mapper.save_realm_level(role_list)
 ```
 
 ## How to execute library tests
