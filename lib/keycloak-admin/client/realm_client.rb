@@ -71,6 +71,10 @@ module KeycloakAdmin
       GroupClient.new(@configuration, self)
     end
 
+    def group(group_id)
+      GroupResource.new(@configuration, self, group_id)
+    end
+
     def roles
       RoleClient.new(@configuration, self)
     end
