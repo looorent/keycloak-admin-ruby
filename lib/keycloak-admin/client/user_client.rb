@@ -50,6 +50,13 @@ module KeycloakAdmin
       true
     end
 
+    def groups(user_id)
+      response = execute_http do
+        RestClient::Resource.new(groups_url(user_id), @configuration.rest_client_options).get(headers)
+      end
+      JSON.parse(response).map { |group_as_hash| GroupRepresentation.from_hash(group_as_hash) }
+    end
+
     def update_password(user_id, new_password)
       execute_http do
         RestClient.put(reset_password_url(user_id), {
@@ -84,6 +91,11 @@ module KeycloakAdmin
     def reset_password_url(user_id)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
       "#{users_url(user_id)}/reset-password"
+    end
+
+    def groups_url(user_id)
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
+      "#{users_url(user_id)}/groups"
     end
 
     def impersonation_url(user_id)
