@@ -80,6 +80,23 @@ module KeycloakAdmin
       ImpersonationRedirectionRepresentation.from_url(impersonation_url(user_id), headers)
     end
 
+    def link_idp(user_id, idp_id, idp_user_id, idp_username)
+      fed_id_rep                   = FederatedIdentityRepresentation.new
+      fed_id_rep.user_id           = idp_user_id
+      fed_id_rep.user_name         = idp_username
+      fed_id_rep.identity_provider = idp_id
+
+      execute_http do
+        RestClient.post(federated_identity_url(user_id, idp_id), fed_id_rep.to_json, headers)
+      end
+    end
+
+    def unlink_idp(user_id, idp_id)
+      execute_http do
+        RestClient::Resource.new(federated_identity_url(user_id, idp_id), @configuration.rest_client_options).delete(headers)
+      end
+    end
+
     def users_url(id=nil)
       if id
         "#{@realm_client.realm_admin_url}/users/#{id}"
@@ -101,6 +118,12 @@ module KeycloakAdmin
     def impersonation_url(user_id)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
       "#{users_url(user_id)}/impersonation"
+    end
+
+    def federated_identity_url(user_id, identity_provider)
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
+      raise ArgumentError.new("identity_provider must be defined") if identity_provider.nil?
+      "#{users_url(user_id)}/federated-identity/#{identity_provider}"
     end
 
     private
