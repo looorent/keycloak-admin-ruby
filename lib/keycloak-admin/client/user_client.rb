@@ -84,7 +84,7 @@ module KeycloakAdmin
         RestClient::Request.execute(
           @configuration.rest_client_options.merge(
             method: :post,
-            url: imporsonation.impersonation_url,
+            url: impersonation.impersonation_url,
             payload: impersonation.body.to_json,
             headers: impersonation.headers
           )
