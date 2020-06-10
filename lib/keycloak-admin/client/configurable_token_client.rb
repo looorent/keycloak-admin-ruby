@@ -16,13 +16,18 @@ module KeycloakAdmin
 
     def exchange_with(user_access_token, token_lifespan_in_seconds)
       response = execute_http do
-        RestClient.post(token_url, {
-          tokenLifespanInSeconds: token_lifespan_in_seconds
-        }.to_json, {
-          Authorization: "Bearer #{user_access_token}",
-          content_type:  :json,
-          accept:        :json
-        })
+        RestClient::Request.execute(
+          @configuration.options.merge(
+            method: :post,
+            url: token_url,
+            payload: { tokenLifespanInSeconds: token_lifespan_in_seconds }.to_json,
+            headers: {
+              Authorization: "Bearer #{user_access_token}",
+              content_type: :json,
+              accept: :json
+            }
+          )
+        )
       end
       TokenRepresentation.from_json(response.body)
     end
