@@ -12,7 +12,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "0.7.5"
+gem "keycloak-admin", "0.7.6"
 ```
 
 ## Login
@@ -98,6 +98,8 @@ All options have a default value. However, all of them can be changed in your in
 * Save client role mappings for a user/group
 * Save realm-level role mappings for a user/group
 * Link/Unlink users to federated identity provider brokers
+* Execute actions emails
+* Send forgot passsword mail
 
 ### Get an access token
 
