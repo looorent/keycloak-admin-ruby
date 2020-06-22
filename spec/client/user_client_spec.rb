@@ -72,6 +72,31 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
   end
 
+  describe "#execute_actions_email_url" do
+    let(:realm_name) { "valid-realm" }
+    let(:user_id)    { nil }
+
+    before(:each) do
+      @client = KeycloakAdmin.realm(realm_name).users
+    end
+
+    context "when user_id is not defined" do
+      let(:user_id) { nil }
+      it "raises an error" do
+        expect {
+          @client.execute_actions_email_url(user_id)
+        }.to raise_error(ArgumentError)
+      end
+    end
+
+    context "when user_id is defined" do
+      let(:user_id) { 42 }
+      it "return a proper url" do
+        expect(@client.execute_actions_email_url(user_id)).to eq "http://auth.service.io/auth/admin/realms/valid-realm/users/42/execute-actions-email"
+      end
+    end
+  end
+
   describe "#impersonation_url" do
     let(:realm_name) { "valid-realm" }
     let(:user_id)    { nil }

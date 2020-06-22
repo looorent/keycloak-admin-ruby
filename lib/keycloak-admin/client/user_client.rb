@@ -68,6 +68,17 @@ module KeycloakAdmin
       user_id
     end
 
+    def forgot_password(user_id)
+      execute_actions_email(user_id, ["UPDATE_PASSWORD"])
+    end
+
+    def execute_actions_email(user_id, actions=[])
+      execute_http do
+        RestClient.put(execute_actions_email_url(user_id), actions.to_json, headers)
+      end
+      user_id
+    end
+
     def impersonate(user_id)
       impersonation = get_redirect_impersonation(user_id)
       response = execute_http do
@@ -108,6 +119,11 @@ module KeycloakAdmin
     def reset_password_url(user_id)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
       "#{users_url(user_id)}/reset-password"
+    end
+
+    def execute_actions_email_url(user_id)
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
+      "#{users_url(user_id)}/execute-actions-email"
     end
 
     def groups_url(user_id)
