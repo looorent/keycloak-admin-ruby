@@ -12,7 +12,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "0.7.6"
+gem "keycloak-admin", "0.7.7"
 ```
 
 ## Login
@@ -344,7 +344,3 @@ From the `keycloak-admin-api` directory:
   $ docker build . -t keycloak-admin:test
   $ docker run -v `pwd`:/usr/src/app/ keycloak-admin:test bundle exec rspec spec
 ```
-
-## Future work
-
-* Allow authentication using JWT assertions

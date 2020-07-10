@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.7] - 2020-07-10
+
+* Fix: `Replace request method shorthand with .execute for proper RestClient option support` (thanks to @RomanHargrave)
+* When sending action emails, add lifespan as an optional parameter (thanks to @hobbypunk90)
+
 ## [0.7.6] - 2020-06-22
 
 Thanks to @hobbypunk90 
@@ -21,7 +26,7 @@ Thanks to @RomanHargrave
 
 ## [0.7.3] - 2019-07-11
 
-Thanks to @cederigo=
+Thanks to @cederigo:
 * For a given user, get her list of groups
 
 ## [0.7.2] - 2019-06-17
