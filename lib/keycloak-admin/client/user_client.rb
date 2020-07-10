@@ -21,7 +21,14 @@ module KeycloakAdmin
     end
 
     def update(user_id, user_representation_body)
-      RestClient.put(users_url(user_id), user_representation_body.to_json, headers)
+      RestClient::Request.execute(
+        @configuration.rest_client_options.merge(
+          method: :put,
+          url: users_url(user_id),
+          payload: user_representation_body.to_json,
+          headers: headers
+        )
+      )
     end
 
     def get(user_id)
@@ -59,11 +66,14 @@ module KeycloakAdmin
 
     def update_password(user_id, new_password)
       execute_http do
-        RestClient.put(reset_password_url(user_id), {
-          type: "password",
-          value: new_password,
-          temporary: false
-        }.to_json, headers)
+        RestClient::Request.execute(
+          @configuration.rest_client_options.merge(
+            method: :put,
+            url: reset_password_url(user_id),
+            payload: { type: 'password', value: new_password, temporary: false }.to_json,
+            headers: headers
+          )
+        )
       end
       user_id
     end
@@ -83,7 +93,14 @@ module KeycloakAdmin
     def impersonate(user_id)
       impersonation = get_redirect_impersonation(user_id)
       response = execute_http do
-        RestClient.post(impersonation.impersonation_url, impersonation.body.to_json, impersonation.headers)
+        RestClient::Request.execute(
+          @configuration.rest_client_options.merge(
+            method: :post,
+            url: impersonation.impersonation_url,
+            payload: impersonation.body.to_json,
+            headers: impersonation.headers
+          )
+        )
       end
       ImpersonationRepresentation.from_response(response, @configuration.server_domain)
     end
@@ -99,7 +116,14 @@ module KeycloakAdmin
       fed_id_rep.identity_provider = idp_id
 
       execute_http do
-        RestClient.post(federated_identity_url(user_id, idp_id), fed_id_rep.to_json, headers)
+        RestClient::Request.execute(
+          @configuration.rest_client_options.merge(
+            method: :post,
+            url: federated_identity_url(user_id, idp_id),
+            payload: fed_id_rep.to_json,
+            headers: headers
+          )
+        )
       end
     end
 
