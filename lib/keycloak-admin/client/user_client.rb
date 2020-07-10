@@ -68,13 +68,14 @@ module KeycloakAdmin
       user_id
     end
 
-    def forgot_password(user_id)
-      execute_actions_email(user_id, ["UPDATE_PASSWORD"])
+    def forgot_password(user_id, lifespan=nil)
+      execute_actions_email(user_id, ["UPDATE_PASSWORD"], lifespan)
     end
 
-    def execute_actions_email(user_id, actions=[])
+    def execute_actions_email(user_id, actions=[], lifespan=nil)
       execute_http do
-        RestClient.put(execute_actions_email_url(user_id), actions.to_json, headers)
+        lifespan_param = lifespan.nil? ? "" : "lifespan=#{lifespan.seconds}"
+        RestClient.put("#{execute_actions_email_url(user_id)}?#{lifespan_param}", actions.to_json, headers)
       end
       user_id
     end
