@@ -17,32 +17,54 @@ gem "keycloak-admin", "0.7.7"
 
 ## Login
 
-You can choose your login process between two different login methods: `username/password` and `Account Service`.
+To login on Keycloak's Admin API, you first need to setup a client.
 
-### Login with username/password
+Go to your realm administration page and open `Clients`. Then, click on the `Create` button.
+On the first screen, enter:
+* `Client ID`: _e.g. my-app-admin-client_ 
+* `Client Protocol`: select `openid-connect`
+* `Root URL`: let it blank
 
-Using this login method requires to create a user (and her credentials).
-* In Keycloak 
-  * Make your client `confidential` or `public`
-  * Do not check `Service Accounts Enabled`
-* In this gem's configuration
-  * Set `use_service_account` to `false`
-  * Setup `username` and `password`
-  * Setup `client_secret` if your client is `confidential`
+The next screen must be configured depending on how you want to authenticate:
+* `username/password` with a user of the realm
+* `Direct Access Grants` with a service account
 
-### Login with an Account Service
+### Login with username/password (realm user)
 
-Using a service account to use the REST Admin API does not require to create a dedicated user (http://www.keycloak.org/docs/2.5/server_admin/topics/clients/oidc/service-accounts.html).
+* In Keycloak, during the client setup:
+  * `Access Type`: `public` or `confidential`
+  * `Service Accounts Enabled` (when `confidential`): `false`
+  * After saving your client, if you have chosen a `confidential` client, go to `Credentials` tab and copy the `Client Secret`
 
-* In Keycloak 
-  * Make your client `confidential`
-  * Check its toggle `Service Accounts Enabled`
-  * Disable both `Standard Flow Enabled` and `Implicit Flow Enabled `
-  * Enable `Direct Access Grants Enabled`
-  * After saving this client, open the `Service Account Roles` and add relevant `realm-management.` client's roles. For instance: `view-users` if you want to search for users using this gem.
-* In this gem's configuration
+* In Keycloak, create a dedicated user (and her credentials):
+  * Go to `Users`
+  * Click on the `Add user` button
+  * Setup her mandatory information, depending on your realm's configuration
+  * On the `Credentials` tab, create her a password (toggle off `Temporary`)
+
+* In this gem's configuration (see Section `Configuration`):
+  * Setup `username` and `password` according to your user's configuration
+  * Setup `client_id` with your `Client ID` (_e.g. my-app-admin-client_)
+  * If your client is `confidential`, copy its Client Secret to `client_secret` 
+
+### Login with `Direct Access Grants` (Service account)
+
+Using a service account to use the REST Admin API does not require to create a dedicated user (https://www.keycloak.org/docs/latest/server_admin/#_service_accounts).
+
+* In Keycloak, during the client setup:
+  * `Access Type`:  `confidential`
+  * `Service Accounts Enabled` (when `confidential`): `true`
+  * `Standard Flow Enabled`: `false`
+  * `Implicit Flow Enabled`: `false`
+  * `Direct Access Grants Enabled`: `true`
+  * After saving this client
+    * open the `Service Account Roles` and add relevant `realm-management.` client's roles. For instance: `view-users` if you want to search for users using this gem.
+    * open the `Credentials` tab and copy the `Client Secret`
+  
+* In this gem's configuration  (see Section `Configuration`):
   * Set `use_service_account` to `true`
-  * Setup `client_secret`
+  * Setup `client_id` with your `Client ID` (_e.g. my-app-admin-client_)
+  * Copy its Client Secret to `client_secret` 
 
 ## Configuration
 
