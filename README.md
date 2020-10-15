@@ -91,7 +91,8 @@ All options have a default value. However, all of them can be changed in your in
 
 | Option | Default Value | Type | Required? | Description  | Example |
 | ---- | ----- | ------ | ----- | ------ | ----- |
-| `server_url` | `nil`| String | Required | The base url where your Keycloak server is located. This value can be retrieved in your Keycloak client configuration. | `server_domain` | `nil`| String | Required | Public domain that identify your authentication cookies. | `auth.service.io` |
+| `server_url` | `nil` | String | Required | The base url where your Keycloak server is located (a URL that starts with `http` and that ends with `/auth`). This value can be retrieved in your Keycloak client configuration. | `http://auth:8080/auth`
+| `server_domain` | `nil`| String | Required | Public domain that identify your authentication cookies. | `auth.service.io` |
 | `client_realm_name` | `""`| String | Required | Name of the realm that contains the admin client. | `master` |
 | `client_id` | `admin-cli`| String | Required | Client that should be used to access admin capabilities. | `api-cli` |
 | `client_secret` | `nil`| String | Optional | If your client is `confidential`, this parameter must be specified. | `4e3c481c-f823-4a6a-b8a7-bf8c86e3eac3` |
