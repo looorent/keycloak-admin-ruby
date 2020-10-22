@@ -38,8 +38,22 @@ module KeycloakAdmin
       UserRepresentation.from_hash(JSON.parse(response))
     end
 
+    ##
+    # Query can be a string or a hash.
+    # * String: It's used as search query
+    # * Hash: Used for complex search queries.
+    #   For its documentation see: https://www.keycloak.org/docs-api/11.0/rest-api/index.html#_users_resource
+    ##
     def search(query)
-      derived_headers = query ? headers.merge({params: { search: query }}) : headers
+      derived_headers = case query
+                        when String
+                          headers.merge({params: { search: query }})
+                        when Hash
+                          headers.merge({params: query })
+                        else
+                          headers
+                        end
+
       response = execute_http do
         RestClient::Resource.new(users_url, @configuration.rest_client_options).get(derived_headers)
       end
