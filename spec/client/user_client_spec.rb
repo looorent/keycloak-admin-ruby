@@ -192,8 +192,20 @@ RSpec.describe KeycloakAdmin::TokenClient do
       allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '[{"username":"test_username","createdTimestamp":1559347200}]'
     end
 
-    it "finds a user" do
+    it "finds a user using a string" do
       users = @user_client.search("test_username")
+      expect(users.length).to eq 1
+      expect(users[0].username).to eq "test_username"
+    end
+
+    it "finds a user using nil does not fail" do
+      users = @user_client.search(nil)
+      expect(users.length).to eq 1
+      expect(users[0].username).to eq "test_username"
+    end
+
+    it "finds a user using a hash" do
+      users = @user_client.search({ search: "test_username"})
       expect(users.length).to eq 1
       expect(users[0].username).to eq "test_username"
     end

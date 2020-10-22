@@ -12,7 +12,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "0.7.8"
+gem "keycloak-admin", "0.7.9"
 ```
 
 ## Login
@@ -145,8 +145,16 @@ KeycloakAdmin.realm("a_realm").users.get(user_id)
 
 Returns an array of `KeycloakAdmin::UserRepresentation`.
 
+According to [the documentation](https://www.keycloak.org/docs-api/11.0/rest-api/index.html#_users_resource):
+* When providing a `String` parameter, this produces an arbitrary search string
+* When providing a `Hash`, you can search for specific field (_e.g_ an email)
+
 ```ruby
 KeycloakAdmin.realm("a_realm").users.search("a_username_or_an_email")
+```
+
+```ruby
+KeycloakAdmin.realm("a_realm").users.search({ email: "john@doe.com" })
 ```
 
 ### List all users in a realm
