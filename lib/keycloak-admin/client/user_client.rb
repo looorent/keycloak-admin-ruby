@@ -31,6 +31,31 @@ module KeycloakAdmin
       )
     end
 
+    # https://keycloak.pkr-system.de/auth/admin/realms/Development/users/9803a4d1-1d8e-4120-9ca1-6d34d7fb281a/groups/c4ac4a31-7426-4f0b-bf95-30473a5b256c
+    def add_group(user_id, group_id)
+      RestClient::Request.execute(
+          @configuration.rest_client_options.merge(
+              method: :put,
+              url: "#{users_url(user_id)}/groups/#{group_id}",
+              payload: {
+                  userId: user_id,
+                  groupId: group_id
+              },
+              headers: headers
+          )
+      )
+    end
+
+    def remove_group(user_id, group_id)
+      RestClient::Request.execute(
+          @configuration.rest_client_options.merge(
+              method: :delete,
+              url: "#{users_url(user_id)}/groups/#{group_id}",
+              headers: headers
+          )
+      )
+    end
+
     def get(user_id)
       response = execute_http do
         RestClient::Resource.new(users_url(user_id), @configuration.rest_client_options).get(headers)
