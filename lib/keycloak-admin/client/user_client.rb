@@ -31,6 +31,32 @@ module KeycloakAdmin
       )
     end
 
+    # Add User-ID to group
+    def add_group(user_id, group_id)
+      RestClient::Request.execute(
+        @configuration.rest_client_options.merge(
+          method: :put,
+          url: "#{users_url(user_id)}/groups/#{group_id}",
+          payload: {
+              userId: user_id,
+              groupId: group_id
+          },
+          headers: headers
+        )
+      )
+    end
+
+    # Remove User-ID from group
+    def remove_group(user_id, group_id)
+      RestClient::Request.execute(
+        @configuration.rest_client_options.merge(
+          method: :delete,
+          url: "#{users_url(user_id)}/groups/#{group_id}",
+          headers: headers
+        )
+      )
+    end
+
     def get(user_id)
       response = execute_http do
         RestClient::Resource.new(users_url(user_id), @configuration.rest_client_options).get(headers)
