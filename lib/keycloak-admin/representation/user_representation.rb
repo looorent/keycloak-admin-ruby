@@ -3,6 +3,7 @@ module KeycloakAdmin
     attr_accessor :id,
       :created_timestamp,
       :attributes,
+      :required_actions,
       :origin,
       :username,
       :email,
@@ -25,6 +26,7 @@ module KeycloakAdmin
       user.first_name           = hash["firstName"]
       user.last_name            = hash["lastName"]
       user.attributes           = hash["attributes"]
+      user.required_actions     = hash["required_actions"]
       user.credentials          = hash["credentials"]&.map{ |hash| CredentialRepresentation.from_hash(hash) } || []
       user.federated_identities = hash["federatedIdentities"]&.map { |hash| FederatedIdentityRepresentation.from_hash(hash) } || []
       user
