@@ -26,7 +26,7 @@ module KeycloakAdmin
       user.first_name           = hash["firstName"]
       user.last_name            = hash["lastName"]
       user.attributes           = hash["attributes"]
-      user.required_actions     = hash["required_actions"]
+      user.required_actions     = hash["requiredActions"]
       user.credentials          = hash["credentials"]&.map{ |hash| CredentialRepresentation.from_hash(hash) } || []
       user.federated_identities = hash["federatedIdentities"]&.map { |hash| FederatedIdentityRepresentation.from_hash(hash) } || []
       user
