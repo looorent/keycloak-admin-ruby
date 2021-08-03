@@ -9,7 +9,7 @@ RSpec.describe KeycloakAdmin::UserRepresentation do
     end
 
     it "can convert to json" do
-      expect(@user.to_json).to eq '{"id":null,"createdTimestamp":1559836000,"origin":null,"username":"test_username","email":null,"enabled":true,"emailVerified":null,"firstName":null,"lastName":null,"attributes":null,"credentials":[],"federatedIdentities":[]}'
+      expect(@user.to_json).to eq '{"id":null,"createdTimestamp":1559836000,"origin":null,"username":"test_username","email":null,"enabled":true,"emailVerified":null,"firstName":null,"lastName":null,"attributes":null,"requiredActions":[],"totp":false,"credentials":[],"federatedIdentities":[]}'
     end
   end
 end

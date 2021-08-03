@@ -158,7 +158,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       @user_client = KeycloakAdmin.realm(realm_name).users
 
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '{"username":"test_username","createdTimestamp":1559347200}'
+      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '{"username":"test_username","createdTimestamp":1559347200, "requiredActions":["CONFIGURE_TOTP"], "totp": true}'
     end
 
     it "parses the response" do
@@ -175,6 +175,8 @@ RSpec.describe KeycloakAdmin::TokenClient do
 
       user = @user_client.get('test_user_id')
       expect(user.username).to eq 'test_username'
+      expect(user.totp).to be true
+      expect(user.required_actions).to eq ["CONFIGURE_TOTP"]
     end
   end
 
