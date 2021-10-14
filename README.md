@@ -120,6 +120,9 @@ All options have a default value. However, all of them can be changed in your in
 * Get list of client role mappings for a user/group
 * Save client role mappings for a user/group
 * Save realm-level role mappings for a user/group
+* Add a Group on a User
+* Remove a Group from a User
+* Get list of Identity Providers
 * Link/Unlink users to federated identity provider brokers
 * Execute actions emails
 * Send forgot passsword mail
@@ -367,6 +370,16 @@ group_id  = "3a63b5c0-ef8a-47fd-86ed-b5fead18d9b8"
 KeycloakAdmin.realm("a_realm").group(group_id).role_mapper.save_realm_level(role_list)
 ```
 
+### Get list of identity providers
+
+Note: This client requires the `realm-management.view-identity-providers` role.
+
+Returns an array of `KeycloakAdmin::IdentityProviderRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").identity_providers.list
+```
+
 ## How to execute library tests
 
 From the `keycloak-admin-api` directory:
@@ -375,3 +388,4 @@ From the `keycloak-admin-api` directory:
   $ docker build . -t keycloak-admin:test
   $ docker run -v `pwd`:/usr/src/app/ keycloak-admin:test bundle exec rspec spec
 ```
+
