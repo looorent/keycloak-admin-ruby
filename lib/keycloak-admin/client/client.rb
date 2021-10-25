@@ -40,7 +40,19 @@ module KeycloakAdmin
     private
 
     def http_error(response)
-      raise "Keycloak: The request failed with response code #{response.code} and message: #{response.body}"
+      if response.code == 400
+        raise KeycloackAdminError::BadFormatRequest.new(response)
+      elsif response.code == 401
+        raise KeycloackAdminError::Unauthorized.new(response)
+      elsif response.code == 404
+        raise KeycloackAdminError::NotFound.new(response)
+      elsif response.code == 502
+        raise	KeycloackAdminError::BadGateway.new(response)
+      elsif response.code == 503
+        raise KeycloackAdminError::ServiceUnavailable.new(response)
+      else
+        raise KeycloackAdminError::RequestFailed.new(response)
+      end
     end
   end
 end

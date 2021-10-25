@@ -2,6 +2,7 @@ require "logger"
 
 require_relative "keycloak-admin/configuration"
 require_relative "keycloak-admin/client/client"
+require_relative "keycloak-admin/errors"
 require_relative "keycloak-admin/client/client_client"
 require_relative "keycloak-admin/client/client_role_mappings_client"
 require_relative "keycloak-admin/client/group_client"
