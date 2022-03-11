@@ -6,6 +6,22 @@ module KeycloakAdmin
       @realm_client = realm_client
     end
 
+    def create(identity_provider_representation)
+      execute_http do
+        RestClient::Resource.new(identity_providers_url, @configuration.rest_client_options).post(
+          identity_provider_representation.to_json, headers
+        )
+      end
+    end
+
+    def add_mapping(identity_provider_alias, identity_provider_mapping_representation)
+      execute_http do
+        RestClient::Resource.new(identity_provider_mappers_url(identity_provider_alias), @configuration.rest_client_options).post(
+          identity_provider_mapping_representation.to_json, headers
+        )
+      end
+    end
+
     def list
       response = execute_http do
         RestClient::Resource.new(identity_providers_url, @configuration.rest_client_options).get(headers)
@@ -15,7 +31,7 @@ module KeycloakAdmin
 
     def get(internal_id_or_alias=nil)
       response = execute_http do
-        RestClient::Resource.new(identity_providers_url, @configuration.rest_client_options).get(headers)
+        RestClient::Resource.new(identity_providers_url(internal_id_or_alias), @configuration.rest_client_options).get(headers)
       end
       IdentityProviderRepresentation.from_hash(JSON.parse(response))
     end
@@ -26,6 +42,10 @@ module KeycloakAdmin
       else
         "#{@realm_client.realm_admin_url}/identity-provider/instances"
       end
+    end
+
+    def identity_provider_mappers_url(internal_id_or_alias)
+      "#{identity_providers_url(internal_id_or_alias)}/mappers"
     end
   end
 end

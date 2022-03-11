@@ -1,3 +1,3 @@
 module KeycloakAdmin
-  VERSION = "1.0.1"
+  VERSION = "1.0.5"
 end

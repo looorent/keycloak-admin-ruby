@@ -12,7 +12,7 @@ module KeycloakAdmin
                   :authenticate_by_default,
                   :link_only,
                   :first_broker_login_flow_alias,
-                  :configuration
+                  :config
 
     def self.from_hash(hash)
       if hash.nil?
@@ -48,7 +48,7 @@ module KeycloakAdmin
                    authenticate_by_default,
                    link_only,
                    first_broker_login_flow_alias,
-                   configuration)
+                   config)
       @alias                           = alias_name
       @display_name                    = display_name
       @internal_id                     = internal_id
@@ -61,7 +61,7 @@ module KeycloakAdmin
       @authenticate_by_default         = authenticate_by_default
       @link_only                       = link_only
       @first_broker_login_flow_alias   = first_broker_login_flow_alias
-      @configuration                   = configuration
+      @config                          = config || {}
     end
   end
 end
