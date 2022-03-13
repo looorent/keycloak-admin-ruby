@@ -6,8 +6,8 @@ module KeycloakAdmin
       @realm_client = realm_client
     end
 
-    def create!(username, email, password, email_verified, locale)
-      user = save(build(username, email, password, email_verified, locale))
+    def create!(username, email, password, email_verified, locale, attributes={})
+      user = save(build(username, email, password, email_verified, locale, attributes))
       search(user.email)&.first
     end
 
@@ -50,6 +50,14 @@ module KeycloakAdmin
           headers: headers
         )
       )
+    end
+
+    def add_client_roles_on_user(user_id, client_id, role_representations)
+      execute_http do
+        RestClient::Resource.new(user_client_role_mappings_url(user_id, client_id), @configuration.rest_client_options).post(
+          create_payload(role_representations), headers
+        )
+      end
     end
 
     def get(user_id)
@@ -176,6 +184,10 @@ module KeycloakAdmin
       end
     end
 
+    def user_client_role_mappings_url(user_id, client_id)
+      "#{users_url(user_id)}/role-mappings/clients/#{client_id}"
+    end
+
     def reset_password_url(user_id)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
       "#{users_url(user_id)}/reset-password"
@@ -204,13 +216,13 @@ module KeycloakAdmin
 
     private
 
-    def build(username, email, password, email_verified, locale)
+    def build(username, email, password, email_verified, locale, attributes={})
       user                     = UserRepresentation.new
       user.email               = email
       user.username            = username
       user.email_verified      = email_verified
       user.enabled             = true
-      user.attributes          = {}
+      user.attributes          = attributes || {}
       user.attributes[:locale] = locale if locale
       user.add_credential(CredentialRepresentation.from_password(password))
       user

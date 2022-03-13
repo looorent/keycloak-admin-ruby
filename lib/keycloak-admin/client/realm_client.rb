@@ -79,6 +79,10 @@ module KeycloakAdmin
       RoleClient.new(@configuration, self)
     end
 
+    def client_roles
+      ClientRoleClient.new(@configuration, self)
+    end
+
     def users
       UserClient.new(@configuration, self)
     end

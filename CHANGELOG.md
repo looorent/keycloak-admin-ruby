@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.13] - 2022-03-13
+
+* Add client role on users
+* List client roles
+
+## [1.0.7] - 2022-03-13
+
+* Allow to use multiple `KeycloakAdmin::Client` in the same environment 
+
 ## [1.0.6] - 2022-03-13
 
 * When serializing an array to JSON, force the serialization to use `to_json` for each element. In several contexts (e.g. Rails), `to_json` is not used.

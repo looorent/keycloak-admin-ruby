@@ -3,6 +3,7 @@ require "logger"
 require_relative "keycloak-admin/configuration"
 require_relative "keycloak-admin/client/client"
 require_relative "keycloak-admin/client/client_client"
+require_relative "keycloak-admin/client/client_role_client"
 require_relative "keycloak-admin/client/client_role_mappings_client"
 require_relative "keycloak-admin/client/group_client"
 require_relative "keycloak-admin/client/realm_client"
@@ -42,7 +43,11 @@ module KeycloakAdmin
   end
 
   def self.realm(realm_name)
-    RealmClient.new(@configuration, realm_name)
+    create_client(@configuration, realm_name)
+  end
+
+  def self.create_client(configuration, realm_name)
+    RealmClient.new(configuration, realm_name)
   end
 
   def self.logger
