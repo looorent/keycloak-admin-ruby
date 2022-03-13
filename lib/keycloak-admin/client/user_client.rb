@@ -14,7 +14,7 @@ module KeycloakAdmin
     def save(user_representation)
       execute_http do
         RestClient::Resource.new(users_url, @configuration.rest_client_options).post(
-          user_representation.to_json, headers
+          create_payload(user_representation), headers
         )
       end
       user_representation
@@ -25,7 +25,7 @@ module KeycloakAdmin
         @configuration.rest_client_options.merge(
           method: :put,
           url: users_url(user_id),
-          payload: user_representation_body.to_json,
+          payload: create_payload(user_representation_body),
           headers: headers
         )
       )
@@ -120,7 +120,7 @@ module KeycloakAdmin
     def execute_actions_email(user_id, actions=[], lifespan=nil)
       execute_http do
         lifespan_param = lifespan.nil? ? "" : "lifespan=#{lifespan.seconds}"
-        RestClient.put("#{execute_actions_email_url(user_id)}?#{lifespan_param}", actions.to_json, headers)
+        RestClient.put("#{execute_actions_email_url(user_id)}?#{lifespan_param}", create_payload(actions), headers)
       end
       user_id
     end

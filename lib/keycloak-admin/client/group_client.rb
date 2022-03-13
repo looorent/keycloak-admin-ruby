@@ -21,7 +21,7 @@ module KeycloakAdmin
     def save(group_representation)
       execute_http do
         RestClient::Resource.new(groups_url, @configuration.rest_client_options).post(
-          group_representation.to_json, headers
+          create_payload(group_representation), headers
         )
       end
     end

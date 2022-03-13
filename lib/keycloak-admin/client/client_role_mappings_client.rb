@@ -16,7 +16,7 @@ module KeycloakAdmin
     def save(role_representation_list)
       execute_http do
         RestClient::Resource.new(base_url, @configuration.rest_client_options).post(
-          role_representation_list.to_json, headers
+          create_payload(role_representation_list), headers
         )
       end
     end

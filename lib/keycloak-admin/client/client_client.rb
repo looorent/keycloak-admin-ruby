@@ -9,7 +9,7 @@ module KeycloakAdmin
     def save(client_representation)
       execute_http do
         RestClient::Resource.new(clients_url, @configuration.rest_client_options).post(
-          client_representation.to_json, headers
+          create_payload(client_representation), headers
         )
       end
     end

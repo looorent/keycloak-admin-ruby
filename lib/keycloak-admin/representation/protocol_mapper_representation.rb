@@ -4,15 +4,15 @@ module KeycloakAdmin
                   :id,
                   :name,
                   :protocol,
-                  :protocolMapper
+                  :protocol_mapper
 
     def self.from_hash(hash)
-      rep                = new
-      rep.id             = hash["id"]
-      rep.config         = hash["config"]
-      rep.name           = hash["name"]
-      rep.protocol       = hash["protocol"]
-      rep.protocolMapper = hash["protocolMapper"]
+      rep                 = new
+      rep.id              = hash["id"]
+      rep.config          = hash["config"]
+      rep.name            = hash["name"]
+      rep.protocol        = hash["protocol"]
+      rep.protocol_mapper = hash["protocolMapper"]
       rep
     end
   end

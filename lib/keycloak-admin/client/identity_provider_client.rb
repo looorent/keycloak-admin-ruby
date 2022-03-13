@@ -9,7 +9,7 @@ module KeycloakAdmin
     def create(identity_provider_representation)
       execute_http do
         RestClient::Resource.new(identity_providers_url, @configuration.rest_client_options).post(
-          identity_provider_representation.to_json, headers
+          create_payload(identity_provider_representation), headers
         )
       end
     end
@@ -17,7 +17,7 @@ module KeycloakAdmin
     def add_mapping(identity_provider_alias, identity_provider_mapping_representation)
       execute_http do
         RestClient::Resource.new(identity_provider_mappers_url(identity_provider_alias), @configuration.rest_client_options).post(
-          identity_provider_mapping_representation.to_json, headers
+          create_payload(identity_provider_mapping_representation), headers
         )
       end
     end

@@ -8,7 +8,7 @@ module KeycloakAdmin
     def save_realm_level(role_representation_list)
       execute_http do
         RestClient::Resource.new(realm_level_url, @configuration.rest_client_options).post(
-          role_representation_list.to_json, headers
+          create_payload(role_representation_list), headers
         )
       end
     end

@@ -37,6 +37,16 @@ module KeycloakAdmin
       id
     end
 
+    def create_payload(value)
+      if value.nil?
+        ""
+      elsif value.kind_of?(Array)
+        "[#{value.map(&:to_json) * ','}]"
+      else
+        value.to_json
+      end
+    end
+
     private
 
     def http_error(response)
