@@ -13,6 +13,13 @@ module KeycloakAdmin
       end
     end
 
+    def remove_all_realm_roles
+      execute_http do
+        RestClient::Resource.new(realm_level_url, @configuration.rest_client_options).delete(headers)
+      end
+      true
+    end
+
     def realm_level_url
       "#{@user_resource.resource_url}/role-mappings/realm"
     end
