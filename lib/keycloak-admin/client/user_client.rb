@@ -36,7 +36,7 @@ module KeycloakAdmin
         @configuration.rest_client_options.merge(
           method: :put,
           url: "#{users_url(user_id)}/groups/#{group_id}",
-          payload: {},
+          payload: create_payload({}),
           headers: headers
         )
       )
