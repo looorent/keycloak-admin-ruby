@@ -21,6 +21,13 @@ module KeycloakAdmin
       JSON.parse(response).map { |client_as_hash| ClientRepresentation.from_hash(client_as_hash) }
     end
 
+    def delete(id)
+      execute_http do
+        RestClient::Resource.new(clients_url(id), @configuration.rest_client_options).delete(headers)
+      end
+      true
+    end
+
     def get_service_account_user(client_id)
       response = execute_http do
         RestClient::Resource.new(service_account_user_url(client_id), @configuration.rest_client_options).get(headers)
