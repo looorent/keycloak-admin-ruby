@@ -13,6 +13,8 @@ module KeycloakAdmin
     end
 
     def revoke_token_url(user_id)
+      puts "--------------- admin rest client ----------------"
+      puts "#{realm_url}/users/#{ user_id}/logout"
       "#{realm_url}/users/#{ user_id}/logout"
     end
 
