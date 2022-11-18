@@ -5,6 +5,13 @@ module KeycloakAdmin
       @user_resource = user_resource
     end
 
+    def list
+      response = execute_http do
+        RestClient::Resource.new(realm_level_url, @configuration.rest_client_options).get(headers)
+      end
+      JSON.parse(response).map { |role_as_hash| RoleRepresentation.from_hash(role_as_hash) }
+    end
+
     def save_realm_level(role_representation_list)
       execute_http do
         RestClient::Resource.new(realm_level_url, @configuration.rest_client_options).post(
