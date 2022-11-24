@@ -12,6 +12,27 @@ RSpec.describe KeycloakAdmin::RoleMapperClient do
     end
   end
 
+  describe "#list" do
+    let(:realm_name) { "valid-realm" }
+    let(:user_id)    { "test_user" }
+
+    before(:each) do
+      @role_mapper_client = KeycloakAdmin.realm(realm_name).user(user_id).role_mapper
+
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:get)
+        .and_return '[{"id":"test_role_id","name":"test_role_name","composite": false}]'
+    end
+
+    it "list user realm-level role mappings" do
+      roles = @role_mapper_client.list
+      expect(roles.length).to eq 1
+      expect(roles[0].id).to eq "test_role_id"
+      expect(roles[0].name).to eq "test_role_name"
+      expect(roles[0].composite).to be false
+    end
+  end
+
   describe "#save_realm_level" do
     let(:realm_name) { "valid-realm" }
     let(:user_id)    { "test_user" }
