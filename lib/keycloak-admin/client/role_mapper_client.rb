@@ -20,6 +20,17 @@ module KeycloakAdmin
       end
     end
 
+    def remove_realm_level(role_representation_list)
+      execute_http do
+        RestClient::Request.execute(
+          method: :delete, 
+          url: realm_level_url, 
+          payload: create_payload(role_representation_list), 
+          headers: headers
+        )
+      end
+    end
+  
     def remove_all_realm_roles
       execute_http do
         RestClient::Resource.new(realm_level_url, @configuration.rest_client_options).delete(headers)
