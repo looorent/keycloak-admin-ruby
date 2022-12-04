@@ -7,8 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.19] - 2022-12-03
 
-* Remove specific realm roles from user (thanks to @Kazhuu) 
-* Get role by name (thanks to @Kazhuu) 
+* Remove specific realm roles from user (thanks to @tlloydthwaites) 
+* Get role by name (thanks to @tlloydthwaites) 
 
 ## [1.0.18] - 2022-11-24
 
