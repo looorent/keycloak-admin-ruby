@@ -111,15 +111,26 @@ RSpec.describe KeycloakAdmin::GroupClient do
         'Create method returned status OK (Code: 200); expected status: Created (201)'
       )
     end
+  end
 
-    def stub_net_http_res(res_class, code, message)
-      net_http_res = double
-      allow(net_http_res).to receive(:message).and_return message
-      allow(net_http_res).to receive(:code).and_return code
-      allow(net_http_res).to receive(:is_a?) do |target_class|
-        target_class == res_class
-      end
-      allow(@response).to receive(:net_http_res).and_return net_http_res
+  describe "#create_subgroup!" do
+    let(:realm_name) { "valid-realm" }
+
+    before(:each) do
+      @group_client = KeycloakAdmin.realm(realm_name).groups
+
+      stub_token_client
+      @response = double headers: {
+        location: 'http://auth.service.io/auth/admin/realms/valid-realm/groups/7686af34-204c-4515-8122-78d19febbf6e'
+      }
+      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return @response
+    end
+
+    it "creates a subgroup" do
+      stub_net_http_res(Net::HTTPCreated, 201, 'Created')
+
+      group_id = @group_client.create_subgroup!('be061c48-6edd-4783-a726-1a57d4bfa22b', 'subgroup-name')
+      expect(group_id).to eq '7686af34-204c-4515-8122-78d19febbf6e'
     end
   end
 end
