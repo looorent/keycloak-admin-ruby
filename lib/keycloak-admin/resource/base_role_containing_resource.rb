@@ -1,5 +1,7 @@
 module KeycloakAdmin
   class BaseRoleContainingResource
+    attr_reader :resource_id
+
     def initialize(configuration, realm_client, resource_id)
       @configuration = configuration
       raise ArgumentError.new("realm must be defined") unless realm_client.name_defined?
