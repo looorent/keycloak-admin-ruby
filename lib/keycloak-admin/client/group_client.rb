@@ -26,6 +26,16 @@ module KeycloakAdmin
       end
     end
 
+    def create_subgroup!(parent_id, name)
+      url = "#{groups_url(parent_id)}/children"
+      response = execute_http do
+        RestClient::Resource.new(url, @configuration.rest_client_options).post(
+          create_payload(build(name, nil)), headers
+        )
+      end
+      created_id(response)
+    end
+
     def groups_url(id=nil)
       if id
         "#{@realm_client.realm_admin_url}/groups/#{id}"
