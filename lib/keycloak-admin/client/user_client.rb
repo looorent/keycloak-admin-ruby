@@ -125,10 +125,11 @@ module KeycloakAdmin
       execute_actions_email(user_id, ["UPDATE_PASSWORD"], lifespan)
     end
 
-    def execute_actions_email(user_id, actions=[], lifespan=nil)
+    def execute_actions_email(user_id, actions=[], lifespan=nil, redirect_uri=nil)
       execute_http do
         lifespan_param = lifespan.nil? ? "" : "lifespan=#{lifespan.seconds}"
-        RestClient.put("#{execute_actions_email_url(user_id)}?#{lifespan_param}", create_payload(actions), headers)
+        redirect_uri = redirect_uri.nil? ? "" : "&redirect_uri=#{redirect_uri}"
+        RestClient.put("#{execute_actions_email_url(user_id)}?#{lifespan_param}#{redirect_uri}", create_payload(actions), headers)
       end
       user_id
     end
