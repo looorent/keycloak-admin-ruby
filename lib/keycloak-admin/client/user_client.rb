@@ -151,6 +151,13 @@ module KeycloakAdmin
       ImpersonationRepresentation.from_response(response, @configuration.server_domain)
     end
 
+    def sessions(user_id)
+      response = execute_http do
+        RestClient::Resource.new("#{users_url(user_id)}/sessions", @configuration.rest_client_options).get(headers)
+      end
+      JSON.parse(response).map { |session_as_hash| SessionRepresentation.from_hash(session_as_hash) }
+    end
+
     def get_redirect_impersonation(user_id)
       ImpersonationRedirectionRepresentation.from_url(impersonation_url(user_id), headers)
     end
