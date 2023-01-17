@@ -160,6 +160,19 @@ module KeycloakAdmin
       JSON.parse(response).map { |session_as_hash| SessionRepresentation.from_hash(session_as_hash) }
     end
 
+    def logout(user_id)
+      execute_http do
+        RestClient::Request.execute(
+          @configuration.rest_client_options.merge(
+            method: :post,
+            url: logout_url(user_id),
+            headers: headers
+          )
+        )
+      end
+      true
+    end
+
     def get_redirect_impersonation(user_id)
       ImpersonationRedirectionRepresentation.from_url(impersonation_url(user_id), headers)
     end
