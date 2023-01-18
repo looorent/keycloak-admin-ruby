@@ -87,6 +87,10 @@ module KeycloakAdmin
       UserClient.new(@configuration, self)
     end
 
+    def attack_detections
+      AttackDetectionClient.new(@configuration, self)
+    end
+
     def identity_providers
       IdentityProviderClient.new(@configuration, self)
     end
