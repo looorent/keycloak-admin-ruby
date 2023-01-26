@@ -12,7 +12,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "1.0.19"
+gem "keycloak-admin", "1.0.20"
 ```
 
 ## Login
@@ -308,6 +308,16 @@ Returns the id of created group.
 group_name = "test"
 group_path = "/top"
 group_id = KeycloakAdmin.realm("a_realm").groups.create!(group_name, group_path)
+```
+
+### Create a new subgroup of an existing group
+
+Create a new group as the child of an existing group.
+
+```ruby
+parent_id = "7686af34-204c-4515-8122-78d19febbf6e"
+group_name = "test"
+sub_group_id = KeycloakAdmin.realm("a_realm").groups.create_subgroup!(parent_id, group_name)
 ```
 
 ### Get list of roles in a realm
