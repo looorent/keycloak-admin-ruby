@@ -35,6 +35,14 @@ module KeycloakAdmin
       end
       created_id(response)
     end
+    
+    def members(group_id, first=0, max=100)
+      url = "#{groups_url(group_id)}/members?first=#{first}&max=#{max}"
+      response = execute_http do
+        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
+      end
+      JSON.parse(response).map { |user_as_hash| UserRepresentation.from_hash(user_as_hash) }
+    end
 
     def groups_url(id=nil)
       if id
