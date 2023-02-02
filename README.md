@@ -119,6 +119,7 @@ All options have a default value. However, all of them can be changed in your in
 * Get list of roles, save a role
 * Get list of realms, save/update/delete a realm
 * Get list of client role mappings for a user/group
+* Get list of members of a group
 * Save client role mappings for a user/group
 * Save realm-level role mappings for a user/group
 * Add a Group on a User
@@ -318,6 +319,20 @@ Create a new group as the child of an existing group.
 parent_id = "7686af34-204c-4515-8122-78d19febbf6e"
 group_name = "test"
 sub_group_id = KeycloakAdmin.realm("a_realm").groups.create_subgroup!(parent_id, group_name)
+```
+
+### Get list of members of a group
+
+Returns an array of `KeycloakAdmin::UserRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").group("group_id").members
+```
+
+You can specify paging with `first` and `max`:
+
+```ruby
+KeycloakAdmin.realm("a_realm").group("group_id").members(first:0, max:100)
 ```
 
 ### Get list of roles in a realm
