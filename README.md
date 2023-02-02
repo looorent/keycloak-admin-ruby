@@ -119,6 +119,7 @@ All options have a default value. However, all of them can be changed in your in
 * Get list of roles, save a role
 * Get list of realms, save/update/delete a realm
 * Get list of client role mappings for a user/group
+* Get list of members of a group
 * Save client role mappings for a user/group
 * Save realm-level role mappings for a user/group
 * Add a Group on a User
