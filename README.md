@@ -320,6 +320,20 @@ group_name = "test"
 sub_group_id = KeycloakAdmin.realm("a_realm").groups.create_subgroup!(parent_id, group_name)
 ```
 
+### Get list of members of a group
+
+Returns an array of `KeycloakAdmin::UserRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").group("group_id").members
+```
+
+You can specify paging with `first` and `max`:
+
+```ruby
+KeycloakAdmin.realm("a_realm").group("group_id").members(first:0, max:100)
+```
+
 ### Get list of roles in a realm
 
 Returns an array of `KeycloakAdmin::RoleRepresentation`.
