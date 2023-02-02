@@ -37,7 +37,12 @@ module KeycloakAdmin
     end
     
     def members(group_id, first=0, max=100)
-      url = "#{groups_url(group_id)}/members?first=#{first}&max=#{max}"
+      url = "#{groups_url(group_id)}/members"
+      query = {first: first.try(:to_i), max: max.try(:to_i)}.compact
+      unless query.empty?
+        query_string = query.to_a.map { |e| "#{e[0]}=#{e[1]}" }.join("&")
+        url = "#{url}?#{query_string}"
+      end
       response = execute_http do
         RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
       end
