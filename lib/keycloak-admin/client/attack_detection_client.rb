@@ -7,7 +7,7 @@ module KeycloakAdmin
     end
 
     def lock_status(user_id)
-      raise ArgumentError.new('user_id must be defined') if user_id.blank?
+      raise ArgumentError.new('user_id must be defined') if user_id.nil?
 
       response = execute_http do
         RestClient::Resource.new(brute_force_url(user_id), @configuration.rest_client_options).get(headers)
@@ -16,7 +16,7 @@ module KeycloakAdmin
     end
 
     def unlock_user(user_id)
-      raise ArgumentError.new('user_id must be defined') if user_id.blank?
+      raise ArgumentError.new('user_id must be defined') if user_id.nil?
 
       execute_http do
         RestClient::Resource.new(brute_force_url(user_id), @configuration.rest_client_options).delete(headers)

@@ -21,6 +21,8 @@ module KeycloakAdmin
     end
 
     def update(user_id, payload = {})
+      raise ArgumentError.new('user_id must be defined') if user_id.nil?
+
       user                     =  UserRepresentation.new
       user.first_name          =  payload[:name]
       user.enabled             =  payload[:enabled]
@@ -154,6 +156,8 @@ module KeycloakAdmin
     end
 
     def sessions(user_id)
+      raise ArgumentError.new('user_id must be defined') if user_id.nil?
+
       response = execute_http do
         RestClient::Resource.new("#{users_url(user_id)}/sessions", @configuration.rest_client_options).get(headers)
       end
@@ -161,6 +165,8 @@ module KeycloakAdmin
     end
 
     def logout(user_id)
+      raise ArgumentError.new('user_id must be defined') if user_id.nil?
+
       execute_http do
         RestClient::Request.execute(
           @configuration.rest_client_options.merge(
@@ -239,6 +245,12 @@ module KeycloakAdmin
       "#{users_url(user_id)}/federated-identity/#{identity_provider}"
     end
 
+    def logout_url(user_id)
+      raise ArgumentError.new('user_id must be defined') if user_id.nil?
+
+      "#{users_url(user_id)}/logout"
+    end
+
     private
 
     def build(username, email, password, email_verified, locale, attributes={})
@@ -249,7 +261,7 @@ module KeycloakAdmin
       user.enabled             = true
       user.attributes          = attributes || {}
       user.attributes[:locale] = locale if locale
-      user.add_credential(CredentialRepresentation.from_password(password)) if password.present?
+      user.add_credential(CredentialRepresentation.from_password(password)) if !password.nil?
       user
     end
   end
