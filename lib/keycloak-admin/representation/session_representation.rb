@@ -10,13 +10,13 @@ module KeycloakAdmin
 
     def self.from_hash(hash)
       rep                   = new
-      rep.id                = hash['id']
-      rep.username          = hash['username']
-      rep.user_id           = hash['userId']
-      rep.ip_address        = hash['ipAddress']
-      rep.start             = hash['start']
-      rep.last_access       = hash['lastAccess']
-      rep.remember_me       = hash['rememberMe']
+      rep.id                = hash["id"]
+      rep.username          = hash["username"]
+      rep.user_id           = hash["userId"]
+      rep.ip_address        = hash["ipAddress"]
+      rep.start             = hash["start"]
+      rep.last_access       = hash["lastAccess"]
+      rep.remember_me       = hash["rememberMe"]
       rep
     end
   end

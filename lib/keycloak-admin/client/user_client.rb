@@ -21,7 +21,7 @@ module KeycloakAdmin
     end
 
     def update(user_id, payload = {})
-      raise ArgumentError.new('user_id must be defined') if user_id.nil?
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
 
       user                     =  UserRepresentation.new
       user.first_name          =  payload[:name]
@@ -117,7 +117,7 @@ module KeycloakAdmin
           @configuration.rest_client_options.merge(
             method: :put,
             url: reset_password_url(user_id),
-            payload: { type: 'password', value: new_password, temporary: false }.to_json,
+            payload: { type: "password", value: new_password, temporary: false }.to_json,
             headers: headers
           )
         )
@@ -132,9 +132,9 @@ module KeycloakAdmin
     def execute_actions_email(user_id, actions=[], lifespan=nil, redirect_uri=nil, client_id=nil)
       raise ArgumentError.new("client_id must be defined") if client_id.nil? && !redirect_uri.nil?
       execute_http do
-        lifespan_param = lifespan.nil? ? '' : "&lifespan=#{lifespan.seconds}"
-        redirect_uri_param = redirect_uri.nil? ? '' : "&redirect_uri=#{redirect_uri}"
-        client_id_param = client_id.nil? ? '' : "client_id=#{client_id}"
+        lifespan_param = lifespan.nil? ? "" : "&lifespan=#{lifespan.seconds}"
+        redirect_uri_param = redirect_uri.nil? ? "" : "&redirect_uri=#{redirect_uri}"
+        client_id_param = client_id.nil? ? "" : "client_id=#{client_id}"
         RestClient.put("#{execute_actions_email_url(user_id)}?#{client_id_param}#{redirect_uri_param}#{lifespan_param}", create_payload(actions), headers)
       end
       user_id
@@ -156,7 +156,7 @@ module KeycloakAdmin
     end
 
     def sessions(user_id)
-      raise ArgumentError.new('user_id must be defined') if user_id.nil?
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
 
       response = execute_http do
         RestClient::Resource.new("#{users_url(user_id)}/sessions", @configuration.rest_client_options).get(headers)
@@ -165,7 +165,7 @@ module KeycloakAdmin
     end
 
     def logout(user_id)
-      raise ArgumentError.new('user_id must be defined') if user_id.nil?
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
 
       execute_http do
         RestClient::Request.execute(
@@ -246,7 +246,7 @@ module KeycloakAdmin
     end
 
     def logout_url(user_id)
-      raise ArgumentError.new('user_id must be defined') if user_id.nil?
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
 
       "#{users_url(user_id)}/logout"
     end
