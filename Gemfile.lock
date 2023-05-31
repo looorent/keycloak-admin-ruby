@@ -1,9 +1,9 @@
 PATH
   remote: .
   specs:
-    keycloak-admin (1.0.22)
+    keycloak-admin (1.0.23)
       http-cookie (~> 1.0, >= 1.0.3)
-      rest-client (~> 2.1)
+      rest-client (~> 2.0)
 
 GEM
   remote: https://rubygems.org/
