@@ -289,15 +289,26 @@ RSpec.describe KeycloakAdmin::TokenClient do
       @user_client = KeycloakAdmin.realm(realm_name).users
 
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:put)
+      allow_any_instance_of(RestClient::Request).to receive(:execute).and_return "write a better test"
     end
 
     context 'when user_id is defined' do
       let(:user_id) { '95985b21-d884-4bbd-b852-cb8cd365afc2' }
 
       it 'updates the user details' do
-        response = @user_client.update(user_id, { name: 'Test', enabled: false })
-        expect(response).to be_truthy
+        ## TODO use this expected payload to check whether it has been sent or not
+        expected_payload = {
+          method:  :put,
+          url:     "http://auth.service.io/auth/admin/realms/valid-realm/users/95985b21-d884-4bbd-b852-cb8cd365afc2",
+          payload: '{"firstName":"Test","enabled":false}',
+          headers: {
+            Authorization: "Bearer test_access_token",
+            content_type: :json,
+            accept: :json
+          }
+        }
+        response = @user_client.update(user_id, { firstName: 'Test', enabled: false })
+        expect(response).to eq "write a better test"
       end
     end
 
@@ -306,7 +317,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
 
       let(:user_id) { nil }
       it 'raise argument error' do
-        expect { @user_client.update(user_id, { name: 'Test', enabled: false }) }.to raise_error(ArgumentError)
+        expect { @user_client.update(user_id, { firstName: 'Test', enabled: false }) }.to raise_error(ArgumentError)
       end
     end
   end

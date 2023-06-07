@@ -20,19 +20,16 @@ module KeycloakAdmin
       user_representation
     end
 
-    def update(user_id, payload = {})
+    def update(user_id, user_representation_body)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
-
-      user                     =  UserRepresentation.new
-      user.first_name          =  payload[:name]
-      user.enabled             =  payload[:enabled]
-      user.attributes          =  payload[:attributes]
-      execute_http do
-        RestClient::Resource.new(users_url(user_id), @configuration.rest_client_options).put(
-          create_payload(user), headers
+      RestClient::Request.execute(
+        @configuration.rest_client_options.merge(
+          method: :put,
+          url: users_url(user_id),
+          payload: create_payload(user_representation_body),
+          headers: headers
         )
-      end
-      true
+      )
     end
 
     def add_group(user_id, group_id)
