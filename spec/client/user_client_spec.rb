@@ -282,4 +282,92 @@ RSpec.describe KeycloakAdmin::TokenClient do
       @user_client.delete('test_user_id')
     end
   end
+
+  describe '#update' do
+    let(:realm_name) { 'valid-realm' }
+    before(:each) do
+      @user_client = KeycloakAdmin.realm(realm_name).users
+
+      stub_token_client
+      allow_any_instance_of(RestClient::Request).to receive(:execute).and_return "write a better test"
+    end
+
+    context 'when user_id is defined' do
+      let(:user_id) { '95985b21-d884-4bbd-b852-cb8cd365afc2' }
+
+      it 'updates the user details' do
+        ## TODO use this expected payload to check whether it has been sent or not
+        expected_payload = {
+          method:  :put,
+          url:     "http://auth.service.io/auth/admin/realms/valid-realm/users/95985b21-d884-4bbd-b852-cb8cd365afc2",
+          payload: '{"firstName":"Test","enabled":false}',
+          headers: {
+            Authorization: "Bearer test_access_token",
+            content_type: :json,
+            accept: :json
+          }
+        }
+        response = @user_client.update(user_id, { firstName: 'Test', enabled: false })
+        expect(response).to eq "write a better test"
+      end
+    end
+
+    context 'when user_id is not defined' do
+      let(:user_id) { '95985b21-d884-4bbd-b852-cb8cd365afc2' }
+
+      let(:user_id) { nil }
+      it 'raise argument error' do
+        expect { @user_client.update(user_id, { firstName: 'Test', enabled: false }) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe '#sessions' do
+    let(:realm_name) { "valid-realm" }
+
+    before(:each) do
+      @user_client = KeycloakAdmin.realm(realm_name).users
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '[{"id":"95985b21-d884-4bbd-b852-dsfsdfsd","username":"test_username", "ip_address":"0.0.0.0"}]'
+    end
+
+    context 'when user_id is defined' do
+      let(:user_id) { '95985b21-d884-4bbd-b852-cb8cd365afc2' }
+      it 'returns list of active sessions' do
+        response = @user_client.sessions(user_id)
+        expect(response[0].id).to eq '95985b21-d884-4bbd-b852-dsfsdfsd'
+      end
+    end
+
+    context 'when user_id is not defined' do
+      let(:user_id) { nil }
+      it 'raise argument error' do
+        expect { @user_client.sessions(user_id) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+  describe '#logout' do
+    let(:realm_name) { 'valid-realm' }
+
+    before(:each) do
+      @user_client = KeycloakAdmin.realm(realm_name).users
+      stub_token_client
+      allow_any_instance_of(RestClient::Request).to receive(:execute)
+    end
+
+    context 'when user_id is defined' do
+      let(:user_id) { '95985b21-d884-4bbd-b852-cb8cd365afc2' }
+      it 'logout user and return true' do
+        expect(@user_client.logout(user_id)).to be_truthy
+      end
+    end
+
+    context 'when user_id is not defined' do
+      let(:user_id) { nil }
+      it 'raise argument error' do
+        expect { @user_client.logout(user_id) }.to raise_error(ArgumentError)
+      end
+    end
+  end
 end

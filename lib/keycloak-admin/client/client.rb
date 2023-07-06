@@ -33,7 +33,7 @@ module KeycloakAdmin
       unless response.net_http_res.is_a? Net::HTTPCreated
         raise "Create method returned status #{response.net_http_res.message} (Code: #{response.net_http_res.code}); expected status: Created (201)"
       end
-      (_head, _separator, id) = response.headers[:location].rpartition('/')
+      (_head, _separator, id) = response.headers[:location].rpartition("/")
       id
     end
 
@@ -41,7 +41,7 @@ module KeycloakAdmin
       if value.nil?
         ""
       elsif value.kind_of?(Array)
-        "[#{value.map(&:to_json) * ','}]"
+        "[#{value.map(&:to_json) * ","}]"
       else
         value.to_json
       end

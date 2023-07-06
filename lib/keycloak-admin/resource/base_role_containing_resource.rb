@@ -10,7 +10,7 @@ module KeycloakAdmin
     end
 
     def resources_name
-      raise NotImplementedError.new('must override in subclass')
+      raise NotImplementedError.new("must override in subclass")
     end
 
     def resource_url

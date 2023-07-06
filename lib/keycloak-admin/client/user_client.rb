@@ -21,6 +21,7 @@ module KeycloakAdmin
     end
 
     def update(user_id, user_representation_body)
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
       RestClient::Request.execute(
         @configuration.rest_client_options.merge(
           method: :put,
@@ -113,7 +114,7 @@ module KeycloakAdmin
           @configuration.rest_client_options.merge(
             method: :put,
             url: reset_password_url(user_id),
-            payload: { type: 'password', value: new_password, temporary: false }.to_json,
+            payload: { type: "password", value: new_password, temporary: false }.to_json,
             headers: headers
           )
         )
@@ -125,10 +126,13 @@ module KeycloakAdmin
       execute_actions_email(user_id, ["UPDATE_PASSWORD"], lifespan)
     end
 
-    def execute_actions_email(user_id, actions=[], lifespan=nil)
+    def execute_actions_email(user_id, actions=[], lifespan=nil, redirect_uri=nil, client_id=nil)
+      raise ArgumentError.new("client_id must be defined") if client_id.nil? && !redirect_uri.nil?
       execute_http do
-        lifespan_param = lifespan.nil? ? "" : "lifespan=#{lifespan.seconds}"
-        RestClient.put("#{execute_actions_email_url(user_id)}?#{lifespan_param}", create_payload(actions), headers)
+        lifespan_param = lifespan.nil? ? "" : "&lifespan=#{lifespan.seconds}"
+        redirect_uri_param = redirect_uri.nil? ? "" : "&redirect_uri=#{redirect_uri}"
+        client_id_param = client_id.nil? ? "" : "client_id=#{client_id}"
+        RestClient.put("#{execute_actions_email_url(user_id)}?#{client_id_param}#{redirect_uri_param}#{lifespan_param}", create_payload(actions), headers)
       end
       user_id
     end
@@ -146,6 +150,30 @@ module KeycloakAdmin
         )
       end
       ImpersonationRepresentation.from_response(response, @configuration.server_domain)
+    end
+
+    def sessions(user_id)
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
+
+      response = execute_http do
+        RestClient::Resource.new("#{users_url(user_id)}/sessions", @configuration.rest_client_options).get(headers)
+      end
+      JSON.parse(response).map { |session_as_hash| SessionRepresentation.from_hash(session_as_hash) }
+    end
+
+    def logout(user_id)
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
+
+      execute_http do
+        RestClient::Request.execute(
+          @configuration.rest_client_options.merge(
+            method: :post,
+            url: logout_url(user_id),
+            headers: headers
+          )
+        )
+      end
+      true
     end
 
     def get_redirect_impersonation(user_id)
@@ -214,6 +242,12 @@ module KeycloakAdmin
       "#{users_url(user_id)}/federated-identity/#{identity_provider}"
     end
 
+    def logout_url(user_id)
+      raise ArgumentError.new("user_id must be defined") if user_id.nil?
+
+      "#{users_url(user_id)}/logout"
+    end
+
     private
 
     def build(username, email, password, email_verified, locale, attributes={})
@@ -224,7 +258,7 @@ module KeycloakAdmin
       user.enabled             = true
       user.attributes          = attributes || {}
       user.attributes[:locale] = locale if locale
-      user.add_credential(CredentialRepresentation.from_password(password))
+      user.add_credential(CredentialRepresentation.from_password(password)) if !password.nil?
       user
     end
   end

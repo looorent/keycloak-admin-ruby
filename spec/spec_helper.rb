@@ -23,8 +23,8 @@ end
 
 def stub_token_client
   allow_any_instance_of(KeycloakAdmin::TokenClient).to receive(:get).and_return KeycloakAdmin::TokenRepresentation.new(
-    'test_access_token', 'token_type', 'expires_in', 'refresh_token',
-    'refresh_expires_in', 'id_token', 'not_before_policy', 'session_state'
+    "test_access_token", "token_type", "expires_in", "refresh_token",
+    "refresh_expires_in", "id_token", "not_before_policy", "session_state"
   )
 end
 
