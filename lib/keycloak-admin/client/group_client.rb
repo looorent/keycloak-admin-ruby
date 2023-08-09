@@ -7,8 +7,20 @@ module KeycloakAdmin
     end
 
     def list
+      search(nil)
+    end
+
+    def search(query)
+      derived_headers = case query
+                        when String
+                          headers.merge({params: { search: query }})
+                        when Hash
+                          headers.merge({params: query })
+                        else
+                          headers
+                        end
       response = execute_http do
-        RestClient::Resource.new(groups_url, @configuration.rest_client_options).get(headers)
+        RestClient::Resource.new(groups_url, @configuration.rest_client_options).get(derived_headers)
       end
       JSON.parse(response).map { |group_as_hash| GroupRepresentation.from_hash(group_as_hash) }
     end
