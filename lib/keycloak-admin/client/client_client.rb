@@ -39,6 +39,16 @@ module KeycloakAdmin
       true
     end
 
+    def update(client_representation)
+      execute_http do
+        RestClient::Resource.new(clients_url(client_representation.id), @configuration.rest_client_options).put(
+          create_payload(client_representation), headers
+        )
+      end
+
+      get(client_representation.id)
+    end
+
     def get_service_account_user(client_id)
       response = execute_http do
         RestClient::Resource.new(service_account_user_url(client_id), @configuration.rest_client_options).get(headers)

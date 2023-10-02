@@ -94,6 +94,25 @@ RSpec.describe KeycloakAdmin::ClientClient do
     end
   end
 
+  describe "#update" do
+    let(:realm_name) { "valid-realm" }
+    let(:client) { KeycloakAdmin::ClientRepresentation.from_hash({ "id" => "test_client_id", "clientId" => "my-client", "name" => "old_name" }) }
+
+    before(:each) do
+      @client_client = KeycloakAdmin.realm(realm_name).clients
+
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:put).and_return ''
+      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '{"id":"test_client_id", "clientId": "my-client","name":"new_name"}'
+    end
+
+    it "updates a client" do
+      updated_client = @client_client.update(client)
+
+      expect(updated_client.name).to eq "new_name"
+    end
+  end
+
   describe "#delete" do
     let(:realm_name) { "valid-realm" }
 
