@@ -28,6 +28,10 @@ module KeycloakAdmin
       JSON.parse(response).map { |client_as_hash| ClientRepresentation.from_hash(client_as_hash) }
     end
 
+    def find_by_client_id(client_id)
+      list.find { |client| client.client_id == client_id }
+    end
+
     def delete(id)
       execute_http do
         RestClient::Resource.new(clients_url(id), @configuration.rest_client_options).delete(headers)
