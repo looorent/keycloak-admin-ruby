@@ -6,6 +6,13 @@ module KeycloakAdmin
       @realm_client = realm_client
     end
 
+    def get(id)
+      response = execute_http do
+        RestClient::Resource.new(clients_url(id), @configuration.rest_client_options).get(headers)
+      end
+      ClientRepresentation.from_hash(JSON.parse(response))
+    end
+
     def save(client_representation)
       execute_http do
         RestClient::Resource.new(clients_url, @configuration.rest_client_options).post(

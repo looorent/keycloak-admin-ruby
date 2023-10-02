@@ -22,6 +22,24 @@ RSpec.describe KeycloakAdmin::ClientClient do
     end
   end
 
+  describe "#get" do
+    let(:realm_name) { "valid-realm" }
+    let(:id) { "test_client_id" }
+    let(:client_name) { "test_client_name" }
+
+    before(:each) do
+      @client_client = KeycloakAdmin.realm(realm_name).clients
+
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '{"id":"test_client_id","name":"test_client_name"}'
+    end
+
+    it "finds a client" do
+      client = @client_client.get(id)
+      expect(client.name).to eq client_name
+      expect(client.id).to eq id
+    end
+  end
   describe "#list" do
     let(:realm_name) { "valid-realm" }
 
