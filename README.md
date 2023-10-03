@@ -309,6 +309,22 @@ Returns an array of `KeycloakAdmin::GroupRepresentation`.
 KeycloakAdmin.realm("a_realm").groups.list
 ```
 
+### Search for a group
+
+Returns an array of `KeycloakAdmin::GroupRepresentation`.
+
+According to [the documentation](https://www.keycloak.org/docs-api/22.0.1/rest-api/index.html#_groups):
+* When providing a `String` parameter, this produces an arbitrary search string
+* When providing a `Hash`, you can specify other fields (_e.g_ q, max, first)
+
+```ruby
+KeycloakAdmin.realm("a_realm").groups.search("MyGroup")
+```
+
+```ruby
+KeycloakAdmin.realm("a_realm").groups.search({query: "MyGroup", exact: true, max: 1})
+```
+
 ### Save a group
 
 Returns the id of saved `group` provided, which must be of type `KeycloakAdmin::GroupRepresentation`.
