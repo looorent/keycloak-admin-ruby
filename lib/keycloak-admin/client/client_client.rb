@@ -6,6 +6,13 @@ module KeycloakAdmin
       @realm_client = realm_client
     end
 
+    def get(id)
+      response = execute_http do
+        RestClient::Resource.new(clients_url(id), @configuration.rest_client_options).get(headers)
+      end
+      ClientRepresentation.from_hash(JSON.parse(response))
+    end
+
     def save(client_representation)
       execute_http do
         RestClient::Resource.new(clients_url, @configuration.rest_client_options).post(
@@ -21,11 +28,25 @@ module KeycloakAdmin
       JSON.parse(response).map { |client_as_hash| ClientRepresentation.from_hash(client_as_hash) }
     end
 
+    def find_by_client_id(client_id)
+      list.find { |client| client.client_id == client_id }
+    end
+
     def delete(id)
       execute_http do
         RestClient::Resource.new(clients_url(id), @configuration.rest_client_options).delete(headers)
       end
       true
+    end
+
+    def update(client_representation)
+      execute_http do
+        RestClient::Resource.new(clients_url(client_representation.id), @configuration.rest_client_options).put(
+          create_payload(client_representation), headers
+        )
+      end
+
+      get(client_representation.id)
     end
 
     def get_service_account_user(client_id)

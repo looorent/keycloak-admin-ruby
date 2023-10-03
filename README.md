@@ -21,7 +21,7 @@ To login on Keycloak's Admin API, you first need to setup a client.
 
 Go to your realm administration page and open `Clients`. Then, click on the `Create` button.
 On the first screen, enter:
-* `Client ID`: _e.g. my-app-admin-client_ 
+* `Client ID`: _e.g. my-app-admin-client_
 * `Client Protocol`: select `openid-connect`
 * `Root URL`: let it blank
 
@@ -45,7 +45,7 @@ The next screen must be configured depending on how you want to authenticate:
 * In this gem's configuration (see Section `Configuration`):
   * Setup `username` and `password` according to your user's configuration
   * Setup `client_id` with your `Client ID` (_e.g. my-app-admin-client_)
-  * If your client is `confidential`, copy its Client Secret to `client_secret` 
+  * If your client is `confidential`, copy its Client Secret to `client_secret`
 
 ### Login with `Direct Access Grants` (Service account)
 
@@ -60,15 +60,15 @@ Using a service account to use the REST Admin API does not require to create a d
   * After saving this client
     * open the `Service Account Roles` and add relevant `realm-management.` client's roles. For instance: `view-users` if you want to search for users using this gem.
     * open the `Credentials` tab and copy the `Client Secret`
-  
+
 * In this gem's configuration  (see Section `Configuration`):
   * Set `use_service_account` to `true`
   * Setup `client_id` with your `Client ID` (_e.g. my-app-admin-client_)
-  * Copy its Client Secret to `client_secret` 
+  * Copy its Client Secret to `client_secret`
 
 ## Configuration
 
-To configure this gem, call `KeycloakAdmin.configure`. 
+To configure this gem, call `KeycloakAdmin.configure`.
 For instance, to configure this gem based on environment variables, write (and load if required) a `keycloak_admin.rb`:
 ```ruby
 KeycloakAdmin.configure do |config|
@@ -96,14 +96,14 @@ All options have a default value. However, all of them can be changed in your in
 | `client_realm_name` | `""`| String | Required | Name of the realm that contains the admin client. | `master` |
 | `client_id` | `admin-cli`| String | Required | Client that should be used to access admin capabilities. | `api-cli` |
 | `client_secret` | `nil`| String | Optional | If your client is `confidential`, this parameter must be specified. | `4e3c481c-f823-4a6a-b8a7-bf8c86e3eac3` |
-| `use_service_account` | `true` | Boolean | Required | `true` if the connection to the client uses a Service Account. `false` if the connection to the client uses a username/password credential. | `false` | 
+| `use_service_account` | `true` | Boolean | Required | `true` if the connection to the client uses a Service Account. `false` if the connection to the client uses a username/password credential. | `false` |
 | `username` | `nil`| String | Optional | Username to access the Admin REST API. Recommended if `user_service_account` is set to `false`. | `mummy` |
 | `password` | `nil`| String | Optional | Clear password to access the Admin REST API. Recommended if `user_service_account` is set to `false`. | `bobby` |
 | `logger` | `Logger.new(STDOUT)`| Logger | Optional | The logger used by `keycloak-admin` | `Rails.logger` | 
 | `rest_client_options` | `{}`| Hash | Optional | Options to pass to `RestClient` | `{ verify_ssl: OpenSSL::SSL::VERIFY_NONE }` | 
 
 
-## Use Case
+## Use Cases
 
 ### Supported features
 
@@ -113,8 +113,8 @@ All options have a default value. However, all of them can be changed in your in
 * Reset credentials
 * Impersonate a user
 * Exchange a configurable token
-* Get list of clients
-* Create clients
+* Get list of clients, or find a client by its id or client_id
+* Create, update, and delete clients
 * Get list of groups, create/save a group
 * Get list of roles, save a role
 * Get list of realms, save/update/delete a realm
@@ -279,10 +279,26 @@ KeycloakAdmin.realm("a_realm").delete
 
 ### Get list of clients in a realm
 
-Returns an array of `KeycloakAdmin::ClientRepresentation`.
+Returns an array of `KeycloakAdmin::ClientRepresentation` or a single `KeycloakAdmin::ClientRepresentation`
+
+Finding a client by its `client_id` is a somewhat slow operation, as it requires fetching all clients and then filtering. Keycloak's API does not support fetching a client by its `client_id` directly.
 
 ```ruby
 KeycloakAdmin.realm("a_realm").clients.list
+KeycloakAdmin.realm("a_realm").clients.get(id) # id is Keycloak's database id, not the client_id
+KeycloakAdmin.realm("a_realm").clients.find_by_client_id(client_id)
+```
+
+### Updating a client
+
+```ruby
+my_client = KeycloakAdmin.realm("a_realm").clients.get(id)
+
+my_client.name        = "My new client name"
+my_client.description = "This is a new description"
+my_client.redirect_uris << "https://www.example.com/auth/callback"
+
+KeycloakAdmin.realm("a_realm").clients.update(client) # Returns the updated client
 ```
 
 ### Get list of groups in a realm
@@ -415,4 +431,3 @@ From the `keycloak-admin-api` directory:
   $ docker build . -t keycloak-admin:test
   $ docker run -v `pwd`:/usr/src/app/ keycloak-admin:test rspec spec
 ```
-
