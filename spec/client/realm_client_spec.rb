@@ -60,7 +60,7 @@ RSpec.describe KeycloakAdmin::RealmClient do
     end
 
     it "passes rest client options" do
-      rest_client_options = {verify_ssl: OpenSSL::SSL::VERIFY_NONE}
+      rest_client_options = {timeout: 10}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
 
       expect(RestClient::Resource).to receive(:new).with(
@@ -87,7 +87,7 @@ RSpec.describe KeycloakAdmin::RealmClient do
     end
 
     it "passes rest client options" do
-      rest_client_options = {verify_ssl: OpenSSL::SSL::VERIFY_NONE}
+      rest_client_options = {timeout: 10}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
 
       expect(RestClient::Resource).to receive(:new).with(
@@ -117,7 +117,7 @@ RSpec.describe KeycloakAdmin::RealmClient do
     end
 
     it "passes rest client options" do
-      rest_client_options = {verify_ssl: OpenSSL::SSL::VERIFY_NONE}
+      rest_client_options = {timeout: 10}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
 
       expect(RestClient::Resource).to receive(:new).with(
@@ -143,7 +143,7 @@ RSpec.describe KeycloakAdmin::RealmClient do
     end
 
     it "passes rest client options" do
-      rest_client_options = {verify_ssl: OpenSSL::SSL::VERIFY_NONE}
+      rest_client_options = {timeout: 10}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
 
       expect(RestClient::Resource).to receive(:new).with(
