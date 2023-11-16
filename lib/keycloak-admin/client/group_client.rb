@@ -7,8 +7,20 @@ module KeycloakAdmin
     end
 
     def list
+      search(nil)
+    end
+
+    def search(query)
+      derived_headers = case query
+                        when String
+                          headers.merge({params: { search: query }})
+                        when Hash
+                          headers.merge({params: query })
+                        else
+                          headers
+                        end
       response = execute_http do
-        RestClient::Resource.new(groups_url, @configuration.rest_client_options).get(headers)
+        RestClient::Resource.new(groups_url, @configuration.rest_client_options).get(derived_headers)
       end
       JSON.parse(response).map { |group_as_hash| GroupRepresentation.from_hash(group_as_hash) }
     end
@@ -21,9 +33,32 @@ module KeycloakAdmin
     def save(group_representation)
       execute_http do
         RestClient::Resource.new(groups_url, @configuration.rest_client_options).post(
-          group_representation.to_json, headers
+          create_payload(group_representation), headers
         )
       end
+    end
+
+    def create_subgroup!(parent_id, name)
+      url = "#{groups_url(parent_id)}/children"
+      response = execute_http do
+        RestClient::Resource.new(url, @configuration.rest_client_options).post(
+          create_payload(build(name, nil)), headers
+        )
+      end
+      created_id(response)
+    end
+    
+    def members(group_id, first=0, max=100)
+      url = "#{groups_url(group_id)}/members"
+      query = {first: first.try(:to_i), max: max.try(:to_i)}.compact
+      unless query.empty?
+        query_string = query.to_a.map { |e| "#{e[0]}=#{e[1]}" }.join("&")
+        url = "#{url}?#{query_string}"
+      end
+      response = execute_http do
+        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
+      end
+      JSON.parse(response).map { |user_as_hash| UserRepresentation.from_hash(user_as_hash) }
     end
 
     def groups_url(id=nil)

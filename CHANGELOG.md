@@ -5,6 +5,91 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2023-10-03
+
+* Search for groups with parameters (thanks to @@tlloydthwaites)
+* Get client by ID, Find client by Client ID, Update Client (thanks to @gee-forr)
+
+## [1.0.24] - 2023-06-07
+
+* Revert the modifications on the feature 'Update a User' introduced in `1.0.22`. This implementation had breaking changes such as not being able to update several attributes (`first_name`, `email`, etc).
+
+## [1.0.23] - 2023-06-01
+
+* Be more permissive about the version of `rest-client` (`~> 2.0`) (thanks to @type-face)
+
+## [1.0.22] - 2023-05-29
+
+* Fetch user's all active sessions (thanks to @prsanjay)
+* Check whether a user is locked or not (thanks to @prsanjay)
+* Logout users from all the active sessions (thanks to @prsanjay)
+
+## [1.0.21] - 2023-02-03
+
+* List users who are a member of a group (thanks to @tlloydthwaites) 
+
+## [1.0.20] - 2022-12-26
+
+* Create subgroups (thanks to @neckhair)
+* Add subgroups to `GroupRepresentation` (thanks to @neckhair)
+* Expose `BaseRoleContainingResource.resource_id` (thanks to @neckhair)
+
+## [1.0.19] - 2022-12-03
+
+* Remove specific realm roles from user (thanks to @tlloydthwaites) 
+* Get role by name (thanks to @tlloydthwaites) 
+
+## [1.0.18] - 2022-11-24
+
+* List user realm-level role mappings (thanks to @Kazhuu) 
+
+## [1.0.17] - 2022-11-02
+
+* Delete `Client` 
+
+## [1.0.16] - 2022-10-15
+
+* Remove `rest-client` warning when adding a group (thanks to @tlloydthwaites)
+
+## [1.0.15] - 2022-05-23
+
+* Delete all "realm" roles mapped to a user
+
+## [1.0.14] - 2022-03-30
+
+* Update `Gemfile.lock` to avoid wrong CVE detections. The version of Rails should always be specified by the parent project. This change has no functional impact.
+
+## [1.0.13] - 2022-03-13
+
+* Add client role on users
+* List client roles
+
+## [1.0.7] - 2022-03-13
+
+* Allow to use multiple `KeycloakAdmin::Client` in the same environment 
+
+## [1.0.6] - 2022-03-13
+
+* When serializing an array to JSON, force the serialization to use `to_json` for each element. In several contexts (e.g. Rails), `to_json` is not used.
+
+## [1.0.5] - 2022-03-11
+
+* Create `Client`
+* Create `Identity Provider` (Breaking change: `IdentityProviderRepresentation.configuration` has been renamed to `IdentityProviderRepresentation.config`)
+* Add `Identity Provider Mapping`
+* Find service account for a `Client`
+
+## [1.0.1] - 2021-10-14
+
+* List all `Identity Providers`
+* Add Group on Users (thanks to @tomuench)
+* Remove Group from Users (thanks to @tomuench)
+
+## [1.0.0] - 2021-08-03
+
+* Add `totp` on Users
+* Add `required_actions` on Users
+
 ## [0.7.9] - 2020-10-22
 
 * Extend `search` function to use complex queries (thanks to @hobbypunk90)

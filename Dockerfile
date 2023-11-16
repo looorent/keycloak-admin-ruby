@@ -1,5 +1,7 @@
-FROM ruby:2.6.5
-RUN mkdir -p /usr/src/app/lib/keycloak-admin
+FROM ruby:3.2.2-slim-bullseye
+
+RUN apt-get update -qq && apt-get install -y build-essential git ruby-dev && apt-get clean && \
+  mkdir -p /usr/src/app/lib/keycloak-admin
 WORKDIR /usr/src/app
 
 COPY Gemfile /usr/src/app/

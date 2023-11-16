@@ -6,9 +6,9 @@ module KeycloakAdmin
 
     def self.from_hash(hash)
       rep                   = new
-      rep.identity_provider = hash['identityProvider']
-      rep.user_id           = hash['userId']
-      rep.user_name         = hash['userName']
+      rep.identity_provider = hash["identityProvider"]
+      rep.user_id           = hash["userId"]
+      rep.user_name         = hash["userName"]
       rep
     end
   end

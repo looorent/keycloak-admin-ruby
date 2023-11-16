@@ -14,11 +14,11 @@ Gem::Specification.new do |spec|
 
   spec.files = `git ls-files -z`.split("\x0")
   spec.require_paths = ["lib"]
-  
+
   spec.required_ruby_version = '>= 2.3'
 
   spec.add_dependency "http-cookie", "~> 1.0", ">= 1.0.3"
   spec.add_dependency "rest-client", "~> 2.0"
-  spec.add_development_dependency "rspec",  "3.7.0"
-  spec.add_development_dependency "byebug", "9.1.0"
+  spec.add_development_dependency "rspec",  "3.12.0"
+  spec.add_development_dependency "byebug", "11.1.3"
 end

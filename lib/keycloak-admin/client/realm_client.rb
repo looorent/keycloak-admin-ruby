@@ -22,7 +22,7 @@ module KeycloakAdmin
     def save(realm_representation)
       execute_http do
         RestClient::Resource.new(realm_list_url, @configuration.rest_client_options).post(
-          realm_representation.to_json, headers
+          create_payload(realm_representation), headers
         )
       end
     end
@@ -30,7 +30,7 @@ module KeycloakAdmin
     def update(realm_representation_body)
       execute_http do
         RestClient::Resource.new(realm_admin_url, @configuration.rest_client_options).put(
-          realm_representation_body.to_json, headers
+          create_payload(realm_representation_body), headers
         )
       end
     end
@@ -79,8 +79,20 @@ module KeycloakAdmin
       RoleClient.new(@configuration, self)
     end
 
+    def client_roles
+      ClientRoleClient.new(@configuration, self)
+    end
+
     def users
       UserClient.new(@configuration, self)
+    end
+
+    def attack_detections
+      AttackDetectionClient.new(@configuration, self)
+    end
+
+    def identity_providers
+      IdentityProviderClient.new(@configuration, self)
     end
 
     def user(user_id)

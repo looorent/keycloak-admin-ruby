@@ -10,7 +10,7 @@ module KeycloakAdmin
     end
 
     def current_token
-      @current_token ||= KeycloakAdmin.realm(@configuration.client_realm_name).token.get
+      @current_token ||= KeycloakAdmin.create_client(@configuration, @configuration.client_realm_name).token.get
     end
 
     def headers
@@ -33,8 +33,18 @@ module KeycloakAdmin
       unless response.net_http_res.is_a? Net::HTTPCreated
         raise "Create method returned status #{response.net_http_res.message} (Code: #{response.net_http_res.code}); expected status: Created (201)"
       end
-      (_head, _separator, id) = response.headers[:location].rpartition('/')
+      (_head, _separator, id) = response.headers[:location].rpartition("/")
       id
+    end
+
+    def create_payload(value)
+      if value.nil?
+        ""
+      elsif value.kind_of?(Array)
+        "[#{value.map(&:to_json) * ","}]"
+      else
+        value.to_json
+      end
     end
 
     private

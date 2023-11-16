@@ -3,6 +3,7 @@ require "logger"
 require_relative "keycloak-admin/configuration"
 require_relative "keycloak-admin/client/client"
 require_relative "keycloak-admin/client/client_client"
+require_relative "keycloak-admin/client/client_role_client"
 require_relative "keycloak-admin/client/client_role_mappings_client"
 require_relative "keycloak-admin/client/group_client"
 require_relative "keycloak-admin/client/realm_client"
@@ -10,9 +11,12 @@ require_relative "keycloak-admin/client/role_client"
 require_relative "keycloak-admin/client/role_mapper_client"
 require_relative "keycloak-admin/client/token_client"
 require_relative "keycloak-admin/client/user_client"
+require_relative "keycloak-admin/client/identity_provider_client"
 require_relative "keycloak-admin/client/configurable_token_client"
+require_relative "keycloak-admin/client/attack_detection_client"
 require_relative "keycloak-admin/representation/camel_json"
 require_relative "keycloak-admin/representation/representation"
+require_relative "keycloak-admin/representation/protocol_mapper_representation"
 require_relative "keycloak-admin/representation/client_representation"
 require_relative "keycloak-admin/representation/group_representation"
 require_relative "keycloak-admin/representation/token_representation"
@@ -23,6 +27,10 @@ require_relative "keycloak-admin/representation/realm_representation"
 require_relative "keycloak-admin/representation/role_representation"
 require_relative "keycloak-admin/representation/federated_identity_representation"
 require_relative "keycloak-admin/representation/user_representation"
+require_relative "keycloak-admin/representation/identity_provider_mapper_representation"
+require_relative "keycloak-admin/representation/identity_provider_representation"
+require_relative "keycloak-admin/representation/attack_detection_representation"
+require_relative "keycloak-admin/representation/session_representation"
 require_relative "keycloak-admin/resource/base_role_containing_resource"
 require_relative "keycloak-admin/resource/group_resource"
 require_relative "keycloak-admin/resource/user_resource"
@@ -38,7 +46,11 @@ module KeycloakAdmin
   end
 
   def self.realm(realm_name)
-    RealmClient.new(@configuration, realm_name)
+    create_client(@configuration, realm_name)
+  end
+
+  def self.create_client(configuration, realm_name)
+    RealmClient.new(configuration, realm_name)
   end
 
   def self.logger

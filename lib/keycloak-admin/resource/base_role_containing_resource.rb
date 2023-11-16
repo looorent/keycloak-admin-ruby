@@ -1,5 +1,7 @@
 module KeycloakAdmin
   class BaseRoleContainingResource
+    attr_reader :resource_id
+
     def initialize(configuration, realm_client, resource_id)
       @configuration = configuration
       raise ArgumentError.new("realm must be defined") unless realm_client.name_defined?
@@ -8,7 +10,7 @@ module KeycloakAdmin
     end
 
     def resources_name
-      raise NotImplementedError.new('must override in subclass')
+      raise NotImplementedError.new("must override in subclass")
     end
 
     def resource_url

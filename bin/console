@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require "bundler/setup"
+require "keycloak-admin"
+require "byebug"
+
+require "irb"
+IRB.start

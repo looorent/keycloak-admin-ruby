@@ -11,8 +11,10 @@ module KeycloakAdmin
       :email_verified,
       :first_name,
       :last_name,
+      :totp,
       :credentials,
-      :federated_identities
+      :federated_identities,
+      :required_actions
 
     def self.from_hash(hash)
       user                      = new
@@ -26,7 +28,8 @@ module KeycloakAdmin
       user.first_name           = hash["firstName"]
       user.last_name            = hash["lastName"]
       user.attributes           = hash["attributes"]
-      user.required_actions     = hash["requiredActions"]
+      user.required_actions     = hash["requiredActions"] || []
+      user.totp                 = hash["totp"] || false
       user.credentials          = hash["credentials"]&.map{ |hash| CredentialRepresentation.from_hash(hash) } || []
       user.federated_identities = hash["federatedIdentities"]&.map { |hash| FederatedIdentityRepresentation.from_hash(hash) } || []
       user
