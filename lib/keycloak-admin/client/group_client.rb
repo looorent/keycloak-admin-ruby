@@ -77,8 +77,7 @@ module KeycloakAdmin
           create_payload([role_representation]), headers
         )
       end
-      # Keycloak returns 204 No Content on success
-      created_id_no_content(response)
+      role_representation
     end
 
     def groups_url(id=nil)

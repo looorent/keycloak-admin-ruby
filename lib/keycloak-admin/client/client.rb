@@ -37,14 +37,6 @@ module KeycloakAdmin
       id
     end
 
-    def created_id_no_content(response)
-      unless response.net_http_res.is_a? Net::HTTPNoContent
-        raise "Create method returned status #{response.net_http_res.message} (Code: #{response.net_http_res.code}); expected status: No Content (204)"
-      end
-      (_head, _separator, id) = response.headers[:location].rpartition("/")
-      id
-    end
-
     def create_payload(value)
       if value.nil?
         ""
