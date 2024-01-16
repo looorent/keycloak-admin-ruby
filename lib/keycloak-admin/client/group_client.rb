@@ -61,6 +61,19 @@ module KeycloakAdmin
       JSON.parse(response).map { |user_as_hash| UserRepresentation.from_hash(user_as_hash) }
     end
 
+    def get_realm_level_roles(group_id)
+      url = "#{groups_url(group_id)}/role-mappings/realm"
+      response = execute_http do
+        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
+      end
+      JSON.parse(response).map { |role_as_hash| RoleRepresentation.from_hash(role_as_hash) }
+    end
+
+    def add_realm_level_role_name!(group_id, role_name)
+      role_representation = RoleClient.new(@configuration, @realm_client).get(role_name)
+      add_realm_level_role!(group_id, role_representation)
+    end
+
     def groups_url(id=nil)
       if id
         "#{@realm_client.realm_admin_url}/groups/#{id}"
@@ -70,6 +83,16 @@ module KeycloakAdmin
     end
 
     private
+
+    def add_realm_level_role!(group_id, role_representation)
+      url = "#{groups_url(group_id)}/role-mappings/realm"
+      response = execute_http do
+        RestClient::Resource.new(url, @configuration.rest_client_options).post(
+          create_payload([role_representation]), headers
+        )
+      end
+      created_id(response)
+    end
 
     def build(name, path)
       group      = GroupRepresentation.new

@@ -14,10 +14,19 @@ module KeycloakAdmin
     end
     
     def get(name)
+      name = URI.encode_uri_component(name)
       response = execute_http do
         RestClient::Resource.new(role_name_url(name), @configuration.rest_client_options).get(headers)
       end
       RoleRepresentation.from_hash JSON.parse(response)
+    end
+
+    def list_groups(name)
+      name = URI.encode_uri_component(name)
+      response = execute_http do
+        RestClient::Resource.new("#{role_name_url(name)}/groups", @configuration.rest_client_options).get(headers)
+      end
+      JSON.parse(response).map { |role_as_hash| GroupRepresentation.from_hash(role_as_hash) }
     end
 
     def save(role_representation)
