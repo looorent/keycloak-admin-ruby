@@ -120,6 +120,8 @@ All options have a default value. However, all of them can be changed in your in
 * Get list of realms, save/update/delete a realm
 * Get list of client role mappings for a user/group
 * Get list of members of a group
+* Get list of groups that have a specific role assigned
+* Get list of realm-roles assigned to a group, add a realm-role to a group
 * Save client role mappings for a user/group
 * Save realm-level role mappings for a user/group
 * Add a Group on a User
@@ -365,6 +367,30 @@ You can specify paging with `first` and `max`:
 
 ```ruby
 KeycloakAdmin.realm("a_realm").group("group_id").members(first:0, max:100)
+```
+
+### Get list of groups that have a specific role assigned
+
+Returns an array of `KeycloakAdmin::GroupRepresentation`
+
+```ruby
+KeycloakAdmin.realm("a_realm").roles.list_groups("role_name")
+```
+
+### Get list of realm-roles assigned to a group
+
+Returns an array of `KeycloakAdmin::RoleRepresentation`
+
+```ruby
+KeycloakAdmin.realm("a_realm").groups.get_realm_level_roles("group_id")
+```
+
+### Add a realm-role to a group
+
+Returns added `KeycloakAdmin::RoleRepresentation`
+
+```ruby
+KeycloakAdmin.realm("a_realm").groups.add_realm_level_role_name!("group_id", "role_name")
 ```
 
 ### Get list of roles in a realm
