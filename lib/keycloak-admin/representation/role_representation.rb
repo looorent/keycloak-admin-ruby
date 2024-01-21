@@ -3,7 +3,8 @@ module KeycloakAdmin
     attr_accessor :id,
       :name,
       :composite,
-      :client_role
+      :client_role,
+      :container_id,
 
     def self.from_hash(hash)
       role             = new
@@ -11,6 +12,7 @@ module KeycloakAdmin
       role.name        = hash["name"]
       role.composite   = hash["composite"]
       role.client_role = hash["clientRole"]
+      role.container_id = hash["containerId"]
       role
     end
   end
