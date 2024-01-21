@@ -12,7 +12,7 @@ RSpec.describe KeycloakAdmin::RoleRepresentation do
     end
 
     it "can convert to json" do
-      expect(@mapper.to_json).to eq "{\"id\":\"bb79fb10-a7b4-4728-a662-82a4de7844a3\",\"name\":\"abcd\",\"composite\":true,\"clientRole\":false}"
+      expect(@mapper.to_json).to eq "{\"id\":\"bb79fb10-a7b4-4728-a662-82a4de7844a3\",\"name\":\"abcd\",\"composite\":true,\"clientRole\":false,\"containerId\":null}"
     end
   end
 
@@ -31,7 +31,7 @@ RSpec.describe KeycloakAdmin::RoleRepresentation do
     end
 
     it "can convert to json" do
-      expect(@mappers.to_json).to eq "[{\"id\":\"bb79fb10-a7b4-4728-a662-82a4de7844a3\",\"name\":\"abcd\",\"composite\":true,\"clientRole\":false}]"
+      expect(@mappers.to_json).to eq "[{\"id\":\"bb79fb10-a7b4-4728-a662-82a4de7844a3\",\"name\":\"abcd\",\"composite\":true,\"clientRole\":false,\"containerId\":null}]"
     end
   end
 end
