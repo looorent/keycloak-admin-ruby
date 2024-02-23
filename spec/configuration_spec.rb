@@ -6,7 +6,7 @@ RSpec.describe KeycloakAdmin::RealmClient do
   let(:use_service_account) { true }
   let(:username)            { "a" }
   let(:password)            { "b" }
-  let(:rest_client_options) { {verify_ssl: OpenSSL::SSL::VERIFY_NONE} }
+  let(:rest_client_options) { {timeout: 10 }
 
   before(:each) do
     @configuration                     = KeycloakAdmin::Configuration.new
