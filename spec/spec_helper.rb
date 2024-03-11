@@ -1,6 +1,7 @@
 require_relative "../lib/keycloak-admin"
 
 require "byebug"
+require "active_support/core_ext/hash"
 
 def configure
   KeycloakAdmin.configure do |config|

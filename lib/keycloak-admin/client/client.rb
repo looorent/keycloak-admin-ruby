@@ -23,10 +23,6 @@ module KeycloakAdmin
 
     def execute_http
       yield
-    rescue RestClient::Exceptions::Timeout => e
-      raise
-    rescue RestClient::ExceptionWithResponse => e
-      http_error(e.response)
     end
 
     def created_id(response)
@@ -38,19 +34,13 @@ module KeycloakAdmin
     end
 
     def create_payload(value)
-      if value.nil?
-        ""
-      elsif value.kind_of?(Array)
-        "[#{value.map(&:to_json) * ","}]"
+      return "" if value.nil?
+
+      if value.is_a?(Array)
+        "[#{value.map(&:to_json) * ','}]"
       else
         value.to_json
       end
-    end
-
-    private
-
-    def http_error(response)
-      raise "Keycloak: The request failed with response code #{response.code} and message: #{response.body}"
     end
   end
 end

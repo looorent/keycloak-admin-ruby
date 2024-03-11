@@ -6,8 +6,21 @@ module KeycloakAdmin
       @realm_client = realm_client
     end
 
-    def create!(username, email, password, email_verified, locale, attributes={})
-      user = save(build(username, email, password, email_verified, locale, attributes))
+    def create!(user_params)
+      password = user_params.delete(:password)
+
+      user                = UserRepresentation.new
+      user.email          = user_params.delete(:email)
+      user.username       = user_params.delete(:username)
+      user.first_name     = user_params.delete(:first_name)
+      user.last_name      = user_params.delete(:last_name)
+      user.email_verified = user_params.delete(:email_verified) || true
+      user.enabled        = user_params.delete(:enabled)
+      user.attributes     = user_params
+
+      user.add_credential(CredentialRepresentation.from_password(password)) if password.present?
+
+      user = save(user)
       search(user.email)&.first
     end
 
@@ -20,16 +33,20 @@ module KeycloakAdmin
       user_representation
     end
 
-    def update(user_id, user_representation_body)
-      raise ArgumentError.new("user_id must be defined") if user_id.nil?
+    def update(user_id, user_params)
+      raise ArgumentError, "user_id must be defined" if user_id.nil?
+
+      camelized_hash = Representation.snaked_to_camelized(user_params)
       RestClient::Request.execute(
         @configuration.rest_client_options.merge(
           method: :put,
           url: users_url(user_id),
-          payload: create_payload(user_representation_body),
-          headers: headers
+          payload: create_payload(camelized_hash),
+          headers:
         )
       )
+
+      get(user_id)
     end
 
     def add_group(user_id, group_id)
@@ -63,8 +80,12 @@ module KeycloakAdmin
 
     def get(user_id)
       response = execute_http do
-        RestClient::Resource.new(users_url(user_id), @configuration.rest_client_options).get(headers)
+        RestClient::Resource.new(
+          users_url(user_id),
+          @configuration.rest_client_options
+        ).get(headers)
       end
+
       UserRepresentation.from_hash(JSON.parse(response))
     end
 
@@ -246,20 +267,6 @@ module KeycloakAdmin
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
 
       "#{users_url(user_id)}/logout"
-    end
-
-    private
-
-    def build(username, email, password, email_verified, locale, attributes={})
-      user                     = UserRepresentation.new
-      user.email               = email
-      user.username            = username
-      user.email_verified      = email_verified
-      user.enabled             = true
-      user.attributes          = attributes || {}
-      user.attributes[:locale] = locale if locale
-      user.add_credential(CredentialRepresentation.from_password(password)) if !password.nil?
-      user
     end
   end
 end

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2024-03-11
+
+* Be more permissive with user attributes on create/update
+* Camelize user params on update
+* Return user object on update (same as create)
+* Add activesupport to enable deep camelize of JSON objects
+* Let exceptions move up the call stack
+
 ## [1.1.1] - 2024-01-21
 
 * Add/List realm-role/s to a group, Allow role-names with spaces, List groups assigned to role (thanks to @LiquidMagical
