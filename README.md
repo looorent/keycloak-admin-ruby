@@ -189,9 +189,14 @@ If you want to update its entire entity. To update some specific attributes, pro
 
 ```ruby
 KeycloakAdmin.realm("a_realm").users.update("05c135c6-5ad8-4e17-b1fa-635fc089fd71", {
-  email: "hello@gmail.com"
+  email: "hello@gmail.com",
+  username: "hello",
+  first_name: "Jean",
+  last_name: "Dupond"
 })
 ```
+
+Attention point: Since Keycloak 24.0.4, when updating a user, all the writable profile attributes must be passed, otherwise they will be removed. (https://www.keycloak.org/docs/24.0.4/upgrading/)
 
 ### Delete a user
 

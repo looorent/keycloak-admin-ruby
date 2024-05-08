@@ -20,6 +20,7 @@ module KeycloakAdmin
       user_representation
     end
 
+    # pay attention that, since Keycloak 24.0.4, partial updates of attributes are not authorized anymore
     def update(user_id, user_representation_body)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
       RestClient::Request.execute(
