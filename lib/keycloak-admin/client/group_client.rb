@@ -6,6 +6,21 @@ module KeycloakAdmin
       @realm_client = realm_client
     end
 
+    def get(group_id)
+      response = execute_http do
+        RestClient::Resource.new(groups_url(group_id), @configuration.rest_client_options).get(headers)
+      end
+      GroupRepresentation.from_hash(JSON.parse(response))
+    end
+
+    def children(parent_id)
+      response = execute_http do
+        url = "#{groups_url(parent_id)}/children"
+        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
+      end
+      JSON.parse(response).map { |group_as_hash| GroupRepresentation.from_hash(group_as_hash) }
+    end
+
     def list
       search(nil)
     end
@@ -25,29 +40,39 @@ module KeycloakAdmin
       JSON.parse(response).map { |group_as_hash| GroupRepresentation.from_hash(group_as_hash) }
     end
 
-    def create!(name, path = nil)
-      response = save(build(name, path))
+    def create!(name, path = nil, attributes = {})
+      response = save(build(name, path, attributes))
       created_id(response)
     end
 
     def save(group_representation)
       execute_http do
-        RestClient::Resource.new(groups_url, @configuration.rest_client_options).post(
-          create_payload(group_representation), headers
-        )
+        payload = create_payload(group_representation)
+        if group_representation.id
+          RestClient::Resource.new(groups_url(group_representation.id), @configuration.rest_client_options).put(payload, headers)
+        else
+          RestClient::Resource.new(groups_url, @configuration.rest_client_options).post(payload, headers)
+        end
       end
     end
 
-    def create_subgroup!(parent_id, name)
+    def create_subgroup!(parent_id, name, attributes = {})
       url = "#{groups_url(parent_id)}/children"
       response = execute_http do
         RestClient::Resource.new(url, @configuration.rest_client_options).post(
-          create_payload(build(name, nil)), headers
+          create_payload(build(name, nil, attributes)), headers
         )
       end
       created_id(response)
     end
-    
+
+    def delete(group_id)
+      execute_http do
+        RestClient::Resource.new(groups_url(group_id), @configuration.rest_client_options).delete(headers)
+      end
+      true
+    end
+
     def members(group_id, first=0, max=100)
       url = "#{groups_url(group_id)}/members"
       query = {first: first.try(:to_i), max: max.try(:to_i)}.compact
@@ -93,11 +118,14 @@ module KeycloakAdmin
 
     private
 
-    def build(name, path)
-      group      = GroupRepresentation.new
-      group.name = name
-      group.path = path
-      group
+    def build(name, path, attributes)
+      GroupRepresentation.from_hash(
+        {
+          "name" => name,
+          "path" => path,
+          "attributes" => attributes
+        }
+      )
     end
   end
 end
