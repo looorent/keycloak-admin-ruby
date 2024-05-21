@@ -1,24 +1,20 @@
 RSpec.describe KeycloakAdmin::RoleClient do
   describe "#roles_url" do
     let(:realm_name) { "valid-realm" }
-    let(:role_id)    { nil }
 
-    before(:each) do
-      @built_url = KeycloakAdmin.realm(realm_name).roles.roles_url(role_id)
+    it "return a proper url without role id" do
+      @built_url = KeycloakAdmin.realm(realm_name).roles.roles_url
+      expect(@built_url).to eq "http://auth.service.io/auth/admin/realms/valid-realm/roles"
     end
+  end
 
-    context "when role_id is not defined" do
-      let(:role_id) { nil }
-      it "return a proper url without role id" do
-        expect(@built_url).to eq "http://auth.service.io/auth/admin/realms/valid-realm/roles"
-      end
-    end
+  describe "#role_id_url" do
+    let(:realm_name) { "valid-realm" }
+    let(:role_id) { "95985b21-d884-4bbd-b852-cb8cd365afc2" }
 
-    context "when role_id is defined" do
-      let(:role_id) { "95985b21-d884-4bbd-b852-cb8cd365afc2" }
-      it "return a proper url with the role id" do
-        expect(@built_url).to eq "http://auth.service.io/auth/admin/realms/valid-realm/roles/95985b21-d884-4bbd-b852-cb8cd365afc2"
-      end
+    it "return a proper url with the role id" do
+      @built_url = KeycloakAdmin.realm(realm_name).roles.role_id_url(role_id)
+      expect(@built_url).to eq "http://auth.service.io/auth/admin/realms/valid-realm/roles-by-id/95985b21-d884-4bbd-b852-cb8cd365afc2"
     end
   end
 
