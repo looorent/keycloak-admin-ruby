@@ -35,23 +35,25 @@ module KeycloakAdmin
 
     def save(role_representation)
       execute_http do
-        RestClient::Resource.new(roles_url, @configuration.rest_client_options).post(
-          create_payload(role_representation), headers
-        )
+        payload = create_payload(role_representation)
+        if role_representation.id
+          RestClient::Resource.new(role_id_url(role_representation.id), @configuration.rest_client_options).put(payload, headers)
+        else
+          RestClient::Resource.new(roles_url, @configuration.rest_client_options).post(payload, headers)
+        end
       end
     end
 
-    def roles_url(id=nil)
-      if id
-        "#{@realm_client.realm_admin_url}/roles/#{id}"
-      else
-        "#{@realm_client.realm_admin_url}/roles"
-      end
+    def roles_url
+      "#{@realm_client.realm_admin_url}/roles"
+    end
+
+    def role_id_url(id)
+      "#{@realm_client.realm_admin_url}/roles-by-id/#{id}"
     end
     
     def role_name_url(name)
       "#{@realm_client.realm_admin_url}/roles/#{name}"
     end
-    
   end
 end
