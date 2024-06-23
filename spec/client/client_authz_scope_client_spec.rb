@@ -66,4 +66,20 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeClient do
       expect(response.icon_uri).to eq "http://asdfasd1"
     end
   end
+
+  describe "#destroy" do
+    let(:realm_name) { "valid-realm" }
+    let(:client_id) { "valid-client-id" }
+    let(:scope_id) { "valid-scope-id" }
+    before(:each) do
+      @client_authz_scope = KeycloakAdmin.realm(realm_name).authz_scopes(client_id)
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:delete).and_return ""
+    end
+
+    it "returns true" do
+      response = @client_authz_scope.delete(scope_id)
+      expect(response).to eq true
+    end
+  end
 end
