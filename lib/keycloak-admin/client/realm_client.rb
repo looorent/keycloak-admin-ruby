@@ -103,6 +103,10 @@ module KeycloakAdmin
       ClientAuthzScopeClient.new(@configuration, self, client_id)
     end
 
+    def authz_resources(client_id)
+      ClientAuthzResourceClient.new(@configuration, self, client_id)
+    end
+
     def name_defined?
       !@realm_name.nil?
     end
