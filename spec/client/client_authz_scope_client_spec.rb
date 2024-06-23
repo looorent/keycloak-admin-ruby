@@ -18,6 +18,18 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeClient do
     end
   end
 
+  describe "#authz_scopes_url" do
+    let(:realm_name) { "valid-realm" }
+    let(:client_id) { "valid-client-id" }
+    before(:each) do
+      @client_authz_scope = KeycloakAdmin.realm(realm_name).authz_scopes(client_id)
+    end
+
+    it "return a proper url" do
+      expect(@client_authz_scope.authz_scopes_url(client_id)).to eq "http://auth.service.io/auth/admin/realms/valid-realm/clients/valid-client-id/authz/resource-server/scope"
+    end
+  end
+
   describe "#list" do
     let(:realm_name) { "valid-realm" }
     let(:client_id) { "valid-client-id" }
@@ -34,6 +46,24 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeClient do
       expect(response.first.name).to eq "GET"
       expect(response.first.display_name).to eq "GET authz scope"
       expect(response.first.icon_uri).to eq "http://asdfasd1"
+    end
+  end
+
+  describe "#create" do
+    let(:realm_name) { "valid-realm" }
+    let(:client_id) { "valid-client-id" }
+    before(:each) do
+      @client_authz_scope = KeycloakAdmin.realm(realm_name).authz_scopes(client_id)
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return '{"id":"c0779ce3-0900-4ea3-b1d6-b23e1f19c662","name":"GET","iconUri":"http://asdfasd1","displayName":"GET authz scope"}'
+    end
+
+    it "returns created authz scope" do
+      response = @client_authz_scope.create!("GET", "GET authz scope", "http://asdfasd1")
+      expect(response.id).to eq "c0779ce3-0900-4ea3-b1d6-b23e1f19c662"
+      expect(response.name).to eq "GET"
+      expect(response.display_name).to eq "GET authz scope"
+      expect(response.icon_uri).to eq "http://asdfasd1"
     end
   end
 end
