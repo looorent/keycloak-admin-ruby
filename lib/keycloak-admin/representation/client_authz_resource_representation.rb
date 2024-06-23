@@ -17,7 +17,7 @@ module KeycloakAdmin
       resource.type                 = hash["type"]
       resource.name                 = hash["name"]
       resource.owner_managed_access = hash["ownerManagedAccess"]
-      resource.icon_uri             = hash["iconUri"]
+      resource.icon_uri             = hash["icon_uri"]
       resource.uris                 = hash["uris"]
       resource.display_name         = hash["displayName"]
       resource.attributes           = hash.fetch("attributes", {}).map { |k, v| [k.to_sym, Array(v)] }.to_h
