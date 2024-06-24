@@ -45,9 +45,26 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
       expect(response[1].id).to eq "385966a2-14b9-4cc4-9539-5f2fe1008222"
       expect(response[1].name).to eq "asdfasdf"
       expect(response[1].type).to eq  "urn:delme-client-id:resources:default"
-      expect(response[1].icon_uri).to eq "http://icon"
+      expect(response[1].owner_managed_access).to be_truthy
     end
 
   end
 
+  describe '#create!' do
+    let(:realm_name) { "valid-realm" }
+    let(:client_id) { "valid-client-id" }
+    before(:each) do
+      @client_authz_resource = KeycloakAdmin.realm(realm_name).authz_resources(client_id)
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return '{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}'
+    end
+
+    it "returns created authz scope" do
+      response = @client_authz_resource.create!("Default Resource", "urn:delme-client-id:resources:default", ["/tmp/*"], false, "Default Resource", [])
+      expect(response.id).to eq "94643fe2-1973-4a36-8e1f-830ade186398"
+      expect(response.name).to eq "Default Resource"
+      expect(response.type).to eq  "urn:delme-client-id:resources:default"
+      expect(response.owner_managed_access).to be_falsey
+    end
+  end
 end
