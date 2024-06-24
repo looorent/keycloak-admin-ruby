@@ -25,6 +25,13 @@ module KeycloakAdmin
       ClientAuthzResourceRepresentation.from_hash(JSON.parse(response))
     end
 
+    def delete(resource_id)
+      execute_http do
+        RestClient::Resource.new(authz_resources_url(@client_id, resource_id), @configuration.rest_client_options).delete(headers)
+      end
+      true
+    end
+
     def authz_resources_url(client_id, id = nil)
       if id
         "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/resource/#{id}"

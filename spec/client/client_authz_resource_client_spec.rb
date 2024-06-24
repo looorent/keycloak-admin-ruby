@@ -47,7 +47,6 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
       expect(response[1].type).to eq  "urn:delme-client-id:resources:default"
       expect(response[1].owner_managed_access).to be_truthy
     end
-
   end
 
   describe '#create!' do
@@ -65,6 +64,22 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
       expect(response.name).to eq "Default Resource"
       expect(response.type).to eq  "urn:delme-client-id:resources:default"
       expect(response.owner_managed_access).to be_falsey
+    end
+  end
+
+  describe "#delete" do
+    let(:realm_name) { "valid-realm" }
+    let(:client_id) { "valid-client-id" }
+    let(:resource_id) { "valid-resource-id" }
+    before(:each) do
+      @client_authz_resource = KeycloakAdmin.realm(realm_name).authz_resources(client_id)
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:delete).and_return '{}'
+    end
+
+    it "returns true" do
+      response = @client_authz_resource.delete(resource_id)
+      expect(response).to be_truthy
     end
   end
 end
