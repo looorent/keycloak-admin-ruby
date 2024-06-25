@@ -36,4 +36,30 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyClient do
     end
   end
 
+  describe '#create!' do
+    let(:realm_name) { "valid-realm" }
+    let(:client_id) { "valid-client-id" }
+    let(:type) { :role }
+    let(:name) { "policy name" }
+    let(:description) { "policy description" }
+    let(:logic) { "POSITIVE" }
+    let(:decision_strategy) { "UNANIMOUS" }
+    let(:config) { { roles: [{ id: "1d305dbe-6379-4900-8e63-96541006160a", required: false }] } }
+    before(:each) do
+      @client_authz_policy = KeycloakAdmin.realm(realm_name).authz_policies(client_id, type)
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return '{"id":"234f6f33-ef03-4f3f-a8c0-ad7bca27b720","name":"policy name","description":"policy description","type":"role","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","config":{"roles":"[{\"id\":\"1d305dbe-6379-4900-8e63-96541006160a\",\"required\":false}]"}}'
+    end
+
+    it "creates a new authz policy" do
+      response = @client_authz_policy.create!(name, description, type, logic, decision_strategy, config[:roles])
+      expect(response.id).to eq "234f6f33-ef03-4f3f-a8c0-ad7bca27b720"
+      expect(response.name).to eq "policy name"
+      expect(response.type).to eq "role"
+      expect(response.logic).to eq "POSITIVE"
+      expect(response.decision_strategy).to eq "UNANIMOUS"
+      expect(response.config.roles[0].id).to eq "1d305dbe-6379-4900-8e63-96541006160a"
+    end
+  end
+
 end

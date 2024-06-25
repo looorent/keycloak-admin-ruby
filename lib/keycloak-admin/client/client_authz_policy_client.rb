@@ -11,7 +11,7 @@ module KeycloakAdmin
       @type = type
     end
 
-    def create!(name, description, type, logic, decision_strategy, roles=[])
+    def create!(name, description, type, logic, decision_strategy, roles)
       response = save(build(name, description, type, logic, decision_strategy, roles))
       ClientAuthzPolicyRepresentation.from_hash(JSON.parse(response))
     end
