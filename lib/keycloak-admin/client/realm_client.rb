@@ -107,6 +107,10 @@ module KeycloakAdmin
       ClientAuthzResourceClient.new(@configuration, self, client_id)
     end
 
+    def authz_policies(client_id, type)
+      ClientAuthzPolicyClient.new(@configuration, self, client_id, type)
+    end
+
     def name_defined?
       !@realm_name.nil?
     end
