@@ -62,4 +62,35 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyClient do
     end
   end
 
+  describe '#delete' do
+    let(:realm_name) { "valid-realm" }
+    let(:client_id) { "valid-client-id" }
+    let(:type) { :role }
+    let(:policy_id) { "234f6f33-ef03-4f3f-a8c0-ad7bca27b720" }
+    before(:each) do
+      @client_authz_policy = KeycloakAdmin.realm(realm_name).authz_policies(client_id, type)
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:delete).and_return 'true'
+    end
+
+    it "deletes an authz policy" do
+      response = @client_authz_policy.delete(policy_id)
+      expect(response).to eq true
+    end
+  end
+
+  describe '#authz_policy_url' do
+    let(:realm_name) { "valid-realm" }
+    let(:client_id) { "valid-client-id" }
+    let(:type) { :role }
+    let(:policy_id) { "234f6f33-ef03-4f3f-a8c0-ad7bca27b720" }
+    before(:each) do
+      @client_authz_policy = KeycloakAdmin.realm(realm_name).authz_policies(client_id, type)
+    end
+
+    it "return a proper url" do
+      expect(@client_authz_policy.authz_policy_url(client_id, policy_id)).to eq "http://auth.service.io/auth/admin/realms/valid-realm/clients/valid-client-id/authz/resource-server/policy/role/234f6f33-ef03-4f3f-a8c0-ad7bca27b720"
+    end
+  end
+
 end
