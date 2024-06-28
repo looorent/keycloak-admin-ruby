@@ -7,6 +7,7 @@ module KeycloakAdmin
                   :logic,
                   :decision_strategy,
                   :config,
+                  :fetch_roles,
                   :roles
 
     def self.from_hash(hash)
@@ -18,6 +19,7 @@ module KeycloakAdmin
       resource.logic                = hash["logic"]
       resource.decision_strategy    = hash["decisionStrategy"]
       resource.roles                = hash["roles"]
+      resource.fetch_roles          = hash["fetchRoles"]
       resource.config               = ClientAuthzPolicyConfigRepresentation.from_hash((hash["config"] || {}))
       resource
     end

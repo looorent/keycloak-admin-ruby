@@ -44,6 +44,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyClient do
     let(:description) { "policy description" }
     let(:logic) { "POSITIVE" }
     let(:decision_strategy) { "UNANIMOUS" }
+    let(:fetch_roles) { true }
     let(:config) { { roles: [{ id: "1d305dbe-6379-4900-8e63-96541006160a", required: false }] } }
     before(:each) do
       @client_authz_policy = KeycloakAdmin.realm(realm_name).authz_policies(client_id, type)
@@ -52,7 +53,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyClient do
     end
 
     it "creates a new authz policy" do
-      response = @client_authz_policy.create!(name, description, type, logic, decision_strategy, config[:roles])
+      response = @client_authz_policy.create!(name, description, type, logic, decision_strategy, fetch_roles, config[:roles])
       expect(response.id).to eq "234f6f33-ef03-4f3f-a8c0-ad7bca27b720"
       expect(response.name).to eq "policy name"
       expect(response.type).to eq "role"
