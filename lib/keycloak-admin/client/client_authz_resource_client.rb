@@ -18,6 +18,14 @@ module KeycloakAdmin
       save(build(name, type, uris, owner_managed_access, display_name, scopes, attributes))
     end
 
+    def find_by(client_id, name, type, uris, owner, scope)
+      response = execute_http do
+        url = "#{authz_resources_url(client_id)}?name=#{name}&type=#{type}&uris=#{uris}&owner=#{owner}&scope=#{scope}&deep=false&first=0&max=11"
+        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
+      end
+      JSON.parse(response).map { |role_as_hash| ClientAuthzResourceRepresentation.from_hash(role_as_hash) }
+    end
+
     def save(client_authz_resource_representation)
       response = execute_http do
         RestClient::Resource.new(authz_resources_url(@client_id), @configuration.rest_client_options).post(client_authz_resource_representation.to_json, headers)
@@ -42,7 +50,7 @@ module KeycloakAdmin
 
     private
 
-    def build(name, type, uris, owner_managed_access, display_name, scopes, attributes={} )
+    def build(name, type, uris, owner_managed_access, display_name, scopes, attributes={})
       resource                      = ClientAuthzResourceRepresentation.new
       resource.name                 = name
       resource.type                 = type
