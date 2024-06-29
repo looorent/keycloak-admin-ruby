@@ -107,6 +107,10 @@ module KeycloakAdmin
       ClientAuthzResourceClient.new(@configuration, self, client_id)
     end
 
+    def authz_permissions(client_id, type)
+      ClientAuthzPermissionClient.new(@configuration, self, client_id, type)
+    end
+
     def authz_policies(client_id, type)
       ClientAuthzPolicyClient.new(@configuration, self, client_id, type)
     end
