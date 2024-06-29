@@ -82,4 +82,24 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
       expect(response).to be_truthy
     end
   end
+
+  describe "#find_by" do
+    let(:realm_name) { "valid-realm" }
+    let(:client_id) { "valid-client-id" }
+    let(:resource_id) { "valid-resource-id" }
+    before(:each) do
+      @client_authz_resource = KeycloakAdmin.realm(realm_name).authz_resources(client_id)
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '[{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}]'
+    end
+
+    it "returns list of authz scopes" do
+      response = @client_authz_resource.find_by(client_id, "Default Resource", "urn:delme-client-id:resources:default", ["/tmp/*"], false, "")
+      expect(response.size).to eq 1
+      expect(response[0].id).to eq "94643fe2-1973-4a36-8e1f-830ade186398"
+      expect(response[0].name).to eq "Default Resource"
+      expect(response[0].type).to eq  "urn:delme-client-id:resources:default"
+      expect(response[0].owner_managed_access).to be_falsey
+    end
+  end
 end
