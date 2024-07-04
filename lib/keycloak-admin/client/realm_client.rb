@@ -99,16 +99,16 @@ module KeycloakAdmin
       UserResource.new(@configuration, self, user_id)
     end
 
-    def authz_scopes(client_id)
-      ClientAuthzScopeClient.new(@configuration, self, client_id)
+    def authz_scopes(client_id, resource_id = nil)
+      ClientAuthzScopeClient.new(@configuration, self, client_id, resource_id)
     end
 
     def authz_resources(client_id)
       ClientAuthzResourceClient.new(@configuration, self, client_id)
     end
 
-    def authz_permissions(client_id, type)
-      ClientAuthzPermissionClient.new(@configuration, self, client_id, type)
+    def authz_permissions(client_id, type, resource_id = nil)
+      ClientAuthzPermissionClient.new(@configuration, self, client_id, type, resource_id)
     end
 
     def authz_policies(client_id, type)

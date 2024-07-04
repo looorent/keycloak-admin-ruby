@@ -1,13 +1,14 @@
 module KeycloakAdmin
   class ClientAuthzPermissionClient < Client
-    def initialize(configuration, realm_client, client_id, type)
+    def initialize(configuration, realm_client, client_id, type, resource_id = nil)
       super(configuration)
       raise ArgumentError.new("realm must be defined") unless realm_client.name_defined?
-      raise ArgumentError.new("bad permission type") unless %i[resource scope].include? type.to_sym
+      raise ArgumentError.new("bad permission type") if !resource_id && !%i[resource scope].include?(type.to_sym)
 
       @realm_client = realm_client
       @client_id = client_id
       @type = type
+      @resource_id = resource_id
     end
 
     def delete(permission_id)
@@ -38,7 +39,9 @@ module KeycloakAdmin
     end
 
     def authz_permission_url(client_id, id = nil)
-      if id
+      if @resource_id
+        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/resource/#{@resource_id}/permissions"
+      elsif id
         "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/permission/resource/#{@type}/#{id}"
       else
         "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/permission/#{@type}"

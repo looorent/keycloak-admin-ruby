@@ -1,10 +1,11 @@
 module KeycloakAdmin
   class ClientAuthzScopeClient < Client
-    def initialize(configuration, realm_client, client_id)
+    def initialize(configuration, realm_client, client_id, resource_id = nil)
       super(configuration)
       raise ArgumentError.new("realm must be defined") unless realm_client.name_defined?
       @realm_client = realm_client
       @client_id = client_id
+      @resource_id = resource_id
     end
 
     def create!(name, display_name, icon_uri)
@@ -27,7 +28,9 @@ module KeycloakAdmin
     end
 
     def authz_scopes_url(client_id, id = nil)
-      if id
+      if @resource_id
+        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/resource/#{@resource_id}/scopes"
+      elsif id
         "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/scope/#{id}"
       else
         "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/scope"

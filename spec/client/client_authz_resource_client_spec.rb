@@ -94,7 +94,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
     end
 
     it "returns list of authz scopes" do
-      response = @client_authz_resource.find_by(client_id, "Default Resource", "urn:delme-client-id:resources:default", ["/tmp/*"], false, "")
+      response = @client_authz_resource.find_by("Default Resource", "urn:delme-client-id:resources:default", ["/tmp/*"], false, "")
       expect(response.size).to eq 1
       expect(response[0].id).to eq "94643fe2-1973-4a36-8e1f-830ade186398"
       expect(response[0].name).to eq "Default Resource"

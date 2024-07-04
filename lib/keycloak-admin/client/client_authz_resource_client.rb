@@ -14,13 +14,28 @@ module KeycloakAdmin
       JSON.parse(response).map { |role_as_hash| ClientAuthzResourceRepresentation.from_hash(role_as_hash) }
     end
 
+    def get(resource_id)
+      response = execute_http do
+        RestClient::Resource.new(authz_resources_url(@client_id, resource_id), @configuration.rest_client_options).get(headers)
+      end
+      ClientAuthzResourceRepresentation.from_hash(JSON.parse(response))
+    end
+
+    def update(resource_id, client_authz_resource_representation)
+      raise "scope[:name] is mandatory and the only necessary attribute to add scope to resource" if client_authz_resource_representation[:scopes] && client_authz_resource_representation[:scopes].any?{|a| !a[:name]}
+      execute_http do
+        RestClient::Resource.new(authz_resources_url(@client_id, resource_id), @configuration.rest_client_options).put(client_authz_resource_representation.to_json, headers)
+      end
+      get(resource_id)
+    end
+
     def create!(name, type, uris, owner_managed_access, display_name, scopes, attributes = {})
       save(build(name, type, uris, owner_managed_access, display_name, scopes, attributes))
     end
 
-    def find_by(client_id, name, type, uris, owner, scope)
+    def find_by(name, type, uris, owner, scope)
       response = execute_http do
-        url = "#{authz_resources_url(client_id)}?name=#{name}&type=#{type}&uris=#{uris}&owner=#{owner}&scope=#{scope}&deep=false&first=0&max=11"
+        url = "#{authz_resources_url(@client_id)}?name=#{name}&type=#{type}&uris=#{uris}&owner=#{owner}&scope=#{scope}&deep=true&first=0&max=100"
         RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzResourceRepresentation.from_hash(role_as_hash) }
