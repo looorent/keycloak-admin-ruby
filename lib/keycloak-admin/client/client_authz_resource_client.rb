@@ -28,16 +28,15 @@ module KeycloakAdmin
       new_resource = build(
         client_authz_resource_representation[:name] || existing_resource.name,
         client_authz_resource_representation[:type] || existing_resource.type,
-        client_authz_resource_representation[:uris] || existing_resource.uris,
+        (client_authz_resource_representation[:uris] || [] ) + existing_resource.uris,
         client_authz_resource_representation[:owner_managed_access] || existing_resource.owner_managed_access,
         client_authz_resource_representation[:display_name] || existing_resource.display_name,
-        client_authz_resource_representation[:scopes] || existing_resource.scopes,
+        (client_authz_resource_representation[:scopes] || []) + existing_resource.scopes.map{|s| {name: s.name}},
         client_authz_resource_representation[:attributes] || existing_resource.attributes
       )
 
       execute_http do
-        RestClient::Resource.new(authz_resources_url(@client_id, resource_id), @configuration.rest_client_options)
-          .put(new_resource.to_json, headers)
+        RestClient::Resource.new(authz_resources_url(@client_id, resource_id), @configuration.rest_client_options).put(new_resource.to_json, headers)
       end
       get(resource_id)
     end
