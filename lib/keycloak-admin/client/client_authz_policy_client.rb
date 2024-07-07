@@ -31,9 +31,9 @@ module KeycloakAdmin
       ClientAuthzPolicyRepresentation.from_hash(JSON.parse(response))
     end
 
-    def find_by(client_id, name, type)
+    def find_by(name, type)
       response = execute_http do
-        url = "#{authz_policy_url(client_id)}?permission=false&name=#{name}&type=#{type}&first=0&max=11"
+        url = "#{authz_policy_url(@client_id)}?permission=false&name=#{name}&type=#{type}&first=0&max=11"
         RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzPolicyRepresentation.from_hash(role_as_hash) }
