@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       keycloak:
-        image: tillawy/keycloak:25.0.1
+        image: tillawy/keycloak-github-actions:25.0.1
         ports:
           - 8080:8080
         env:
