@@ -18,7 +18,7 @@ module KeycloakAdmin
 
     def save(policy_representation)
       execute_http do
-        RestClient::Resource.new(authz_policy_url(@client_id), @configuration.rest_client_options).post(
+        RestClient::Resource.new(authz_policy_url(@client_id, @type), @configuration.rest_client_options).post(
           create_payload(policy_representation), headers
         )
       end
@@ -26,14 +26,14 @@ module KeycloakAdmin
 
     def get(policy_id)
       response = execute_http do
-        RestClient::Resource.new(authz_policy_url(@client_id, policy_id), @configuration.rest_client_options).get(headers)
+        RestClient::Resource.new(authz_policy_url(@client_id, @type, policy_id), @configuration.rest_client_options).get(headers)
       end
       ClientAuthzPolicyRepresentation.from_hash(JSON.parse(response))
     end
 
     def find_by(name, type)
       response = execute_http do
-        url = "#{authz_policy_url(@client_id)}?permission=false&name=#{name}&type=#{type}&first=0&max=11"
+        url = "#{authz_policy_url(@client_id, @type)}?permission=false&name=#{name}&type=#{type}&first=0&max=11"
         RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzPolicyRepresentation.from_hash(role_as_hash) }
@@ -41,23 +41,23 @@ module KeycloakAdmin
 
     def delete(policy_id)
       execute_http do
-        RestClient::Resource.new(authz_policy_url(@client_id, policy_id), @configuration.rest_client_options).delete(headers)
+        RestClient::Resource.new(authz_policy_url(@client_id, @type, policy_id), @configuration.rest_client_options).delete(headers)
       end
       true
     end
 
     def list
       response = execute_http do
-        RestClient::Resource.new(authz_policy_url(@client_id), @configuration.rest_client_options).get(headers)
+        RestClient::Resource.new(authz_policy_url(@client_id, @type), @configuration.rest_client_options).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzPolicyRepresentation.from_hash(role_as_hash) }
     end
 
-    def authz_policy_url(client_id, id = nil)
+    def authz_policy_url(client_id, type, id = nil)
       if id
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/policy/#{@type}/#{id}"
+        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/policy/#{type}/#{id}"
       else
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/policy/#{@type}?permission=false"
+        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/policy/#{type}?permission=false"
       end
     end
 
@@ -72,6 +72,5 @@ module KeycloakAdmin
       policy.roles             = roles
       policy
     end
-
   end
 end
