@@ -42,6 +42,7 @@ jobs:
 #          KEYCLOAK_AUTH_CLIENT_ID": "dummy-client"
 #          KEYCLOAK_AUTH_CLIENT_SECRET": "dummy-client-super-secret-xxx"
 
+
     strategy:
       matrix:
         ruby-version: ['3.0']
