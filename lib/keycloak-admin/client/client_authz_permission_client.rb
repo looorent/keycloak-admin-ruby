@@ -23,7 +23,7 @@ module KeycloakAdmin
         url = "#{authz_permission_url(@client_id)}?name=#{name}&resource=#{resource}&type=#{@type}&scope=#{scope}&deep=true&first=0&max=100"
         RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
       end
-      JSON.parse(response).map { |role_as_hash| ClientAuthzResourceRepresentation.from_hash(role_as_hash) }
+      JSON.parse(response).map { |role_as_hash| ClientAuthzPermissionRepresentation.from_hash(role_as_hash) }
     end
 
     def create!(name, description, decision_strategy,logic = "POSITIVE", resources = [], policies = [], scopes = [], resource_type = nil)
@@ -46,11 +46,18 @@ module KeycloakAdmin
       JSON.parse(response).map { |role_as_hash| ClientAuthzPermissionRepresentation.from_hash(role_as_hash) }
     end
 
+    def get(permission_id)
+      response = execute_http do
+        RestClient::Resource.new(authz_permission_url(@client_id, nil, @type, permission_id), @configuration.rest_client_options).get(headers)
+      end
+      ClientAuthzPermissionRepresentation.from_hash(JSON.parse(response))
+    end
+
     def authz_permission_url(client_id, resource_id = nil, type = nil, id = nil)
       if resource_id
         "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/resource/#{resource_id}/permissions"
       elsif id
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/permission/resource/#{type}/#{id}"
+        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/permission/#{type}/#{id}"
       else
         "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/permission/#{type}"
       end
