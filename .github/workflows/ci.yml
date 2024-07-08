@@ -23,7 +23,7 @@ jobs:
     services:
       keycloak:
         image: quay.io/keycloak/keycloak:25.0.1
-        options: --entrypoint /opt/keycloak/bin/kc.sh start-dev --hostname=http://keycloak:8080 --hostname-admin=http://keycloak:8080 --http-enabled=true --verbose
+        options: --entrypoint /opt/keycloak/bin/kc.sh "start-dev --hostname=http://keycloak:8080 --hostname-admin=http://keycloak:8080 --http-enabled=true --verbose"
         ports:
           - 8080:8080
         env:
