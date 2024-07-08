@@ -20,11 +20,47 @@ jobs:
   test:
 
     runs-on: ubuntu-latest
+    services:
+      keycloak:
+        image: quay.io/keycloak/keycloak:25.0.1
+        options: --entrypoint kc.sh start-dev --hostname=http://keycloak:8080 --hostname-admin=http://keycloak:8080 --http-enabled=true --verbose
+        ports:
+          - 8080:8080
+        env:
+          KEYCLOAK_USER: "admin"
+          KEYCLOAK_PASSWORD: "admin"
+#          KEYCLOAK_SERVER_URL": "http://keycloak:8080"
+#          KEYCLOAK_ADMIN_CLIENT_ID": "keycloak-admin"
+#          KEYCLOAK_ADMIN_SERVER_URL": "http://keycloak:8080"
+#          KEYCLOAK_ADMIN_CLIENT_SECRET": "keycloak-admin-client-secret-xxx"
+#          KEYCLOAK_ADMIN_REALM_NAME": "master"
+#          KEYCLOAK_ADMIN_USER": "admin"
+#          KEYCLOAK_ADMIN_PASSWORD": "admin"
+#          KEYCLOAK_AUTH_CLIENT_REALM_NAME": "dummy"
+#          KEYCLOAK_AUTH_CLIENT_ID": "dummy-client"
+#          KEYCLOAK_AUTH_CLIENT_SECRET": "dummy-client-super-secret-xxx"
+
     strategy:
       matrix:
         ruby-version: ['3.0']
 
     steps:
+    - name: create realm
+      run: |
+         TOKEN=$(curl --silent --location --request POST "http://keycloak:8080/realms/master/protocol/openid-connect/token" \
+            --header 'Content-Type: application/x-www-form-urlencoded' \
+            --data-urlencode 'grant_type=password' \
+            --data-urlencode 'username=admin' \
+            --data-urlencode 'password=admin' \
+            --data-urlencode 'client_id=admin-cli' | jq -r '.access_token')
+  
+         echo ${TOKEN}
+          
+         curl --silent --show-error -L -X POST "http://keycloak:8080/admin/realms" \
+            --header "Content-Type: application/json" \
+            --header "Authorization: Bearer ${TOKEN}" \
+            --data '{"realm":"dummy","enabled":true}'
+
     - uses: actions/checkout@v4
     - name: Set up Ruby
     # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
