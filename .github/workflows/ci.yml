@@ -23,12 +23,15 @@ jobs:
     services:
       keycloak:
         image: quay.io/keycloak/keycloak:25.0.1
-        options: --entrypoint /opt/keycloak/bin/kc.sh "start-dev --hostname=http://keycloak:8080 --hostname-admin=http://keycloak:8080 --http-enabled=true --verbose"
         ports:
           - 8080:8080
         env:
           KEYCLOAK_USER: "admin"
           KEYCLOAK_PASSWORD: "admin"
+          KC_HOSTNAME: "http://keycloak:8080"
+          KC_HOSTNAME_ADMIN: "http://keycloak:8080"
+          KC_HTTP_ENABLED: "true"
+          KC_DB: "dev-file"
 #          KEYCLOAK_SERVER_URL": "http://keycloak:8080"
 #          KEYCLOAK_ADMIN_CLIENT_ID": "keycloak-admin"
 #          KEYCLOAK_ADMIN_SERVER_URL": "http://keycloak:8080"
