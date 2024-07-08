@@ -28,8 +28,8 @@ jobs:
         env:
           KEYCLOAK_USER: "admin"
           KEYCLOAK_PASSWORD: "admin"
-          KC_HOSTNAME: "http://keycloak:8080"
-          KC_HOSTNAME_ADMIN: "http://keycloak:8080"
+          KC_HOSTNAME: "http://localhost:8080"
+          KC_HOSTNAME_ADMIN: "http://localhost:8080"
           KC_HTTP_ENABLED: "true"
           KC_DB: "dev-file"
 #          KEYCLOAK_SERVER_URL": "http://keycloak:8080"
@@ -50,7 +50,7 @@ jobs:
     steps:
     - name: create realm
       run: |
-         TOKEN=$(curl --silent --location --request POST "http://keycloak:8080/realms/master/protocol/openid-connect/token" \
+         TOKEN=$(curl --silent --location --request POST "http://localhost:8080/realms/master/protocol/openid-connect/token" \
             --header 'Content-Type: application/x-www-form-urlencoded' \
             --data-urlencode 'grant_type=password' \
             --data-urlencode 'username=admin' \
@@ -59,7 +59,7 @@ jobs:
   
          echo ${TOKEN}
           
-         curl --silent --show-error -L -X POST "http://keycloak:8080/admin/realms" \
+         curl --silent --show-error -L -X POST "http://localhost:8080/admin/realms" \
             --header "Content-Type: application/json" \
             --header "Authorization: Bearer ${TOKEN}" \
             --data '{"realm":"dummy","enabled":true}'
