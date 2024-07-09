@@ -24,6 +24,7 @@ jobs:
         image: tillawy/keycloak-github-actions:25.0.1-1
         ports:
           - 8080:8080
+        options: '--health-cmd "nc -z localhost 8080" --health-interval 10s --health-timeout 10s --health-retries 10 --health-start-period 100s'
         env:
           KEYCLOAK_USER: "admin"
           KEYCLOAK_PASSWORD: "admin"
