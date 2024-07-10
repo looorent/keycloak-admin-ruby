@@ -56,15 +56,13 @@ jobs:
             --data-urlencode 'username=admin' \
             --data-urlencode 'password=admin' \
             --data-urlencode 'client_id=admin-cli' | jq -r '.access_token')
-  
-         echo ${TOKEN}
           
          curl --silent --show-error -L -X POST "http://localhost:8080/admin/realms" \
             --header "Content-Type: application/json" \
             --header "Authorization: Bearer ${TOKEN}" \
             --data '{"realm":"dummy","enabled":true}'
         
-        curl --location --request POST 'http://localhost:8080/admin/realms/dummy/clients' \
+         curl --silent --show-error --request POST 'http://localhost:8080/admin/realms/dummy/clients' \
            --header 'Authorization: Bearer '$TOKEN \
            --header 'Content-Type: application/json' \
            --data-raw '{
