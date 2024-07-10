@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       keycloak:
-        image: tillawy/keycloak-github-actions:25.0.1-1
+        image: quay.io/keycloak/keycloak:25.0.1
         ports:
           - 8080:8080
         options: '--health-cmd "exec 3<>/dev/tcp/localhost/8080" --health-interval 5s --health-timeout 5s --health-retries 10 --health-start-period 100s'
