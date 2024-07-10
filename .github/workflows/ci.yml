@@ -63,6 +63,22 @@ jobs:
             --header "Content-Type: application/json" \
             --header "Authorization: Bearer ${TOKEN}" \
             --data '{"realm":"dummy","enabled":true}'
+        
+        curl --location --request POST 'http://localhost:8080/admin/realms/dummy/clients' \
+           --header 'Authorization: Bearer '$TOKEN \
+           --header 'Content-Type: application/json' \
+           --data-raw '{
+             "clientId":"dummy-client",
+             "enabled":true,
+             "consentRequired": false,
+             "attributes":{},
+             "serviceAccountsEnabled": true,
+             "protocol":"openid-connect",
+             "publicClient":false,
+             "authorizationServicesEnabled": true,
+             "clientAuthenticatorType":"client-secret",
+             "redirectUris":["http://localhost:8180/demo"]
+           }'
 
     - uses: actions/checkout@v4
     - name: Set up Ruby
