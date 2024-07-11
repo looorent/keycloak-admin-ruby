@@ -505,7 +505,7 @@ KeycloakAdmin.realm("a_realm").authz_scopes(client.id).search("POST")
 Returns `KeycloakAdmin::ClientAuthzScopeRepresentation`
 
 ```ruby 
-KeycloakAdmin.realm("a_realm").authz_scopes(client.id).get(scope_id).name
+KeycloakAdmin.realm("a_realm").authz_scopes(client.id).get(scope_id)
 ```
 
 ### Delete one scope
@@ -521,7 +521,17 @@ note: for scopes, use {name: scope.name} to reference the scope object
 Returns added `KeycloakAdmin::ClientAuthzResourceRepresentation`
 
 ```ruby 
-KeycloakAdmin.realm("realm_id").authz_resources(client.id).create!("Dummy Resource", "type", ["/resource_1/*", "/resource_1/"], true, "display_name", [ {name: scope_1.name} ], {"attribute": ["value_1", "value_2"]})
+KeycloakAdmin.realm("realm_id")
+        .authz_resources(client.id)
+        .create!(
+                "Dummy Resource", 
+                "type", 
+                ["/resource_1/*", "/resource_1/"], 
+                true, 
+                "display_name", 
+                [ {name: scope_1.name} ], 
+                {"attribute": ["value_1", "value_2"]}
+        )
 ```
 
 ### Update a client authorization resource
@@ -531,20 +541,22 @@ Returns updated `KeycloakAdmin::ClientAuthzResourceRepresentation`
 note: for scopes, use {name: scope.name} to reference the scope object
 
 ```ruby 
-KeycloakAdmin.realm("realm_a").authz_resources(client.id).update(resource.id,
-                                                                             {
-                                                                               "name": "Dummy Resource",
-                                                                               "type": "type",
-                                                                               "owner_managed_access": true,
-                                                                               "display_name": "display_name",
-                                                                               "attributes": {"a":["b","c"]},
-                                                                               "uris": [ "/resource_1/*" , "/resource_1/" ],
-                                                                               "scopes":[
-                                                                                 {name: scope_1.name},
-                                                                                 {name: scope_2.name}
-                                                                               ],
-                                                                               "icon_uri": "https://icon.url"
-                                                                             })
+KeycloakAdmin.realm("realm_a")
+        .authz_resources(client.id)
+        .update(resource.id,
+                       {
+                         "name": "Dummy Resource",
+                         "type": "type",
+                         "owner_managed_access": true,
+                         "display_name": "display_name",
+                         "attributes": {"a":["b","c"]},
+                         "uris": [ "/resource_1/*" , "/resource_1/" ],
+                         "scopes":[
+                           {name: scope_1.name},
+                           {name: scope_2.name}
+                         ],
+                         "icon_uri": "https://icon.url"
+                       })
 ```
 
 ### Find client authorization resources by (name, type, uri, owner, scope)
@@ -580,7 +592,16 @@ Note: for the moment only `role` policies are supported.
 Returns added `KeycloakAdmin::ClientAuthzPolicyRepresentation`
 
 ```ruby 
- KeycloakAdmin.realm("realm_a").authz_policies(client.id, 'role').create!("Policy 1", "description", "role", "POSITIVE", "UNANIMOUS", true, [{id: realm_role.id, required: true}])
+ KeycloakAdmin.realm("realm_a")
+        .authz_policies(client.id, 'role')
+        .create!("Policy 1", 
+                 "description", 
+                 "role", 
+                 "POSITIVE", 
+                 "UNANIMOUS", 
+                 true, 
+                 [{id: realm_role.id, required: true}]
+        )
 ```
 
 ### Find client authorization policies by (name, type)
@@ -610,7 +631,17 @@ KeycloakAdmin.realm("realm_a").authz_policies(client.id, 'role').delete(policy.i
 Returns added `KeycloakAdmin::ClientAuthzPermissionRepresentation`
 
 ```ruby 
-KeycloakAdmin.realm("realm_a").authz_permissions(client.id, :resource).create!("Dummy Resource Permission", "resource description", "UNANIMOUS", "POSITIVE", [resource.id], [policy.id], nil, "")
+KeycloakAdmin.realm("realm_a")
+        .authz_permissions(client.id, :resource)
+        .create!("Dummy Resource Permission", 
+                 "resource description", 
+                 "UNANIMOUS", 
+                 "POSITIVE",
+                 [resource.id], 
+                 [policy.id],
+                 nil, 
+                 ""
+        )
 ```
 
 ### Create a client authorization permission (Scope type)
@@ -618,7 +649,17 @@ KeycloakAdmin.realm("realm_a").authz_permissions(client.id, :resource).create!("
 Returns added `KeycloakAdmin::ClientAuthzPermissionRepresentation`
 
 ```ruby
-KeycloakAdmin.realm("realm_a").authz_permissions(client.id, :scope).create!("Dummy Scope Permission", "scope description", "UNANIMOUS", "POSITIVE", [resource.id], [policy.id], [scope_1.id, scope_2.id], "") 
+KeycloakAdmin.realm("realm_a")
+        .authz_permissions(client.id, :scope)
+        .create!("Dummy Scope Permission", 
+                 "scope description", 
+                 "UNANIMOUS", 
+                 "POSITIVE", 
+                 [resource.id], 
+                 [policy.id], 
+                 [scope_1.id, scope_2.id], 
+                 ""
+        ) 
 ```
 
 ### List a resource authorization permissions (all: scope or resource)
