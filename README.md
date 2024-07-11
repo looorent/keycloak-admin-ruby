@@ -133,6 +133,7 @@ All options have a default value. However, all of them can be changed in your in
 * Link/Unlink users to federated identity provider brokers
 * Execute actions emails
 * Send forgot passsword mail
+* Client Authorization, create, update, get, delete Resource, Scope, Policy, Permission, Policy Enforcer
 
 ### Get an access token
 
@@ -470,6 +471,230 @@ Returns an array of `KeycloakAdmin::IdentityProviderRepresentation`.
 
 ```ruby
 KeycloakAdmin.realm("a_realm").identity_providers.list
+```
+
+### Manage [Client Authorization Resources & Scopes](https://www.keycloak.org/docs/latest/authorization_services/index.html#_resource_overview)
+
+In order to use authorization, you need to enable the client's `authorization_services_enabled` attribute.
+
+```ruby
+client_id = "dummy-client"
+client = KeycloakAdmin.realm("realm_a").clients.find_by_client_id(client_id)
+client.authorization_services_enabled = true
+KeycloakAdmin.realm("a_realm").clients.update(client)
+```
+
+### Create a scope
+
+Returns added `KeycloakAdmin::ClientAuthzScopeRepresentation`
+
+```ruby
+KeycloakAdmin.realm("a_realm").authz_scopes(client_id).create!("POST_1", "POST 1 scope description", "http://icon.url")
+````
+
+### Search for scope
+
+Returns array of `KeycloakAdmin::ClientAuthzScopeRepresentation`
+
+```ruby
+KeycloakAdmin.realm("a_realm").authz_scopes(client.id).search("POST")
+```
+
+### Get one scope by its id
+
+Returns `KeycloakAdmin::ClientAuthzScopeRepresentation`
+
+```ruby 
+KeycloakAdmin.realm("a_realm").authz_scopes(client.id).get(scope_id).name
+```
+
+### Delete one scope
+
+```ruby
+KeycloakAdmin.realm("a_realm").authz_scopes(client.id).delete(scope.id)
+```
+
+### Create a client authorization resource
+
+note: for scopes, use {name: scope.name} to reference the scope object
+
+Returns added `KeycloakAdmin::ClientAuthzResourceRepresentation`
+
+```ruby 
+KeycloakAdmin.realm("realm_id").authz_resources(client.id).create!("Dummy Resource", "type", ["/resource_1/*", "/resource_1/"], true, "display_name", [ {name: scope_1.name} ], {"attribute": ["value_1", "value_2"]})
+```
+
+### Update a client authorization resource
+
+Returns updated `KeycloakAdmin::ClientAuthzResourceRepresentation`
+
+note: for scopes, use {name: scope.name} to reference the scope object
+
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_resources(client.id).update(resource.id,
+                                                                             {
+                                                                               "name": "Dummy Resource",
+                                                                               "type": "type",
+                                                                               "owner_managed_access": true,
+                                                                               "display_name": "display_name",
+                                                                               "attributes": {"a":["b","c"]},
+                                                                               "uris": [ "/resource_1/*" , "/resource_1/" ],
+                                                                               "scopes":[
+                                                                                 {name: scope_1.name},
+                                                                                 {name: scope_2.name}
+                                                                               ],
+                                                                               "icon_uri": "https://icon.url"
+                                                                             })
+```
+
+### Find client authorization resources by (name, type, uri, owner, scope)
+
+Returns array of `KeycloakAdmin::ClientAuthzResourceRepresentation`
+
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_resources(client.id).find_by("Dummy Resource", "", "", "", "")
+```
+or
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_resources(client.id).find_by("", "type", "", "", "")
+```
+
+### Get client authorization resource by its id
+
+Returns `KeycloakAdmin::ClientAuthzResourceRepresentation`
+
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_resources(client.id).get(resource.id)
+```
+
+### delete a client authorization resource
+
+```ruby
+KeycloakAdmin.realm("realm_a").authz_resources(client.id).delete(resource.id)
+```
+
+### Create a client authorization policy
+
+Note: for the moment only `role` policies are supported.
+
+Returns added `KeycloakAdmin::ClientAuthzPolicyRepresentation`
+
+```ruby 
+ KeycloakAdmin.realm("realm_a").authz_policies(client.id, 'role').create!("Policy 1", "description", "role", "POSITIVE", "UNANIMOUS", true, [{id: realm_role.id, required: true}])
+```
+
+### Find client authorization policies by (name, type)
+
+Returns array of `KeycloakAdmin::ClientAuthzPolicyRepresentation`
+
+```ruby
+KeycloakAdmin.realm("realm_a").authz_policies(client.id, 'role').find_by("Policy 1", "role") 
+```
+
+### Get client authorization policy by its id
+
+Returns `KeycloakAdmin::ClientAuthzPolicyRepresentation`
+
+```ruby
+KeycloakAdmin.realm("realm_a").authz_policies(client.id, 'role').get(policy.id) 
+```
+
+### Delete a client authorization policy
+
+```ruby
+KeycloakAdmin.realm("realm_a").authz_policies(client.id, 'role').delete(policy.id)
+```
+
+### Create a client authorization permission (Resource type)
+
+Returns added `KeycloakAdmin::ClientAuthzPermissionRepresentation`
+
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, :resource).create!("Dummy Resource Permission", "resource description", "UNANIMOUS", "POSITIVE", [resource.id], [policy.id], nil, "")
+```
+
+### Create a client authorization permission (Scope type)
+
+Returns added `KeycloakAdmin::ClientAuthzPermissionRepresentation`
+
+```ruby
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, :scope).create!("Dummy Scope Permission", "scope description", "UNANIMOUS", "POSITIVE", [resource.id], [policy.id], [scope_1.id, scope_2.id], "") 
+```
+
+### List a resource authorization permissions (all: scope or resource)
+
+Return array of `KeycloakAdmin::ClientAuthzPermissionRepresentation`
+
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, "", resource.id).list
+```
+
+### List a resource authorization permissions (by type: resource)
+
+Return array of `KeycloakAdmin::ClientAuthzPermissionRepresentation`
+
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, 'resource').list
+```
+### List a resource authorization permissions (by type: scope)
+
+Return array of `KeycloakAdmin::ClientAuthzPermissionRepresentation`
+
+```ruby 
+authz_permissions(client.id, 'scope').list.size
+```
+
+### Find client authorization permissions by (name, type, scope)
+
+Return array of `KeycloakAdmin::ClientAuthzPermissionRepresentation`
+
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, "resource").find_by(resource_permission.name, nil)
+```
+or
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, "resource").find_by(resource_permission.name, nil)
+```
+or
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, "resource").find_by(resource_permission.name, resource.id)
+
+```
+or
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, "scope").find_by(scope_permission.name, resource.id)
+```
+or
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, "scope").find_by(scope_permission.name, resource.id, "POST_1")
+```
+or
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, "resource").find_by(nil, resource.id)
+```
+or
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, "scope").find_by(nil, resource.id)
+```
+or
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, "scope").find_by(nil, resource.id, "POST_1")
+```
+or
+```ruby 
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, "scope").find_by(scope_permission.name, nil)
+```
+
+### Delete a client authorization permission, scope type
+
+```ruby
+KeycloakAdmin.realm("realm_a").authz_permissions(client.id, 'scope').delete(scope.id)
+```
+
+### Delete a client authorization permission, resource type
+
+```ruby
+ KeycloakAdmin.realm("realm_a").authz_permissions(client.id, 'resource').delete(resource_permission.id)
 ```
 
 ## How to execute library tests
