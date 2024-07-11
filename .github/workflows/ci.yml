@@ -32,16 +32,6 @@ jobs:
           KC_HOSTNAME_ADMIN: "http://localhost:8080"
           KC_HTTP_ENABLED: "true"
           KC_DB: "dev-file"
-#          KEYCLOAK_SERVER_URL": "http://keycloak:8080"
-#          KEYCLOAK_ADMIN_CLIENT_ID": "keycloak-admin"
-#          KEYCLOAK_ADMIN_SERVER_URL": "http://keycloak:8080"
-#          KEYCLOAK_ADMIN_CLIENT_SECRET": "keycloak-admin-client-secret-xxx"
-#          KEYCLOAK_ADMIN_REALM_NAME": "master"
-#          KEYCLOAK_ADMIN_USER": "admin"
-#          KEYCLOAK_ADMIN_PASSWORD": "admin"
-#          KEYCLOAK_AUTH_CLIENT_REALM_NAME": "dummy"
-#          KEYCLOAK_AUTH_CLIENT_ID": "dummy-client"
-#          KEYCLOAK_AUTH_CLIENT_SECRET": "dummy-client-super-secret-xxx"
 
     strategy:
       matrix:
