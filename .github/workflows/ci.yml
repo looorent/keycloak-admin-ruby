@@ -1,0 +1,83 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will download a prebuilt Ruby version, install dependencies and run tests with Rake
+# For more information see: https://github.com/marketplace/actions/setup-ruby-jruby-and-truffleruby
+
+name: Ruby
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      keycloak:
+        image: tillawy/keycloak-github-actions:25.0.1
+        ports:
+          - 8080:8080
+        options: '--health-cmd "exec 3<>/dev/tcp/localhost/8080" --health-interval 5s --health-timeout 5s --health-retries 10 --health-start-period 100s'
+        env:
+          KEYCLOAK_ADMIN: "admin"
+          KEYCLOAK_ADMIN_PASSWORD: "admin"
+          KC_HOSTNAME: "http://localhost:8080"
+          KC_HOSTNAME_ADMIN: "http://localhost:8080"
+          KC_HTTP_ENABLED: "true"
+          KC_DB: "dev-file"
+
+    strategy:
+      matrix:
+        ruby-version: ['3.2']
+
+    steps:
+    - name: create realm
+      run: |
+         TOKEN=$(curl --silent --location --request POST "http://localhost:8080/realms/master/protocol/openid-connect/token" \
+            --header 'Content-Type: application/x-www-form-urlencoded' \
+            --data-urlencode 'grant_type=password' \
+            --data-urlencode 'username=admin' \
+            --data-urlencode 'password=admin' \
+            --data-urlencode 'client_id=admin-cli' | jq -r '.access_token')
+          
+         curl --silent --show-error -L -X POST "http://localhost:8080/admin/realms" \
+            --header "Content-Type: application/json" \
+            --header "Authorization: Bearer ${TOKEN}" \
+            --data '{"realm":"dummy","enabled":true}'
+        
+         curl --silent --show-error --request POST 'http://localhost:8080/admin/realms/dummy/clients' \
+           --header 'Authorization: Bearer '$TOKEN \
+           --header 'Content-Type: application/json' \
+           --data-raw '{
+             "clientId":"dummy-client",
+             "enabled":true,
+             "consentRequired": false,
+             "attributes":{},
+             "serviceAccountsEnabled": true,
+             "protocol":"openid-connect",
+             "publicClient":false,
+             "authorizationServicesEnabled": true,
+             "clientAuthenticatorType":"client-secret",
+             "redirectUris":["http://localhost:8180/demo"]
+           }'
+
+    - uses: actions/checkout@v4
+    - name: Set up Ruby
+    # To automatically get bug fixes and new Ruby versions for ruby/setup-ruby,
+    # change this to (see https://github.com/ruby/setup-ruby#versioning):
+    # uses: ruby/setup-ruby@v1
+      uses: ruby/setup-ruby@55283cc23133118229fd3f97f9336ee23a179fcf # v1.146.0
+      with:
+        ruby-version: ${{ matrix.ruby-version }}
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Run tests
+      run: bundle exec rspec
+      env:
+        GITHUB_ACTIONS: true
