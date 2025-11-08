@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.4] - 2025-11-08
+
+* Add remove_realm_level_role_name! action on a GroupClient (thanks to @mkrawc)
+* Dependencies: Update Gemfile.lock to bump byebug → 12.0.0, rspec → 3.13.2, and related dependencies
+* Bug: The 'remove' operation of the 'RoleMapperClient' does not take the global rest options into account
+
 ## [1.1.3] - 2024-07-12
 
 * Client Authorization management support (thanks to @tillawy)
