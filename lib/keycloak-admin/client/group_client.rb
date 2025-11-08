@@ -108,6 +108,23 @@ module KeycloakAdmin
       role_representation
     end
 
+    # Remove a realm-level role from a group by the role name
+    def remove_realm_level_role_name!(group_id, role_name)
+      role_representation = RoleClient.new(@configuration, @realm_client).get(role_name)
+      url = "#{groups_url(group_id)}/role-mappings/realm"
+      execute_http do
+        RestClient::Request.execute(
+          @configuration.rest_client_options.merge(
+            url:,
+            method: :delete,
+            payload: create_payload([role_representation]),
+            headers: headers
+          )
+        )
+      end
+      true
+    end
+
     def groups_url(id=nil)
       if id
         "#{@realm_client.realm_admin_url}/groups/#{id}"

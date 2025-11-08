@@ -255,4 +255,74 @@ RSpec.describe KeycloakAdmin::GroupClient do
       expect { @group_client.delete("test_group_id") }.to raise_error("error")
     end
   end
+
+  describe '#get_realm_level_roles' do
+    let(:realm_name) { 'valid-realm' }
+    before(:each) do
+      @group_client = KeycloakAdmin.realm(realm_name).groups
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '[{"id":"role-id","name":"role-name"}]'
+    end
+
+    it 'gets all realm-level roles for a group' do
+      roles = @group_client.get_realm_level_roles('test-group-id')
+      expect(roles.length).to eq 1
+      expect(roles[0].id).to eq 'role-id'
+      expect(roles[0].name).to eq 'role-name'
+    end
+  end
+
+  describe '#add_realm_level_role_name!' do
+    let(:realm_name) { 'valid-realm' }
+
+    before(:each) do
+      @group_client = KeycloakAdmin.realm(realm_name).groups
+
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return ''
+    end
+
+    it 'adds a realm-level role to a group' do
+      role_representation = double
+      allow(role_representation).to receive(:name).and_return 'test-role-name'
+
+      role_client = double
+      allow(role_client).to receive(:get).with('test-role-name').and_return role_representation
+      allow(KeycloakAdmin::RoleClient).to receive(:new).and_return role_client
+
+      result = @group_client.add_realm_level_role_name!('test-group-id', 'test-role-name')
+      expect(result).to eq role_representation
+    end
+  end
+
+  describe '#remove_realm_level_role_name!' do
+    let(:realm_name) { 'valid-realm' }
+
+    before(:each) do
+      @group_client = KeycloakAdmin.realm(realm_name).groups
+
+      stub_token_client
+      allow(RestClient::Request).to receive(:execute).and_return ''
+    end
+
+    it 'deletes a realm-level role from a group' do
+      role_representation = double
+      allow(role_representation).to receive(:name).and_return 'test-role-name'
+
+      role_client = double
+      allow(role_client).to receive(:get).with('test-role-name').and_return role_representation
+      allow(KeycloakAdmin::RoleClient).to receive(:new).and_return role_client
+
+      result = @group_client.remove_realm_level_role_name!('test-group-id', 'test-role-name')
+      expect(result).to be(true)
+      expect(RestClient::Request).to have_received(:execute).with(
+        hash_including(
+          url: "http://auth.service.io/auth/admin/realms/valid-realm/groups/test-group-id/role-mappings/realm",
+          method: :delete,
+          payload: @group_client.send(:create_payload, [role_representation]),
+          headers: @group_client.send(:headers)
+        )
+      )
+    end
+  end
 end
