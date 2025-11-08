@@ -1,7 +1,7 @@
 RSpec.describe 'ClientAuthorization' do
 
-  before do
-    skip unless ENV["GITHUB_ACTIONS"]
+  before(:each) do
+    skip("This test requires to be run in a Github action.")  unless ENV["GITHUB_ACTIONS"]
 
     KeycloakAdmin.configure do |config|
       config.use_service_account = false
@@ -14,14 +14,12 @@ RSpec.describe 'ClientAuthorization' do
     end
   end
 
-  after do
+  after(:each) do
     configure
   end
 
   describe "ClientAuthorization Suite" do
     it do
-      skip unless ENV["GITHUB_ACTIONS"]
-
       realm_name = "dummy"
 
       client = KeycloakAdmin.realm(realm_name).clients.find_by_client_id("dummy-client")

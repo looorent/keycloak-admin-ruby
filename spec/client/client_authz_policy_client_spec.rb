@@ -31,7 +31,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyClient do
       it "does not raise any error" do
         expect {
           @realm.authz_policies("", type)
-        }.to raise_error
+        }.to raise_error(ArgumentError)
       end
     end
   end
