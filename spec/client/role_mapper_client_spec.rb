@@ -65,4 +65,49 @@ RSpec.describe KeycloakAdmin::RoleMapperClient do
       @role_mapper_client.save_realm_level(role_list)
     end
   end
+
+  describe "#remove_realm_level" do
+    let(:realm_name) { "valid-realm" }
+    let(:user_id)    { "test_user" }
+    let(:role_list) { [
+      KeycloakAdmin::RoleRepresentation.from_hash(
+        "id" => "d9e3376b-f602-4086-8eee-89fea73c73ea"
+      )
+    ] }
+    let(:expected_url) { "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/realm" }
+
+    before(:each) do
+      @role_mapper_client = KeycloakAdmin.realm(realm_name).user(user_id).role_mapper
+
+      stub_token_client
+    end
+
+    it "removes realm-level role mappings" do
+      expect(RestClient::Request).to receive(:execute).with(
+        hash_including(
+          method: :delete,
+          url: expected_url,
+          payload: role_list.to_json
+        )
+      )
+
+      @role_mapper_client.remove_realm_level(role_list)
+    end
+
+    it "passes rest client options" do
+      rest_client_options = {timeout: 10}
+      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
+      
+      expect(RestClient::Request).to receive(:execute).with(
+        hash_including(
+          method: :delete,
+          url: expected_url,
+          payload: role_list.to_json,
+          timeout: 10
+        )
+      )
+
+      @role_mapper_client.remove_realm_level(role_list)
+    end
+  end
 end
