@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.5] - 2026-01-05
+
+* [Feature] Added the ability to list credentials for a given user.
+* [Fix] Implemented safe parsing for nested JSON elements within `CredentialRepresentation` (handling both `credentialData` and `secretData` fields). Please refer to [the official documentation](https://www.keycloak.org/docs-api/latest/rest-api/index.html#CredentialRepresentation).
+* [Breaking] Renamed `CredentialRepresentation` attribute `created_date` $\rightarrow$ `createdDate` to align with the Keycloak Admin API.
+
 ## [1.1.4] - 2025-11-08
 
 * Add remove_realm_level_role_name! action on a GroupClient (thanks to @mkrawc)

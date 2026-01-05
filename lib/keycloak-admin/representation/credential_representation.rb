@@ -1,6 +1,8 @@
 module KeycloakAdmin
   class CredentialRepresentation < Representation
-    attr_accessor :type,
+    attr_accessor :id,
+      :type,
+      :userLabel,
       :device,
       :value,
       :hashedSaltedValue,
@@ -10,7 +12,9 @@ module KeycloakAdmin
       :algorithm,
       :digits,
       :period,
-      :created_date,
+      :createdDate,
+      :credentialData,
+      :secretData,
       :config,
       :temporary
 
@@ -30,10 +34,39 @@ module KeycloakAdmin
     def self.from_hash(hash)
       credential = new
       hash.each do |key, value|
-        property = "@#{key}".to_sym
-        credential.instance_variable_set(property, value)
+        if credential.respond_to?("#{key}=")
+          credential.public_send("#{key}=", value)
+        end
       end
+
+      nested_attributes = safely_parse_nested_json(hash["credentialData"]).merge(safely_parse_nested_json(hash["secretData"]))
+
+      nested_attributes.each do |key, value|
+        if credential.respond_to?("#{key}=")
+          current_value = credential.public_send(key)
+          if current_value.nil?
+            credential.public_send("#{key}=", value)
+          end
+        end
+      end
+
       credential
+    end
+
+    class << self
+      private
+
+      def safely_parse_nested_json(json_string)
+        if json_string.nil? || json_string.strip.empty?
+          {}
+        else
+          begin
+            JSON.parse(json_string)
+          rescue JSON::ParserError
+            {}
+          end
+        end
+      end
     end
   end
 end

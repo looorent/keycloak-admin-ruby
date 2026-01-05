@@ -370,4 +370,49 @@ RSpec.describe KeycloakAdmin::TokenClient do
       end
     end
   end
+
+  describe '#credentials' do
+    let(:realm_name) { "valid-realm" }
+
+    before(:each) do
+      @user_client = KeycloakAdmin.realm(realm_name).users
+      stub_token_client
+      json_payload = <<-'payload'
+        [
+          {
+            "id": "2ff4b4d0-fd72-4c6e-9684-02ab337687c2",
+            "type": "password",
+            "userLabel": "My password",
+            "createdDate": 1767604673211,
+            "credentialData": "{\"hashIterations\":5,\"algorithm\":\"argon2\",\"additionalParameters\":{\"hashLength\":[\"32\"],\"memory\":[\"7168\"],\"type\":[\"id\"],\"version\":[\"1.3\"],\"parallelism\":[\"1\"]}}"
+          },
+          {
+            "id": "34389672-9356-4154-9ed6-6c212b869010",
+            "type": "otp",
+            "userLabel": "Smartphone",
+            "createdDate": 1767605202060,
+            "credentialData": "{\"subType\":\"totp\",\"digits\":6,\"counter\":0,\"period\":30,\"algorithm\":\"HmacSHA1\"}"
+          }
+        ]
+      payload
+      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return json_payload
+    end
+
+    context 'when user_id is defined' do
+      let(:user_id) { '95985b21-d884-4bbd-b852-cb8cd365afc2' }
+      it 'returns list of credentials' do
+        response = @user_client.credentials(user_id)
+        expect(response.size).to eq 2
+        expect(response[0].id).to eq "2ff4b4d0-fd72-4c6e-9684-02ab337687c2"
+        expect(response[1].id).to eq "34389672-9356-4154-9ed6-6c212b869010"
+      end
+    end
+
+    context 'when user_id is not defined' do
+      let(:user_id) { nil }
+      it 'raise argument error' do
+        expect { @user_client.credentials(user_id) }.to raise_error(ArgumentError)
+      end
+    end
+  end
 end
