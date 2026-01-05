@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    keycloak-admin (1.1.5)
+    keycloak-admin (1.1.6)
       http-cookie (~> 1.0, >= 1.0.3)
       rest-client (~> 2.0)
 

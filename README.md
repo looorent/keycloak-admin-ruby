@@ -12,7 +12,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "1.1.5"
+gem "keycloak-admin", "1.1.6"
 ```
 
 ## Login
@@ -135,6 +135,11 @@ All options have a default value. However, all of them can be changed in your in
 * Execute actions emails
 * Send forgot passsword mail
 * Client Authorization, create, update, get, delete Resource, Scope, Policy, Permission, Policy Enforcer
+* Get list of organizations, create/update/get/delete an organization
+* Get list of members of an organization, add/remove members
+* Invite new or existing users to an organization
+* List, add, and remove Identity Providers for an organization
+* Get list of organizations associated with a specific user
 
 ### Get an access token
 
@@ -250,6 +255,12 @@ To have enough information to execute an impersonation by yourself, `get_redirec
 ```ruby
 user_id = "95985b21-d884-4bbd-b852-cb8cd365afc2"
 KeycloakAdmin.realm("a_realm").users.get_redirect_impersonation(user_id)
+```
+
+### List all the organizations of a realm
+
+```ruby
+KeycloakAdmin.realm("a_realm").organizations.list
 ```
 
 ### Exchange a configurable token

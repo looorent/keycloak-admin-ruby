@@ -11,6 +11,7 @@ module KeycloakAdmin
                   :add_read_token_role_on_create,
                   :authenticate_by_default,
                   :link_only,
+                  :organization_id,
                   :first_broker_login_flow_alias,
                   :config
 
@@ -30,6 +31,7 @@ module KeycloakAdmin
           hash["addReadTokenRoleOnCreate"],
           hash["authenticateByDefault"],
           hash["linkOnly"],
+          hash["organizationId"],
           hash["firstBrokerLoginFlowAlias"],
           hash["config"]
         )
@@ -47,6 +49,7 @@ module KeycloakAdmin
                    add_read_token_role_on_create,
                    authenticate_by_default,
                    link_only,
+                   organization_id,
                    first_broker_login_flow_alias,
                    config)
       @alias                           = alias_name
@@ -60,6 +63,7 @@ module KeycloakAdmin
       @add_read_token_role_on_create   = add_read_token_role_on_create
       @authenticate_by_default         = authenticate_by_default
       @link_only                       = link_only
+      @organization_id                 = organization_id
       @first_broker_login_flow_alias   = first_broker_login_flow_alias
       @config                          = config || {}
     end

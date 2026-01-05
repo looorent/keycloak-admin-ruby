@@ -95,6 +95,10 @@ module KeycloakAdmin
       IdentityProviderClient.new(@configuration, self)
     end
 
+    def organizations
+      OrganizationClient.new(@configuration, self)
+    end
+
     def user(user_id)
       UserResource.new(@configuration, self, user_id)
     end

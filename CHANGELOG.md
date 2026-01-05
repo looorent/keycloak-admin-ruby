@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.6] - 2026-01-05
+
+* [Feature] Support for Organizations (Multi-tenancy):
+    * **Organization Management**:
+        * Supported operations: `create!`, `update`, `get`, `delete`, `list`, and `count`.
+        * Supported searching and filtering via `exact`, `query`, and `search` parameters.
+    * **Member Management**:
+        * Added ability to list organization members with pagination and filtering (`members`).
+        * Added `members_count` to retrieve the total number of members.
+        * Added `get_member`, `add_member` (by user ID), and `delete_member`.
+        * Added helper to find all organizations associated with a specific user: `associated_with_member`.
+    * **Invitations**:
+        * Added `invite_user`: Invites a new user via email/name.
+        * Added `invite_existing_user`: Invites an existing Keycloak user to the organization by ID.
+    * **Identity Provider (IdP) Linking**:
+        * Added methods to manage IdPs linked to an organization: `identity_providers`, `get_identity_provider`, `add_identity_provider`, and `delete_identity_provider`.
+
 ## [1.1.5] - 2026-01-05
 
 * [Feature] Added the ability to list credentials for a given user.
