@@ -1,7 +1,6 @@
 require_relative "../lib/keycloak-admin"
 
 require "byebug"
-require "rspec/its"
 
 def configure
   KeycloakAdmin.configure do |config|
