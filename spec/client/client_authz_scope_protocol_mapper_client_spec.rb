@@ -18,22 +18,20 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
   describe "#initialize" do
     context "when realm_name is defined" do
       it "does not raise any error" do
-        expect { KeycloakAdmin.realm(realm_name).client_authz_scope_protocol_mappers(client_scope_id) }.to_not raise_error
+        expect { KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id) }.to_not raise_error
       end
     end
 
     context "when realm_name is not defined" do
       it "raises an argument error" do
-        expect { KeycloakAdmin.realm(nil).client_authz_scope_protocol_mappers(client_scope_id) }.to raise_error(ArgumentError)
+        expect { KeycloakAdmin.realm(nil).authz_scope_protocol_mappers(client_scope_id) }.to raise_error(ArgumentError)
       end
     end
   end
 
   describe "#list" do
-    subject { @client.list }
-
     before(:each) do
-      @client = KeycloakAdmin.realm(realm_name).client_authz_scope_protocol_mappers(client_scope_id)
+      @client = KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id)
       stub_token_client
       allow_any_instance_of(RestClient::Resource).to receive(:get).and_return stub_response
     end
@@ -41,30 +39,43 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
     context "with a hardcoded claim mapper" do
       let(:stub_response) { "[#{mapper_json}]" }
 
-      its(:size)  { is_expected.to eq 1 }
-      its(:first) { is_expected.to have_attributes(id: "valid-mapper-id", name: "my-claim", protocol: "openid-connect", protocolMapper: "oidc-hardcoded-claim-mapper") }
+      it "returns one mapper" do
+        expect(@client.list.size).to eq 1
+      end
+
+      it "returns the correct mapper attributes" do
+        expect(@client.list.first).to have_attributes(id: "valid-mapper-id", name: "my-claim", protocol: "openid-connect", protocolMapper: "oidc-hardcoded-claim-mapper")
+      end
     end
 
     context "with an audience mapper" do
       let(:stub_response) { "[#{audience_mapper_json}]" }
 
-      its(:size)  { is_expected.to eq 1 }
-      its(:first) { is_expected.to have_attributes(name: "audience-config-rvw-123", protocol: "openid-connect", protocolMapper: "oidc-audience-mapper") }
+      it "returns one mapper" do
+        expect(@client.list.size).to eq 1
+      end
+
+      it "returns the correct mapper attributes" do
+        expect(@client.list.first).to have_attributes(name: "audience-config-rvw-123", protocol: "openid-connect", protocolMapper: "oidc-audience-mapper")
+      end
     end
 
     context "with multiple mappers" do
       let(:stub_response) { "[#{mapper_json},#{audience_mapper_json}]" }
 
-      its(:size) { is_expected.to eq 2 }
-      it         { expect(subject.map(&:name)).to include("my-claim", "audience-config-rvw-123") }
+      it "returns two mappers" do
+        expect(@client.list.size).to eq 2
+      end
+
+      it "includes both mapper names" do
+        expect(@client.list.map(&:name)).to include("my-claim", "audience-config-rvw-123")
+      end
     end
   end
 
   describe "#get" do
-    subject { @client.get(mapper_id) }
-
     before(:each) do
-      @client = KeycloakAdmin.realm(realm_name).client_authz_scope_protocol_mappers(client_scope_id)
+      @client = KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id)
       stub_token_client
       allow_any_instance_of(RestClient::Resource).to receive(:get).and_return stub_response
     end
@@ -72,27 +83,52 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
     context "with a hardcoded claim mapper" do
       let(:stub_response) { mapper_json }
 
-      its(:id)             { is_expected.to eq "valid-mapper-id" }
-      its(:name)           { is_expected.to eq "my-claim" }
-      its(:protocol)       { is_expected.to eq "openid-connect" }
-      its(:protocolMapper) { is_expected.to eq "oidc-hardcoded-claim-mapper" }
+      it "returns the correct id" do
+        expect(@client.get(mapper_id).id).to eq "valid-mapper-id"
+      end
+
+      it "returns the correct name" do
+        expect(@client.get(mapper_id).name).to eq "my-claim"
+      end
+
+      it "returns the correct protocol" do
+        expect(@client.get(mapper_id).protocol).to eq "openid-connect"
+      end
+
+      it "returns the correct protocolMapper" do
+        expect(@client.get(mapper_id).protocolMapper).to eq "oidc-hardcoded-claim-mapper"
+      end
     end
 
     context "with an audience mapper" do
       let(:stub_response) { audience_mapper_json }
 
-      its(:name)           { is_expected.to eq "audience-config-rvw-123" }
-      its(:protocol)       { is_expected.to eq "openid-connect" }
-      its(:protocolMapper) { is_expected.to eq "oidc-audience-mapper" }
-      its(:config)         { is_expected.to include("included.custom.audience" => "https://api.example.com", "access.token.claim" => "true", "introspection.token.claim" => "true", "id.token.claim" => "false") }
+      it "returns the correct name" do
+        expect(@client.get(mapper_id).name).to eq "audience-config-rvw-123"
+      end
+
+      it "returns the correct protocol" do
+        expect(@client.get(mapper_id).protocol).to eq "openid-connect"
+      end
+
+      it "returns the correct protocolMapper" do
+        expect(@client.get(mapper_id).protocolMapper).to eq "oidc-audience-mapper"
+      end
+
+      it "returns the correct config" do
+        expect(@client.get(mapper_id).config).to include(
+          "included.custom.audience"  => "https://api.example.com",
+          "access.token.claim"        => "true",
+          "introspection.token.claim" => "true",
+          "id.token.claim"            => "false"
+        )
+      end
     end
   end
 
   describe "#create!" do
-    subject { @client.create!(mapper_representation) }
-
     before(:each) do
-      @client = KeycloakAdmin.realm(realm_name).client_authz_scope_protocol_mappers(client_scope_id)
+      @client = KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id)
       stub_token_client
       allow_any_instance_of(RestClient::Resource).to receive(:post).and_return stub_response
     end
@@ -108,9 +144,9 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
         mapper
       end
 
-      its(:id)       { is_expected.to eq "valid-mapper-id" }
-      its(:name)     { is_expected.to eq "my-claim" }
-      its(:protocol) { is_expected.to eq "openid-connect" }
+      it "creates successfully" do
+        expect(@client.create!(mapper_representation)).to be true
+      end
     end
 
     context "with an audience mapper" do
@@ -131,18 +167,15 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
         mapper
       end
 
-      its(:name)           { is_expected.to eq "audience-config-rvw-123" }
-      its(:protocol)       { is_expected.to eq "openid-connect" }
-      its(:protocolMapper) { is_expected.to eq "oidc-audience-mapper" }
-      its(:config)         { is_expected.to include("included.custom.audience" => "https://api.example.com") }
+      it "creates successfully" do
+        expect(@client.create!(mapper_representation)).to be true
+      end
     end
   end
 
   describe "#update" do
-    subject { @client.update(mapper_representation) }
-
     before(:each) do
-      @client = KeycloakAdmin.realm(realm_name).client_authz_scope_protocol_mappers(client_scope_id)
+      @client = KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id)
       stub_token_client
       allow_any_instance_of(RestClient::Resource).to receive(:put).and_return ""
     end
@@ -152,7 +185,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
 
       it "calls put on the mapper url" do
         expect_any_instance_of(RestClient::Resource).to receive(:put).with(anything, anything)
-        subject
+        @client.update(mapper_representation)
       end
     end
 
@@ -161,37 +194,37 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
 
       it "calls put on the mapper url" do
         expect_any_instance_of(RestClient::Resource).to receive(:put).with(anything, anything)
-        subject
+        @client.update(mapper_representation)
       end
     end
   end
 
   describe "#delete" do
-    subject { @client.delete(mapper_id) }
-
     before(:each) do
-      @client = KeycloakAdmin.realm(realm_name).client_authz_scope_protocol_mappers(client_scope_id)
+      @client = KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id)
       stub_token_client
       allow_any_instance_of(RestClient::Resource).to receive(:delete).and_return ""
     end
 
-    it { is_expected.to eq true }
+    it "returns true" do
+      expect(@client.delete(mapper_id)).to eq true
+    end
   end
 
   describe "#protocol_mappers_url" do
-    let(:client)   { KeycloakAdmin.realm(realm_name).client_authz_scope_protocol_mappers(client_scope_id) }
+    let(:client)   { KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id) }
     let(:base_url) { "http://auth.service.io/auth/admin/realms/valid-realm/client-scopes/valid-scope-id/protocol-mappers/models" }
 
     context "without a mapper_id" do
-      subject { client.protocol_mappers_url }
-
-      it { is_expected.to eq base_url }
+      it "returns the base url" do
+        expect(client.protocol_mappers_url).to eq base_url
+      end
     end
 
     context "with a mapper_id" do
-      subject { client.protocol_mappers_url(mapper_id) }
-
-      it { is_expected.to eq "#{base_url}/valid-mapper-id" }
+      it "returns the url with mapper_id appended" do
+        expect(client.protocol_mappers_url(mapper_id)).to eq "#{base_url}/valid-mapper-id"
+      end
     end
   end
 end

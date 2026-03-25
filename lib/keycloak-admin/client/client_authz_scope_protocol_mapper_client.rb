@@ -32,7 +32,7 @@ module KeycloakAdmin
         )
       end
 
-      ProtocolMapperRepresentation.from_hash(JSON.parse(response))
+      true
     end
 
     def update(mapper_representation)
@@ -41,6 +41,8 @@ module KeycloakAdmin
           create_payload(mapper_representation), headers
         )
       end
+
+      true
     end
 
     def delete(mapper_id)

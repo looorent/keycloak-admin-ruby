@@ -103,7 +103,7 @@ module KeycloakAdmin
       UserResource.new(@configuration, self, user_id)
     end
 
-    def client_authz_scope_protocol_mappers(client_scope_id)
+    def authz_scope_protocol_mappers(client_scope_id)
       ClientAuthzScopeProtocolMapperClient.new(@configuration, self, client_scope_id)
     end
 
