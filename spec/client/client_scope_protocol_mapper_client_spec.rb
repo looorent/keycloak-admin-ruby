@@ -173,7 +173,7 @@ RSpec.describe KeycloakAdmin::ClientScopeProtocolMapperClient do
     end
   end
 
-  describe "#update" do
+  describe "#save" do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id)
       stub_token_client
@@ -185,7 +185,7 @@ RSpec.describe KeycloakAdmin::ClientScopeProtocolMapperClient do
 
       it "calls put on the mapper url" do
         expect_any_instance_of(RestClient::Resource).to receive(:put).with(anything, anything)
-        @client.update(mapper_representation)
+        @client.save(mapper_representation)
       end
     end
 
@@ -194,7 +194,7 @@ RSpec.describe KeycloakAdmin::ClientScopeProtocolMapperClient do
 
       it "calls put on the mapper url" do
         expect_any_instance_of(RestClient::Resource).to receive(:put).with(anything, anything)
-        @client.update(mapper_representation)
+        @client.save(mapper_representation)
       end
     end
   end
