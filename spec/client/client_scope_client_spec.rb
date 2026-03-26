@@ -157,6 +157,38 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     end
   end
 
+  describe "#search" do
+    let(:second_scope_json) { '{"id":"other-scope-id","name":"other-scope","protocol":"openid-connect"}' }
+
+    before(:each) do
+      @client = KeycloakAdmin.realm(realm_name).client_scopes
+      stub_token_client
+      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return "[#{scope_json},#{second_scope_json}]"
+    end
+
+    context "when the name matches one scope" do
+      it "returns only the matching scope" do
+        expect(@client.search("my-scope").size).to eq 1
+      end
+
+      it "returns the correct scope" do
+        expect(@client.search("my-scope").first).to have_attributes(id: "valid-scope-id", name: "my-scope")
+      end
+    end
+
+    context "when the name is a partial match" do
+      it "returns all scopes containing the substring" do
+        expect(@client.search("scope").size).to eq 2
+      end
+    end
+
+    context "when no scope matches" do
+      it "returns an empty array" do
+        expect(@client.search("unknown")).to eq []
+      end
+    end
+  end
+
   describe "#delete" do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes

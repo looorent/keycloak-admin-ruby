@@ -45,12 +45,7 @@ module KeycloakAdmin
     end
 
     def search(name)
-      url = "#{client_scopes_url}?search=#{name}"
-      response = execute_http do
-        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
-      end
-
-      JSON.parse(response).map { |h| ClientScopeRepresentation.from_hash(h) }
+      list.select { |scope| scope&.name&.include?(name) }
     end
 
     def delete(client_scope_id)
