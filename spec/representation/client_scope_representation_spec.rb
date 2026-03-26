@@ -55,12 +55,12 @@ RSpec.describe KeycloakAdmin::ClientScopeRepresentation do
       end
 
       it "deserializes protocolMappers as ProtocolMapperRepresentation objects" do
-        expect(subject.protocolMappers.size).to eq 1
-        expect(subject.protocolMappers.first).to be_a KeycloakAdmin::ProtocolMapperRepresentation
+        expect(subject.protocol_mappers.size).to eq 1
+        expect(subject.protocol_mappers.first).to be_a KeycloakAdmin::ProtocolMapperRepresentation
       end
 
       it "sets the correct mapper attributes" do
-        expect(subject.protocolMappers.first).to have_attributes(
+        expect(subject.protocol_mappers.first).to have_attributes(
           id:             "mapper-id",
           name:           "my-claim",
           protocol:       "openid-connect",
@@ -73,7 +73,7 @@ RSpec.describe KeycloakAdmin::ClientScopeRepresentation do
       subject { described_class.from_hash({ "id" => "valid-scope-id", "name" => "my-scope" }) }
 
       it "defaults protocolMappers to an empty array" do
-        expect(subject.protocolMappers).to eq []
+        expect(subject.protocol_mappers).to eq []
       end
     end
 

@@ -100,7 +100,7 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
       end
 
       it "returns an empty protocolMappers list" do
-        expect(@client.get(client_scope_id).protocolMappers).to eq []
+        expect(@client.get(client_scope_id).protocol_mappers).to eq []
       end
     end
 
@@ -108,11 +108,11 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
       let(:stub_response) { scope_with_mappers_json }
 
       it "returns protocol mappers" do
-        expect(@client.get(client_scope_id).protocolMappers.size).to eq 1
+        expect(@client.get(client_scope_id).protocol_mappers.size).to eq 1
       end
 
       it "returns the correct mapper name" do
-        expect(@client.get(client_scope_id).protocolMappers.first.name).to eq "my-claim"
+        expect(@client.get(client_scope_id).protocol_mappers.first.name).to eq "my-claim"
       end
     end
   end
