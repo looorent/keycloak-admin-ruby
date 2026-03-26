@@ -135,6 +135,7 @@ All options have a default value. However, all of them can be changed in your in
 * Execute actions emails
 * Send forgot passsword mail
 * Client Authorization, create, update, get, delete Resource, Scope, Policy, Permission, Policy Enforcer
+* Get list of protocol mappers for a client scope, create/update/get/delete a protocol mapper
 * Get list of organizations, create/update/get/delete an organization
 * Get list of members of an organization, add/remove members
 * Invite new or existing users to an organization
@@ -755,6 +756,62 @@ KeycloakAdmin.realm("realm_a").authz_permissions(client.id, 'scope').delete(scop
 
 ```ruby
  KeycloakAdmin.realm("realm_a").authz_permissions(client.id, 'resource').delete(resource_permission.id)
+```
+
+### Manage Protocol Mappers for a Client Scope
+
+Protocol mappers allow you to transform tokens and assertions. The following operations are available on the protocol mappers of a given client scope.
+
+### List protocol mappers for a client scope
+
+Returns an array of `KeycloakAdmin::ProtocolMapperRepresentation`.
+
+```ruby
+client_scope_id = "7686af34-204c-4515-8122-78d19febbf6e"
+KeycloakAdmin.realm("a_realm").client_scope_protocol_mappers(client_scope_id).list
+```
+
+### Get a protocol mapper by its id
+
+Returns an instance of `KeycloakAdmin::ProtocolMapperRepresentation`.
+
+```ruby
+client_scope_id = "7686af34-204c-4515-8122-78d19febbf6e"
+mapper_id       = "95985b21-d884-4bbd-b852-cb8cd365afc2"
+KeycloakAdmin.realm("a_realm").client_scope_protocol_mappers(client_scope_id).get(mapper_id)
+```
+
+### Create a protocol mapper for a client scope
+
+Takes `mapper_representation` of type `KeycloakAdmin::ProtocolMapperRepresentation`. Returns `true` on success.
+
+```ruby
+client_scope_id     = "7686af34-204c-4515-8122-78d19febbf6e"
+mapper              = KeycloakAdmin::ProtocolMapperRepresentation.new
+mapper.name         = "my-mapper"
+mapper.protocol     = "openid-connect"
+mapper.protocolMapper = "oidc-usermodel-attribute-mapper"
+mapper.config       = { "user.attribute" => "locale", "claim.name" => "locale", "jsonType.label" => "String", "id.token.claim" => "true", "access.token.claim" => "true", "userinfo.token.claim" => "true" }
+KeycloakAdmin.realm("a_realm").client_scope_protocol_mappers(client_scope_id).create!(mapper)
+```
+
+### Update a protocol mapper for a client scope
+
+Takes `mapper_representation` of type `KeycloakAdmin::ProtocolMapperRepresentation` (must include its `id`). Returns `true` on success.
+
+```ruby
+client_scope_id    = "7686af34-204c-4515-8122-78d19febbf6e"
+mapper             = KeycloakAdmin.realm("a_realm").client_scope_protocol_mappers(client_scope_id).get(mapper_id)
+mapper.config["claim.name"] = "updated_claim"
+KeycloakAdmin.realm("a_realm").client_scope_protocol_mappers(client_scope_id).update(mapper)
+```
+
+### Delete a protocol mapper from a client scope
+
+```ruby
+client_scope_id = "7686af34-204c-4515-8122-78d19febbf6e"
+mapper_id       = "95985b21-d884-4bbd-b852-cb8cd365afc2"
+KeycloakAdmin.realm("a_realm").client_scope_protocol_mappers(client_scope_id).delete(mapper_id)
 ```
 
 ## How to execute library tests
