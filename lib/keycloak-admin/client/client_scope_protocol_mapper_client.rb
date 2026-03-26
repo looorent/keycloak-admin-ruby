@@ -1,5 +1,5 @@
 module KeycloakAdmin
-  class ClientAuthzScopeProtocolMapperClient < Client
+  class ClientScopeProtocolMapperClient < Client
     def initialize(configuration, realm_client, client_scope_id)
       super(configuration)
 
@@ -26,7 +26,7 @@ module KeycloakAdmin
     end
 
     def create!(mapper_representation)
-      response = execute_http do
+      execute_http do
         RestClient::Resource.new(protocol_mappers_url, @configuration.rest_client_options).post(
           create_payload(mapper_representation), headers
         )

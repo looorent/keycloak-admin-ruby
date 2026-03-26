@@ -1,4 +1,4 @@
-RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
+RSpec.describe KeycloakAdmin::ClientScopeProtocolMapperClient do
   let(:realm_name)      { "valid-realm" }
   let(:client_scope_id) { "valid-scope-id" }
   let(:mapper_id)       { "valid-mapper-id" }
@@ -18,20 +18,20 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
   describe "#initialize" do
     context "when realm_name is defined" do
       it "does not raise any error" do
-        expect { KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id) }.to_not raise_error
+        expect { KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id) }.to_not raise_error
       end
     end
 
     context "when realm_name is not defined" do
       it "raises an argument error" do
-        expect { KeycloakAdmin.realm(nil).authz_scope_protocol_mappers(client_scope_id) }.to raise_error(ArgumentError)
+        expect { KeycloakAdmin.realm(nil).client_scope_protocol_mappers(client_scope_id) }.to raise_error(ArgumentError)
       end
     end
   end
 
   describe "#list" do
     before(:each) do
-      @client = KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id)
+      @client = KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id)
       stub_token_client
       allow_any_instance_of(RestClient::Resource).to receive(:get).and_return stub_response
     end
@@ -75,7 +75,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
 
   describe "#get" do
     before(:each) do
-      @client = KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id)
+      @client = KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id)
       stub_token_client
       allow_any_instance_of(RestClient::Resource).to receive(:get).and_return stub_response
     end
@@ -128,7 +128,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
 
   describe "#create!" do
     before(:each) do
-      @client = KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id)
+      @client = KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id)
       stub_token_client
       allow_any_instance_of(RestClient::Resource).to receive(:post).and_return stub_response
     end
@@ -175,7 +175,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
 
   describe "#update" do
     before(:each) do
-      @client = KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id)
+      @client = KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id)
       stub_token_client
       allow_any_instance_of(RestClient::Resource).to receive(:put).and_return ""
     end
@@ -201,7 +201,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
 
   describe "#delete" do
     before(:each) do
-      @client = KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id)
+      @client = KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id)
       stub_token_client
       allow_any_instance_of(RestClient::Resource).to receive(:delete).and_return ""
     end
@@ -212,7 +212,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeProtocolMapperClient do
   end
 
   describe "#protocol_mappers_url" do
-    let(:client)   { KeycloakAdmin.realm(realm_name).authz_scope_protocol_mappers(client_scope_id) }
+    let(:client)   { KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id) }
     let(:base_url) { "http://auth.service.io/auth/admin/realms/valid-realm/client-scopes/valid-scope-id/protocol-mappers/models" }
 
     context "without a mapper_id" do
