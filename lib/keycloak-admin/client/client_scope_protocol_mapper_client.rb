@@ -35,7 +35,7 @@ module KeycloakAdmin
       true
     end
 
-    def update(mapper_representation)
+    def save(mapper_representation)
       execute_http do
         RestClient::Resource.new(protocol_mappers_url(mapper_representation.id), @configuration.rest_client_options).put(
           create_payload(mapper_representation), headers
