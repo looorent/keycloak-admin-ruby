@@ -68,7 +68,7 @@ jobs:
              "redirectUris":["http://localhost:8180/demo"]
            }'
 
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:

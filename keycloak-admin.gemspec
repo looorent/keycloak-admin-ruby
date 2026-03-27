@@ -20,5 +20,5 @@ Gem::Specification.new do |spec|
   spec.add_dependency "http-cookie", "~> 1.0", ">= 1.0.3"
   spec.add_dependency "rest-client", "~> 2.0"
   spec.add_development_dependency "rspec",  "3.13.2"
-  spec.add_development_dependency "byebug", "12.0.0"
+  spec.add_development_dependency "byebug", "13.0.0"
 end
