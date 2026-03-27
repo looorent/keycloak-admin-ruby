@@ -135,7 +135,8 @@ All options have a default value. However, all of them can be changed in your in
 * Execute actions emails
 * Send forgot passsword mail
 * Client Authorization, create, update, get, delete Resource, Scope, Policy, Permission, Policy Enforcer
-* Get list of protocol mappers for a client scope, create/update/get/delete a protocol mapper
+* Get list of client scopes, create/save/get/delete/search a client scope
+* Get list of protocol mappers for a client scope, create/save/get/delete a protocol mapper
 * Get list of organizations, create/update/get/delete an organization
 * Get list of members of an organization, add/remove members
 * Invite new or existing users to an organization
@@ -758,6 +759,64 @@ KeycloakAdmin.realm("realm_a").authz_permissions(client.id, 'scope').delete(scop
  KeycloakAdmin.realm("realm_a").authz_permissions(client.id, 'resource').delete(resource_permission.id)
 ```
 
+### Manage Client Scopes
+
+### List all client scopes in a realm
+
+Returns an array of `KeycloakAdmin::ClientScopeRepresentation`.
+
+```ruby
+KeycloakAdmin.realm("a_realm").client_scopes.list
+```
+
+### Get a client scope by its id
+
+Returns an instance of `KeycloakAdmin::ClientScopeRepresentation`.
+
+```ruby
+client_scope_id = "7686af34-204c-4515-8122-78d19febbf6e"
+KeycloakAdmin.realm("a_realm").client_scopes.get(client_scope_id)
+```
+
+### Search for client scopes by name
+
+Returns an array of `KeycloakAdmin::ClientScopeRepresentation` whose names contain the given substring.
+
+```ruby
+KeycloakAdmin.realm("a_realm").client_scopes.search("my-scope")
+```
+
+### Create a client scope
+
+Takes `scope_representation` of type `KeycloakAdmin::ClientScopeRepresentation`. Returns `true` on success.
+
+```ruby
+scope             = KeycloakAdmin::ClientScopeRepresentation.new
+scope.name        = "my-scope"
+scope.description = "My custom scope"
+scope.protocol    = "openid-connect"
+scope.attributes  = { "display.on.consent.screen" => "true", "include.in.token.scope" => "true" }
+KeycloakAdmin.realm("a_realm").client_scopes.create!(scope)
+```
+
+### Save (update) a client scope
+
+Takes `scope_representation` of type `KeycloakAdmin::ClientScopeRepresentation` (must include its `id`). Returns `true` on success.
+
+```ruby
+client_scope_id = "7686af34-204c-4515-8122-78d19febbf6e"
+scope           = KeycloakAdmin.realm("a_realm").client_scopes.get(client_scope_id)
+scope.description = "Updated description"
+KeycloakAdmin.realm("a_realm").client_scopes.save(scope)
+```
+
+### Delete a client scope
+
+```ruby
+client_scope_id = "7686af34-204c-4515-8122-78d19febbf6e"
+KeycloakAdmin.realm("a_realm").client_scopes.delete(client_scope_id)
+```
+
 ### Manage Protocol Mappers for a Client Scope
 
 Protocol mappers allow you to transform tokens and assertions. The following operations are available on the protocol mappers of a given client scope.
@@ -795,7 +854,7 @@ mapper.config       = { "user.attribute" => "locale", "claim.name" => "locale", 
 KeycloakAdmin.realm("a_realm").client_scope_protocol_mappers(client_scope_id).create!(mapper)
 ```
 
-### Update a protocol mapper for a client scope
+### Save (update) a protocol mapper for a client scope
 
 Takes `mapper_representation` of type `KeycloakAdmin::ProtocolMapperRepresentation` (must include its `id`). Returns `true` on success.
 
@@ -803,7 +862,7 @@ Takes `mapper_representation` of type `KeycloakAdmin::ProtocolMapperRepresentati
 client_scope_id    = "7686af34-204c-4515-8122-78d19febbf6e"
 mapper             = KeycloakAdmin.realm("a_realm").client_scope_protocol_mappers(client_scope_id).get(mapper_id)
 mapper.config["claim.name"] = "updated_claim"
-KeycloakAdmin.realm("a_realm").client_scope_protocol_mappers(client_scope_id).update(mapper)
+KeycloakAdmin.realm("a_realm").client_scope_protocol_mappers(client_scope_id).save(mapper)
 ```
 
 ### Delete a protocol mapper from a client scope
