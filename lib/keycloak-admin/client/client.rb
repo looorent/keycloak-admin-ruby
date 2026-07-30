@@ -6,7 +6,7 @@ module KeycloakAdmin
     end
 
     def server_url
-      @configuration.server_url
+      @configuration.server_url&.sub(/\/+\z/, "")
     end
 
     def current_token
