@@ -15,11 +15,13 @@ Gem::Specification.new do |spec|
   spec.files = `git ls-files -z`.split("\x0")
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = '>= 2.3'
+  spec.required_ruby_version = '>= 3.1'
 
   spec.add_dependency "http-cookie", "~> 1.0", ">= 1.0.3"
   spec.add_dependency "rest-client", "~> 2.0"
   spec.add_dependency "base64"
   spec.add_development_dependency "rspec",  "3.13.2"
-  spec.add_development_dependency "byebug", "13.0.0"
+  # byebug 13 requires Ruby >= 3.2; 12.0.0 is the newest release that still
+  # installs on Ruby 3.1, so one lockfile resolves on every supported Ruby.
+  spec.add_development_dependency "byebug", "12.0.0"
 end

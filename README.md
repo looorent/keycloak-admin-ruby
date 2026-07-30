@@ -6,6 +6,10 @@ This gem basically acts as an url builder using `http-client` to get responses a
 
 _Warning: This beta gem is currently used for personal use. Most Keycloak Admin features are not implemented yet._
 
+## Requirements
+
+Ruby 3.1 or greater. The gem is tested against Ruby 3.1, 3.2, 3.3 and 3.4.
+
 ## Install
 
 This gem *does not* require Rails.

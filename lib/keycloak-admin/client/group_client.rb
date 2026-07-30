@@ -115,7 +115,7 @@ module KeycloakAdmin
       execute_http do
         RestClient::Request.execute(
           @configuration.rest_client_options.merge(
-            url:,
+            url: url,
             method: :delete,
             payload: create_payload([role_representation]),
             headers: headers

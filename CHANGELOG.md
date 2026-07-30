@@ -7,9 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0] - 2026-07-31
 
-* [Chore] CI now tests against Ruby 3.3, 3.4, and 4.0, replacing Ruby 3.2 (end-of-life since March 2026).
+* [Fix] `GroupClient#remove_realm_level_role_name!` used Ruby 3.1 hash value omission
 * [Fix] Strip trailing slashes from the configured `server_url`. Keycloak 26 rejects non-normalized request paths with `400 {"error":"missingNormalization"}`, so a `server_url` such as `http://localhost:8080/` produced an unusable `//realms/...` path. Earlier Keycloak versions tolerated it.
-
+* [Chore] `required_ruby_version` is now `>= 3.1` instead of `>= 2.3`
+* [Chore] CI now tests against Ruby 3.1, 3.2, 3.3 and 3.4.
 
 ## [1.2.0] - 2026-07-30
 
