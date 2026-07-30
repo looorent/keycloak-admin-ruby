@@ -2,12 +2,14 @@ PATH
   remote: .
   specs:
     keycloak-admin (1.2.0)
+      base64
       http-cookie (~> 1.0, >= 1.0.3)
       rest-client (~> 2.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
+    base64 (0.3.0)
     byebug (13.0.0)
       reline (>= 0.6.0)
     diff-lcs (1.6.2)
