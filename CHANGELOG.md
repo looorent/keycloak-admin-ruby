@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-07-31
+
+* [Chore] CI now tests against Ruby 3.3, 3.4, and 4.0, replacing Ruby 3.2 (end-of-life since March 2026).
+
+
 ## [1.2.0] - 2026-07-30
 
 * [Chore] Bump `http-cookie` dependency from 1.1.0 to 1.1.6.
