@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-07-30
+
+* [Chore] Bump `http-cookie` dependency from 1.1.0 to 1.1.6.
+* [Chore] Upgrade Docker base image from `ruby:3.2.2-slim-bullseye` to `ruby:3.3.12-slim-trixie`.
+
 ## [1.1.7] - 2026-03-27
 
 * [Feature] Client scopes - supported operations:  `create!`, `get`, `delete`, `list`, and `search`.

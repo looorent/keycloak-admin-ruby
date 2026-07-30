@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    keycloak-admin (1.1.7)
+    keycloak-admin (1.2.0)
       http-cookie (~> 1.0, >= 1.0.3)
       rest-client (~> 2.0)
 
@@ -13,14 +13,14 @@ GEM
     diff-lcs (1.6.2)
     domain_name (0.6.20240107)
     http-accept (1.7.0)
-    http-cookie (1.1.0)
+    http-cookie (1.1.6)
       domain_name (~> 0.5)
     io-console (0.8.2)
     logger (1.7.0)
     mime-types (3.7.0)
       logger
       mime-types-data (~> 3.2025, >= 3.2025.0507)
-    mime-types-data (3.2026.0317)
+    mime-types-data (3.2026.0701)
     netrc (0.11.0)
     reline (0.6.3)
       io-console (~> 0.5)
