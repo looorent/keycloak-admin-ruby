@@ -27,7 +27,7 @@ RSpec.describe 'ClientAuthorization' do
       KeycloakAdmin.realm(realm_name).clients.update(client)
 
       expect(KeycloakAdmin.realm(realm_name).authz_scopes(client.id).list.size).to eql(0)
-      expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).list.size).to eql(1)
+      expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).list.size).to eql(0)
       expect(KeycloakAdmin.realm(realm_name).authz_policies(client.id, 'role').list.size).to eql(0)
 
       realm_role =  KeycloakAdmin.realm(realm_name).roles.get("default-roles-dummy")
@@ -70,8 +70,8 @@ RSpec.describe 'ClientAuthorization' do
       expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "resource").get(resource_permission.id).name).to eql("Dummy Resource Permission")
       expect(KeycloakAdmin.realm(realm_name).authz_scopes(client.id, resource.id).list.size).to eql(2)
 
-      expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, 'scope').list.size).to eql(3)
-      expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, 'resource').list.size).to eql(3)
+      expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, 'scope').list.size).to eql(2)
+      expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, 'resource').list.size).to eql(2)
       expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "resource").find_by(resource_permission.name, nil).first.name).to eql("Dummy Resource Permission")
       expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "resource").find_by(resource_permission.name, resource.id).first.name).to eql("Dummy Resource Permission")
       expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "scope").find_by(scope_permission.name, resource.id).first.name).to eql("Dummy Scope Permission")

@@ -13,7 +13,7 @@ module KeycloakAdmin
 
     def delete(permission_id)
       execute_http do
-        RestClient::Resource.new(authz_permission_url(@client_id, nil, nil, permission_id), @configuration.rest_client_options).delete(headers)
+        RestClient::Resource.new(authz_permission_url(@client_id, nil, @type, permission_id), @configuration.rest_client_options).delete(headers)
       end
       true
     end
