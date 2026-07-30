@@ -19,25 +19,37 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    services:
-      keycloak:
-        image: tillawy/keycloak-github-actions:25.0.1
-        ports:
-          - 8080:8080
-        options: '--health-cmd "exec 3<>/dev/tcp/localhost/8080" --health-interval 5s --health-timeout 5s --health-retries 10 --health-start-period 100s'
-        env:
-          KEYCLOAK_ADMIN: "admin"
-          KEYCLOAK_ADMIN_PASSWORD: "admin"
-          KC_HOSTNAME: "http://localhost:8080"
-          KC_HOSTNAME_ADMIN: "http://localhost:8080"
-          KC_HTTP_ENABLED: "true"
-          KC_DB: "dev-file"
 
     strategy:
       matrix:
         ruby-version: ['3.2']
 
     steps:
+    - name: Start Keycloak
+      run: |
+        docker run -d --name keycloak -p 8080:8080 \
+          -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
+          -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
+          -e KC_HOSTNAME=http://localhost:8080 \
+          -e KC_HOSTNAME_ADMIN=http://localhost:8080 \
+          -e KC_HTTP_ENABLED=true \
+          -e KC_DB=dev-file \
+          quay.io/keycloak/keycloak:26.7.0 \
+          start-dev
+
+    - name: Wait for Keycloak to be ready
+      run: |
+        for i in $(seq 1 30); do
+          if curl --silent --fail http://localhost:8080/realms/master > /dev/null; then
+            echo "Keycloak is ready"
+            exit 0
+          fi
+          sleep 5
+        done
+        echo "Keycloak did not become ready in time"
+        docker logs keycloak
+        exit 1
+
     - name: create realm
       run: |
          TOKEN=$(curl --silent --location --request POST "http://localhost:8080/realms/master/protocol/openid-connect/token" \

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * [Chore] Bump `http-cookie` dependency from 1.1.0 to 1.1.6.
 * [Chore] Upgrade Docker base image from `ruby:3.2.2-slim-bullseye` to `ruby:3.3.12-slim-trixie`.
+* [Chore] CI now boots Keycloak 26.7.0 (`quay.io/keycloak/keycloak`) instead of the abandoned `tillawy/keycloak-github-actions:25.0.1`
 
 ## [1.1.7] - 2026-03-27
 
