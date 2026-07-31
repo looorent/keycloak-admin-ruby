@@ -12,10 +12,17 @@ Gem::Specification.new do |spec|
   spec.description = "Keycloak Admin REST API client written in Ruby"
   spec.license     = "MIT"
 
-  spec.files = `git ls-files -z`.split("\x0")
+  spec.files         = Dir.glob(["lib/**/*.rb", "CHANGELOG.md", "MIT-LICENSE", "README.md", "keycloak-admin.gemspec"]).sort
   spec.require_paths = ["lib"]
 
-  spec.required_ruby_version = '>= 3.1'
+  spec.required_ruby_version = ">= 3.1"
+
+  spec.metadata = {
+    "source_code_uri"       => spec.homepage,
+    "changelog_uri"         => "#{spec.homepage}/blob/main/CHANGELOG.md",
+    "bug_tracker_uri"       => "#{spec.homepage}/issues",
+    "rubygems_mfa_required" => "true"
+  }
 
   spec.add_dependency "http-cookie", "~> 1.0", ">= 1.0.3"
   spec.add_dependency "faraday", "~> 2.0"
