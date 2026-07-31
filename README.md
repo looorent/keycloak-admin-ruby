@@ -885,3 +885,19 @@ From the `keycloak-admin-api` directory:
   $ docker build . -t keycloak-admin:test
   $ docker run -v `pwd`:/usr/src/app/ keycloak-admin:test rspec spec
 ```
+
+## How to release a new version
+
+Releases are published to [RubyGems](https://rubygems.org/gems/keycloak-admin) by GitHub Actions
+(`.github/workflows/release.yml`), through [Trusted Publishing](https://guides.rubygems.org/trusted-publishing/):
+no API key is stored in this repository, the workflow exchanges a short-lived GitHub OIDC token for a
+scoped RubyGems credential.
+
+1. Update `KeycloakAdmin::VERSION` in `lib/keycloak-admin/version.rb` and the `CHANGELOG.md`
+2. Commit and push these changes to `main`
+3. Tag the commit and push the tag:
+
+```
+  $ git tag -a v2.0.1 -m "Version 2.0.1"
+  $ git push origin v2.0.1
+```

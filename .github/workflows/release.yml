@@ -1,0 +1,112 @@
+name: Release
+
+# Publishing is triggered by pushing a version tag, e.g.:
+#   git tag -a v1.2.0 -m "Version 1.2.0" && git push origin v1.2.0
+#
+# No RubyGems API key is stored in this repository: the gem is pushed through
+# RubyGems' Trusted Publishing, which exchanges a short-lived GitHub OIDC token
+# for a scoped RubyGems credential. This requires a trusted publisher declared on
+# https://rubygems.org/gems/keycloak-admin pointing to this repository, this
+# workflow file name and the 'release' environment.
+on:
+  push:
+    tags: [ "v*" ]
+
+permissions:
+  contents: read
+
+jobs:
+  release:
+    name: Push gem to RubyGems.org
+    # Pinned rather than 'ubuntu-latest', for the same reason as in ci.yml.
+    runs-on: ubuntu-24.04
+
+    environment: release
+
+    permissions:
+      contents: write # 'rake release' pushes the version tag when it does not exist yet
+      id-token: write # mandatory to request the OIDC token used by trusted publishing
+
+    steps:
+    # The test suite includes an integration spec that talks to a real Keycloak
+    # (spec/integration/client_authorization_spec.rb, gated on ENV["GITHUB_ACTIONS"],
+    # which GitHub Actions sets on every run regardless of workflow). Keycloak is
+    # provisioned here the same way ci.yml does it, so 'bundle exec rspec' below is a
+    # real, complete gate rather than skipping that spec for lack of a server.
+    - name: Start Keycloak
+      run: |
+        docker run -d --name keycloak -p 8080:8080 \
+          -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
+          -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin \
+          -e KC_HOSTNAME=http://localhost:8080 \
+          -e KC_HOSTNAME_ADMIN=http://localhost:8080 \
+          -e KC_HTTP_ENABLED=true \
+          -e KC_DB=dev-file \
+          quay.io/keycloak/keycloak:26.7.0 \
+          start-dev
+
+    - name: Wait for Keycloak to be ready
+      run: |
+        for i in $(seq 1 30); do
+          if curl --silent --fail http://localhost:8080/realms/master > /dev/null; then
+            echo "Keycloak is ready"
+            exit 0
+          fi
+          sleep 5
+        done
+        echo "Keycloak did not become ready in time"
+        docker logs keycloak
+        exit 1
+
+    - name: create realm
+      run: |
+         TOKEN=$(curl --silent --location --request POST "http://localhost:8080/realms/master/protocol/openid-connect/token" \
+            --header 'Content-Type: application/x-www-form-urlencoded' \
+            --data-urlencode 'grant_type=password' \
+            --data-urlencode 'username=admin' \
+            --data-urlencode 'password=admin' \
+            --data-urlencode 'client_id=admin-cli' | jq -r '.access_token')
+
+         curl --silent --show-error -L -X POST "http://localhost:8080/admin/realms" \
+            --header "Content-Type: application/json" \
+            --header "Authorization: Bearer ${TOKEN}" \
+            --data '{"realm":"dummy","enabled":true}'
+
+         curl --silent --show-error --request POST 'http://localhost:8080/admin/realms/dummy/clients' \
+           --header 'Authorization: Bearer '$TOKEN \
+           --header 'Content-Type: application/json' \
+           --data-raw '{
+             "clientId":"dummy-client",
+             "enabled":true,
+             "consentRequired": false,
+             "attributes":{},
+             "serviceAccountsEnabled": true,
+             "protocol":"openid-connect",
+             "publicClient":false,
+             "authorizationServicesEnabled": true,
+             "clientAuthenticatorType":"client-secret",
+             "redirectUris":["http://localhost:8180/demo"]
+           }'
+
+    - uses: actions/checkout@v4
+
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.4'
+        bundler-cache: true
+
+    - name: Check that the tag matches KeycloakAdmin::VERSION
+      run: |
+        tag="${GITHUB_REF_NAME#v}"
+        version="$(ruby -Ilib -r keycloak-admin/version -e 'print KeycloakAdmin::VERSION')"
+        if [ "$tag" != "$version" ]; then
+          echo "::error::Tag '${GITHUB_REF_NAME}' does not match KeycloakAdmin::VERSION '${version}'"
+          exit 1
+        fi
+
+    - name: Run tests
+      run: bundle exec rspec
+
+    # Builds the gem, pushes it to RubyGems.org and waits for it to be available.
+    - uses: rubygems/release-gem@v1

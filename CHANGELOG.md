@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+* Publish the gem to RubyGems from Github Actions when a `v*` tag is pushed, using RubyGems' Trusted Publishing
+
 ## [2.0.0] - 2026-07-31
 
 * [Breaking] Replaced `rest-client` with `Faraday` as the underlying HTTP library. This should be transparent for callers of this gem's own API, but `config.rest_client_options` is renamed to `config.faraday_options` and its shape changes from rest-client's flat hash to Faraday's connection options (e.g. `{ timeout: 5 }` becomes `{ request: { timeout: 5 } }`, `{ verify_ssl: false }` becomes `{ ssl: { verify: false } }`). See the `Configuration` section of the README.
