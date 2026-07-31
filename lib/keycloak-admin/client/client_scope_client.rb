@@ -10,7 +10,7 @@ module KeycloakAdmin
 
     def list
       response = execute_http do
-        RestClient::Resource.new(client_scopes_url, @configuration.rest_client_options).get(headers)
+        resource(client_scopes_url).get(headers)
       end
 
       JSON.parse(response).map { |h| ClientScopeRepresentation.from_hash(h) }
@@ -18,7 +18,7 @@ module KeycloakAdmin
 
     def get(client_scope_id)
       response = execute_http do
-        RestClient::Resource.new(client_scopes_url(client_scope_id), @configuration.rest_client_options).get(headers)
+        resource(client_scopes_url(client_scope_id)).get(headers)
       end
 
       ClientScopeRepresentation.from_hash(JSON.parse(response))
@@ -26,7 +26,7 @@ module KeycloakAdmin
 
     def create!(client_scope_representation)
       execute_http do
-        RestClient::Resource.new(client_scopes_url, @configuration.rest_client_options).post(
+        resource(client_scopes_url).post(
           create_payload(client_scope_representation), headers
         )
       end
@@ -36,7 +36,7 @@ module KeycloakAdmin
 
     def save(client_scope_representation)
       execute_http do
-        RestClient::Resource.new(client_scopes_url(client_scope_representation.id), @configuration.rest_client_options).put(
+        resource(client_scopes_url(client_scope_representation.id)).put(
           create_payload(client_scope_representation), headers
         )
       end
@@ -50,7 +50,7 @@ module KeycloakAdmin
 
     def delete(client_scope_id)
       execute_http do
-        RestClient::Resource.new(client_scopes_url(client_scope_id), @configuration.rest_client_options).delete(headers)
+        resource(client_scopes_url(client_scope_id)).delete(headers)
       end
 
       true

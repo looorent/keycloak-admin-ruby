@@ -30,7 +30,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyRepresentation do
 
   describe "#create!" do
     before(:each) do
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return policy.to_json
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return policy.to_json
     end
 
     it "returns created authz policy" do

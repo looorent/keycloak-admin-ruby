@@ -32,19 +32,15 @@ RSpec.describe KeycloakAdmin::Client do
     it "handles timeout" do
       expect do
         @client.execute_http do
-          raise RestClient::Exceptions::OpenTimeout.new
+          raise Faraday::TimeoutError.new
         end
-      end.to raise_error(RestClient::Exceptions::OpenTimeout)
+      end.to raise_error(Faraday::TimeoutError)
     end
 
     it "handles response exception" do
-      response = double
-      allow(response).to receive(:code).and_return 500
-      allow(response).to receive(:body).and_return "Server error"
-
       expect do
         @client.execute_http do
-          raise RestClient::ExceptionWithResponse.new(response)
+          raise Faraday::ServerError.new("boom", status: 500, body: "Server error")
         end
       end.to raise_error("Keycloak: The request failed with response code 500 and message: Server error")
     end

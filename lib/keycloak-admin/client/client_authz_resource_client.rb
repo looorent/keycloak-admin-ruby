@@ -9,14 +9,14 @@ module KeycloakAdmin
 
     def list
       response = execute_http do
-        RestClient::Resource.new(authz_resources_url(@client_id), @configuration.rest_client_options).get(headers)
+        resource(authz_resources_url(@client_id)).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzResourceRepresentation.from_hash(role_as_hash) }
     end
 
     def get(resource_id)
       response = execute_http do
-        RestClient::Resource.new(authz_resources_url(@client_id, resource_id), @configuration.rest_client_options).get(headers)
+        resource(authz_resources_url(@client_id, resource_id)).get(headers)
       end
       ClientAuthzResourceRepresentation.from_hash(JSON.parse(response))
     end
@@ -36,7 +36,7 @@ module KeycloakAdmin
       )
 
       execute_http do
-        RestClient::Resource.new(authz_resources_url(@client_id, resource_id), @configuration.rest_client_options).put(new_resource.to_json, headers)
+        resource(authz_resources_url(@client_id, resource_id)).put(new_resource.to_json, headers)
       end
       get(resource_id)
     end
@@ -48,21 +48,21 @@ module KeycloakAdmin
     def find_by(name, type, uris, owner, scope)
       response = execute_http do
         url = "#{authz_resources_url(@client_id)}?name=#{name}&type=#{type}&uris=#{uris}&owner=#{owner}&scope=#{scope}&deep=true&first=0&max=100"
-        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
+        resource(url).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzResourceRepresentation.from_hash(role_as_hash) }
     end
 
     def save(client_authz_resource_representation)
       response = execute_http do
-        RestClient::Resource.new(authz_resources_url(@client_id), @configuration.rest_client_options).post(client_authz_resource_representation.to_json, headers)
+        resource(authz_resources_url(@client_id)).post(client_authz_resource_representation.to_json, headers)
       end
       ClientAuthzResourceRepresentation.from_hash(JSON.parse(response))
     end
 
     def delete(resource_id)
       execute_http do
-        RestClient::Resource.new(authz_resources_url(@client_id, resource_id), @configuration.rest_client_options).delete(headers)
+        resource(authz_resources_url(@client_id, resource_id)).delete(headers)
       end
       true
     end

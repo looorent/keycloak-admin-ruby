@@ -20,7 +20,7 @@ RSpec.describe KeycloakAdmin::RoleMapperClient do
       @role_mapper_client = KeycloakAdmin.realm(realm_name).user(user_id).role_mapper
 
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get)
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get)
         .and_return '[{"id":"test_role_id","name":"test_role_name","composite": false}]'
     end
 
@@ -48,7 +48,7 @@ RSpec.describe KeycloakAdmin::RoleMapperClient do
       @role_mapper_client = KeycloakAdmin.realm(realm_name).user(user_id).role_mapper
 
       stub_token_client
-      expect_any_instance_of(RestClient::Resource).to receive(:post).with(role_list.to_json, anything)
+      expect_any_instance_of(KeycloakAdmin::Resource).to receive(:post).with(role_list.to_json, anything)
     end
 
     it "saves realm-elevel role mappings" do
@@ -56,11 +56,11 @@ RSpec.describe KeycloakAdmin::RoleMapperClient do
     end
 
     it "passes rest client options" do
-      rest_client_options = {timeout: 10}
-      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
+      faraday_options = {timeout: 10}
+      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
-      expect(RestClient::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/realm", rest_client_options).and_call_original
+      expect(KeycloakAdmin::Resource).to receive(:new).with(
+        "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/realm", faraday_options).and_call_original
 
       @role_mapper_client.save_realm_level(role_list)
     end
@@ -83,7 +83,7 @@ RSpec.describe KeycloakAdmin::RoleMapperClient do
     end
 
     it "removes realm-level role mappings" do
-      expect(RestClient::Request).to receive(:execute).with(
+      expect(KeycloakAdmin::Resource).to receive(:execute).with(
         hash_including(
           method: :delete,
           url: expected_url,
@@ -95,10 +95,10 @@ RSpec.describe KeycloakAdmin::RoleMapperClient do
     end
 
     it "passes rest client options" do
-      rest_client_options = {timeout: 10}
-      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
+      faraday_options = {timeout: 10}
+      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
       
-      expect(RestClient::Request).to receive(:execute).with(
+      expect(KeycloakAdmin::Resource).to receive(:execute).with(
         hash_including(
           method: :delete,
           url: expected_url,

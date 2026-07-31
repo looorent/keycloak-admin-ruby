@@ -2,7 +2,7 @@
 # Keycloak Admin Ruby
 
 Ruby client that acts as a client for the Keycloak REST API.
-This gem basically acts as an url builder using `http-client` to get responses and serialize them into _representation_ objects.
+This gem basically acts as an url builder using `Faraday` to get responses and serialize them into _representation_ objects.
 
 _Warning: This beta gem is currently used for personal use. Most Keycloak Admin features are not implemented yet._
 
@@ -16,7 +16,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "1.2.0"
+gem "keycloak-admin", "2.0.0"
 ```
 
 ## Login
@@ -85,8 +85,8 @@ KeycloakAdmin.configure do |config|
   config.password            = ENV["KEYCLOAK_ADMIN_PASSWORD"]
   config.logger              = Rails.logger
 
-  # You configure RestClient to your liking – see https://github.com/rest-client/rest-client/blob/master/lib/restclient/request.rb for available options.
-  config.rest_client_options = { timeout: 5 }
+  # You configure Faraday to your liking – see https://lostisland.github.io/faraday/#/customization/connection-options for available options.
+  config.faraday_options = { request: { timeout: 5 } }
 end
 ```
 This example is autoloaded in a Rails environment.
@@ -106,7 +106,7 @@ All options have a default value. However, all of them can be changed in your in
 | `username` | `nil`| String | Optional | Username to access the Admin REST API. Recommended if `user_service_account` is set to `false`. | `mummy` |
 | `password` | `nil`| String | Optional | Clear password to access the Admin REST API. Recommended if `user_service_account` is set to `false`. | `bobby` |
 | `logger` | `Logger.new(STDOUT)`| Logger | Optional | The logger used by `keycloak-admin` | `Rails.logger` | 
-| `rest_client_options` | `{}`| Hash | Optional | Options to pass to `RestClient` | `{ timeout: 5 }` | 
+| `faraday_options` | `{}`| Hash | Optional | Options to pass to `Faraday.new` (e.g. `request:`, `ssl:`, `proxy:`) | `{ request: { timeout: 5 } }` | 
 
 
 ## Use Cases

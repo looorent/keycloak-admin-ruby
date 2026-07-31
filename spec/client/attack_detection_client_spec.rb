@@ -25,7 +25,7 @@ RSpec.describe KeycloakAdmin::AttackDetectionClient do
     before(:each) do
       @attack_detections = KeycloakAdmin.realm(realm_name).attack_detections
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '{"numFailures":1,"disabled":true, "lastFailure":123456}'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '{"numFailures":1,"disabled":true, "lastFailure":123456}'
     end
 
     context "when user_id is defined" do
@@ -49,7 +49,7 @@ RSpec.describe KeycloakAdmin::AttackDetectionClient do
     before(:each) do
       @attack_detections = KeycloakAdmin.realm(realm_name).attack_detections
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:delete)
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete)
     end
 
     context "when user_id is defined" do
@@ -72,7 +72,7 @@ RSpec.describe KeycloakAdmin::AttackDetectionClient do
     before(:each) do
       @attack_detections = KeycloakAdmin.realm(realm_name).attack_detections
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:delete)
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete)
     end
     it "returns true" do
       expect(@attack_detections.unlock_users).to be_truthy

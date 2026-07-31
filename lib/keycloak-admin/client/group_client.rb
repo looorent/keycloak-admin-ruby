@@ -8,7 +8,7 @@ module KeycloakAdmin
 
     def get(group_id)
       response = execute_http do
-        RestClient::Resource.new(groups_url(group_id), @configuration.rest_client_options).get(headers)
+        resource(groups_url(group_id)).get(headers)
       end
       GroupRepresentation.from_hash(JSON.parse(response))
     end
@@ -16,7 +16,7 @@ module KeycloakAdmin
     def children(parent_id)
       response = execute_http do
         url = "#{groups_url(parent_id)}/children"
-        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
+        resource(url).get(headers)
       end
       JSON.parse(response).map { |group_as_hash| GroupRepresentation.from_hash(group_as_hash) }
     end
@@ -35,7 +35,7 @@ module KeycloakAdmin
                           headers
                         end
       response = execute_http do
-        RestClient::Resource.new(groups_url, @configuration.rest_client_options).get(derived_headers)
+        resource(groups_url).get(derived_headers)
       end
       JSON.parse(response).map { |group_as_hash| GroupRepresentation.from_hash(group_as_hash) }
     end
@@ -49,9 +49,9 @@ module KeycloakAdmin
       execute_http do
         payload = create_payload(group_representation)
         if group_representation.id
-          RestClient::Resource.new(groups_url(group_representation.id), @configuration.rest_client_options).put(payload, headers)
+          resource(groups_url(group_representation.id)).put(payload, headers)
         else
-          RestClient::Resource.new(groups_url, @configuration.rest_client_options).post(payload, headers)
+          resource(groups_url).post(payload, headers)
         end
       end
     end
@@ -59,7 +59,7 @@ module KeycloakAdmin
     def create_subgroup!(parent_id, name, attributes = {})
       url = "#{groups_url(parent_id)}/children"
       response = execute_http do
-        RestClient::Resource.new(url, @configuration.rest_client_options).post(
+        resource(url).post(
           create_payload(build(name, nil, attributes)), headers
         )
       end
@@ -68,7 +68,7 @@ module KeycloakAdmin
 
     def delete(group_id)
       execute_http do
-        RestClient::Resource.new(groups_url(group_id), @configuration.rest_client_options).delete(headers)
+        resource(groups_url(group_id)).delete(headers)
       end
       true
     end
@@ -81,7 +81,7 @@ module KeycloakAdmin
         url = "#{url}?#{query_string}"
       end
       response = execute_http do
-        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
+        resource(url).get(headers)
       end
       JSON.parse(response).map { |user_as_hash| UserRepresentation.from_hash(user_as_hash) }
     end
@@ -90,7 +90,7 @@ module KeycloakAdmin
     def get_realm_level_roles(group_id)
       url = "#{groups_url(group_id)}/role-mappings/realm"
       response = execute_http do
-        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
+        resource(url).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| RoleRepresentation.from_hash(role_as_hash) }
     end
@@ -101,7 +101,7 @@ module KeycloakAdmin
       role_representation = RoleClient.new(@configuration, @realm_client).get(role_name)
       url = "#{groups_url(group_id)}/role-mappings/realm"
       response = execute_http do
-        RestClient::Resource.new(url, @configuration.rest_client_options).post(
+        resource(url).post(
           create_payload([role_representation]), headers
         )
       end
@@ -113,8 +113,8 @@ module KeycloakAdmin
       role_representation = RoleClient.new(@configuration, @realm_client).get(role_name)
       url = "#{groups_url(group_id)}/role-mappings/realm"
       execute_http do
-        RestClient::Request.execute(
-          @configuration.rest_client_options.merge(
+        Resource.execute(
+          @configuration.faraday_options.merge(
             url: url,
             method: :delete,
             payload: create_payload([role_representation]),

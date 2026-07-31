@@ -10,7 +10,7 @@ module KeycloakAdmin
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
 
       response = execute_http do
-        RestClient::Resource.new(brute_force_url(user_id), @configuration.rest_client_options).get(headers)
+        resource(brute_force_url(user_id)).get(headers)
       end
       AttackDetectionRepresentation.from_hash(JSON.parse(response))
     end
@@ -19,14 +19,14 @@ module KeycloakAdmin
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
 
       execute_http do
-        RestClient::Resource.new(brute_force_url(user_id), @configuration.rest_client_options).delete(headers)
+        resource(brute_force_url(user_id)).delete(headers)
       end
       true
     end
 
     def unlock_users
       execute_http do
-        RestClient::Resource.new(brute_force_url, @configuration.rest_client_options).delete(headers)
+        resource(brute_force_url).delete(headers)
       end
       true
     end

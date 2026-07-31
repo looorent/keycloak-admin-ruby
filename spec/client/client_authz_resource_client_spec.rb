@@ -24,7 +24,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
     before(:each) do
       @client_authz_resource = KeycloakAdmin.realm(realm_name).authz_resources(client_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '[{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]},{"name":"asdfasdf","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":true,"displayName":"asdfasdfasdfa","_id":"385966a2-14b9-4cc4-9539-5f2fe1008222","uris":["/*"],"icon_uri":"http://icon"}]'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]},{"name":"asdfasdf","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":true,"displayName":"asdfasdfasdfa","_id":"385966a2-14b9-4cc4-9539-5f2fe1008222","uris":["/*"],"icon_uri":"http://icon"}]'
     end
 
     it "returns list of authz scopes" do
@@ -44,7 +44,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
     let(:client_authz_resource) { KeycloakAdmin.realm(realm_name).authz_resources(client_id) }
     before(:each) do
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}'
     end
 
     it "returns authz scope" do
@@ -63,8 +63,8 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
     let(:client_authz_resource) { KeycloakAdmin.realm(realm_name).authz_resources(client_id) }
     before(:each) do
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}'
-      allow_any_instance_of(RestClient::Resource).to receive(:put).and_return '{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:put).and_return '{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}'
     end
 
     it "returns updated authz scope" do
@@ -82,7 +82,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
     before(:each) do
       @client_authz_resource = KeycloakAdmin.realm(realm_name).authz_resources(client_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return '{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return '{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}'
     end
 
     it "returns created authz scope" do
@@ -101,7 +101,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
     let(:client_authz_resource) { KeycloakAdmin.realm(realm_name).authz_resources(client_id) }
     before(:each) do
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '[{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}]'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}]'
     end
 
     it "returns list of authz scopes" do
@@ -139,7 +139,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
     let(:client_authz_resource) { KeycloakAdmin.realm(realm_name).authz_resources(client_id) }
     before(:each) do
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:delete).and_return '{}'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete).and_return '{}'
     end
 
     it "returns true" do

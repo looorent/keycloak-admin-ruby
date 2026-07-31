@@ -8,7 +8,7 @@ module KeycloakAdmin
 
     def create(identity_provider_representation)
       execute_http do
-        RestClient::Resource.new(identity_providers_url, @configuration.rest_client_options).post(
+        resource(identity_providers_url).post(
           create_payload(identity_provider_representation), headers
         )
       end
@@ -16,7 +16,7 @@ module KeycloakAdmin
 
     def add_mapping(identity_provider_alias, identity_provider_mapping_representation)
       execute_http do
-        RestClient::Resource.new(identity_provider_mappers_url(identity_provider_alias), @configuration.rest_client_options).post(
+        resource(identity_provider_mappers_url(identity_provider_alias)).post(
           create_payload(identity_provider_mapping_representation), headers
         )
       end
@@ -24,14 +24,14 @@ module KeycloakAdmin
 
     def list
       response = execute_http do
-        RestClient::Resource.new(identity_providers_url, @configuration.rest_client_options).get(headers)
+        resource(identity_providers_url).get(headers)
       end
       JSON.parse(response).map { |provider_as_hash| IdentityProviderRepresentation.from_hash(provider_as_hash) }
     end
 
     def get(internal_id_or_alias=nil)
       response = execute_http do
-        RestClient::Resource.new(identity_providers_url(internal_id_or_alias), @configuration.rest_client_options).get(headers)
+        resource(identity_providers_url(internal_id_or_alias)).get(headers)
       end
       IdentityProviderRepresentation.from_hash(JSON.parse(response))
     end

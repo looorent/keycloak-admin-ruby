@@ -18,10 +18,8 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 3.1'
 
   spec.add_dependency "http-cookie", "~> 1.0", ">= 1.0.3"
-  spec.add_dependency "rest-client", "~> 2.0"
+  spec.add_dependency "faraday", "~> 2.0"
   spec.add_dependency "base64"
   spec.add_development_dependency "rspec",  "3.13.2"
-  # byebug 13 requires Ruby >= 3.2; 12.0.0 is the newest release that still
-  # installs on Ruby 3.1, so one lockfile resolves on every supported Ruby.
   spec.add_development_dependency "byebug", "12.0.0"
 end

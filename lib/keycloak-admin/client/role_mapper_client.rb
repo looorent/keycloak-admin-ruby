@@ -7,14 +7,14 @@ module KeycloakAdmin
 
     def list
       response = execute_http do
-        RestClient::Resource.new(realm_level_url, @configuration.rest_client_options).get(headers)
+        resource(realm_level_url).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| RoleRepresentation.from_hash(role_as_hash) }
     end
 
     def save_realm_level(role_representation_list)
       execute_http do
-        RestClient::Resource.new(realm_level_url, @configuration.rest_client_options).post(
+        resource(realm_level_url).post(
           create_payload(role_representation_list), headers
         )
       end
@@ -22,20 +22,20 @@ module KeycloakAdmin
 
     def remove_realm_level(role_representation_list)
       execute_http do
-        RestClient::Request.execute(
-          @configuration.rest_client_options.merge(
+        Resource.execute(
+          @configuration.faraday_options.merge(
             method: :delete,
             url: realm_level_url,
-            payload: create_payload(role_representation_list), 
+            payload: create_payload(role_representation_list),
             headers: headers
           )
         )
       end
     end
-  
+
     def remove_all_realm_roles
       execute_http do
-        RestClient::Resource.new(realm_level_url, @configuration.rest_client_options).delete(headers)
+        resource(realm_level_url).delete(headers)
       end
       true
     end

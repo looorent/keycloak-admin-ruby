@@ -15,21 +15,21 @@ module KeycloakAdmin
 
     def list
       response = execute_http do
-        RestClient::Resource.new(authz_scopes_url(@client_id, @resource_id), @configuration.rest_client_options).get(headers)
+        resource(authz_scopes_url(@client_id, @resource_id)).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzScopeRepresentation.from_hash(role_as_hash) }
     end
 
     def delete(scope_id)
       execute_http do
-        RestClient::Resource.new(authz_scopes_url(@client_id, nil, scope_id), @configuration.rest_client_options).delete(headers)
+        resource(authz_scopes_url(@client_id, nil, scope_id)).delete(headers)
       end
       true
     end
 
     def get(scope_id)
       response = execute_http do
-        RestClient::Resource.new(authz_scopes_url(@client_id, nil, scope_id), @configuration.rest_client_options).get(headers)
+        resource(authz_scopes_url(@client_id, nil, scope_id)).get(headers)
       end
       ClientAuthzScopeRepresentation.from_hash(JSON.parse(response))
     end
@@ -37,7 +37,7 @@ module KeycloakAdmin
     def search(name)
       url = "#{authz_scopes_url(@client_id)}?first=0&max=11&deep=false&name=#{name}"
       response = execute_http do
-        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
+        resource(url).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzScopeRepresentation.from_hash(role_as_hash) }
     end
@@ -54,7 +54,7 @@ module KeycloakAdmin
 
     def save(scope_representation)
       execute_http do
-        RestClient::Resource.new(authz_scopes_url(@client_id), @configuration.rest_client_options).post(
+        resource(authz_scopes_url(@client_id)).post(
           create_payload(scope_representation), headers
         )
       end

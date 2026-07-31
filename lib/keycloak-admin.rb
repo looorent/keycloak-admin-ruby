@@ -1,6 +1,8 @@
 require "logger"
 
 require_relative "keycloak-admin/configuration"
+require_relative "keycloak-admin/client/response"
+require_relative "keycloak-admin/client/resource"
 require_relative "keycloak-admin/client/client"
 require_relative "keycloak-admin/client/client_client"
 require_relative "keycloak-admin/client/client_role_client"
@@ -83,7 +85,7 @@ module KeycloakAdmin
       config.use_service_account = true
       config.username            = nil
       config.password            = nil
-      config.rest_client_options = {}
+      config.faraday_options     = {}
     end
   end
 

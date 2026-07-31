@@ -8,7 +8,7 @@ module KeycloakAdmin
 
     def list(client_id)
       response = execute_http do
-        RestClient::Resource.new(clients_url(client_id), @configuration.rest_client_options).get(headers)
+        resource(clients_url(client_id)).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| RoleRepresentation.from_hash(role_as_hash) }
     end

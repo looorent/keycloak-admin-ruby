@@ -42,7 +42,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
           }
         ]
       payload
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return json_payload
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return json_payload
     end
 
     it "lists organizations" do
@@ -53,11 +53,11 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     end
 
     it "passes rest client options" do
-      rest_client_options = {timeout: 10}
-      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
+      faraday_options = {timeout: 10}
+      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
-      expect(RestClient::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/organizations?briefRepresentation=true", rest_client_options).and_call_original
+      expect(KeycloakAdmin::Resource).to receive(:new).with(
+        "http://auth.service.io/auth/admin/realms/valid-realm/organizations?briefRepresentation=true", faraday_options).and_call_original
 
       organizations = @organization_client.list
       expect(organizations.length).to eq 1
@@ -74,7 +74,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
       @organization_client = KeycloakAdmin.realm(realm_name).organizations
       stub_token_client
       json_payload = "2"
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return json_payload
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return json_payload
     end
 
     it "count organizations" do
@@ -163,7 +163,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
           }
         ]
       payload
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return json_payload
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return json_payload
     end
 
     it "list organizations of members organizations" do
@@ -180,7 +180,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     before(:each) do
       @organization_client = KeycloakAdmin.realm(realm_name).organizations
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:delete).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete).and_return ""
     end
 
     it "deletes an organization" do
@@ -189,11 +189,11 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     end
 
     it "raises a delete error" do
-      rest_client_options = {timeout: 10}
-      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
+      faraday_options = {timeout: 10}
+      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
-      expect(RestClient::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/organizations/2904e1a1-e5f4-4143-8725-003e54cc8b58", rest_client_options).and_raise("error")
+      expect(KeycloakAdmin::Resource).to receive(:new).with(
+        "http://auth.service.io/auth/admin/realms/valid-realm/organizations/2904e1a1-e5f4-4143-8725-003e54cc8b58", faraday_options).and_raise("error")
 
       expect { @organization_client.delete("2904e1a1-e5f4-4143-8725-003e54cc8b58") }.to raise_error("error")
     end
@@ -230,7 +230,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
           }
         ]
       payload
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return json_payload
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return json_payload
     end
 
     it "get identity providers" do
@@ -248,7 +248,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     before(:each) do
       @organization_client = KeycloakAdmin.realm(realm_name).organizations
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return ""
     end
 
     it "adds one identity provider" do
@@ -285,7 +285,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
         }
       payload
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return json_payload
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return json_payload
     end
 
     it "get identity provider" do
@@ -320,7 +320,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
           ]
         }
       payload
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return json_payload
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return json_payload
     end
 
     it "get organization" do
@@ -332,11 +332,11 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     end
 
     it "passes rest client options" do
-      rest_client_options = {timeout: 10}
-      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
+      faraday_options = {timeout: 10}
+      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
-      expect(RestClient::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/organizations/8f6e474e-e688-4bec-99ba-5dc862594f4b", rest_client_options).and_call_original
+      expect(KeycloakAdmin::Resource).to receive(:new).with(
+        "http://auth.service.io/auth/admin/realms/valid-realm/organizations/8f6e474e-e688-4bec-99ba-5dc862594f4b", faraday_options).and_call_original
 
       organization = @organization_client.get("8f6e474e-e688-4bec-99ba-5dc862594f4b")
       expect(organization).to be
@@ -351,7 +351,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     before(:each) do
       @organization_client = KeycloakAdmin.realm(realm_name).organizations
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return "2"
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return "2"
     end
 
     it "get count of members" do
@@ -399,7 +399,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
       ]
       payload
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return json_payload
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return json_payload
     end
 
     it "get members" do
@@ -420,7 +420,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     before(:each) do
       @organization_client = KeycloakAdmin.realm(realm_name).organizations
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return ""
     end
 
     it "invites an existing user" do
@@ -434,7 +434,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     before(:each) do
       @organization_client = KeycloakAdmin.realm(realm_name).organizations
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return ""
     end
 
     it "invites an existing user" do
@@ -448,7 +448,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     before(:each) do
       @organization_client = KeycloakAdmin.realm(realm_name).organizations
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:delete).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete).and_return ""
     end
 
     it "deletes a member" do
@@ -478,7 +478,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
         }  
       payload
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return json_payload
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return json_payload
     end
 
     it "gets a member" do
@@ -496,7 +496,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     before(:each) do
       @organization_client = KeycloakAdmin.realm(realm_name).organizations
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return ""
     end
 
     it "creates a member from an existing user" do
@@ -511,7 +511,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     before(:each) do
       @organization_client = KeycloakAdmin.realm(realm_name).organizations
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return ""
     end
 
     it "creates a member from an existing user" do
@@ -553,8 +553,8 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     before(:each) do
       @organization_client = KeycloakAdmin.realm(realm_name).organizations
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:put).and_return ""
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return json_payload
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:put).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return json_payload
     end
 
     it "updates an organization" do
@@ -571,7 +571,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
     before(:each) do
       @organization_client = KeycloakAdmin.realm(realm_name).organizations
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return ""
     end
 
     it "creates an organization" do

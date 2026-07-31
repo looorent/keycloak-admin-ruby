@@ -11,7 +11,7 @@ module KeycloakAdmin
 
     def list
       response = execute_http do
-        RestClient::Resource.new(protocol_mappers_url, @configuration.rest_client_options).get(headers)
+        resource(protocol_mappers_url).get(headers)
       end
 
       JSON.parse(response).map { |h| ProtocolMapperRepresentation.from_hash(h) }
@@ -19,7 +19,7 @@ module KeycloakAdmin
 
     def get(mapper_id)
       response = execute_http do
-        RestClient::Resource.new(protocol_mappers_url(mapper_id), @configuration.rest_client_options).get(headers)
+        resource(protocol_mappers_url(mapper_id)).get(headers)
       end
 
       ProtocolMapperRepresentation.from_hash(JSON.parse(response))
@@ -27,7 +27,7 @@ module KeycloakAdmin
 
     def create!(mapper_representation)
       execute_http do
-        RestClient::Resource.new(protocol_mappers_url, @configuration.rest_client_options).post(
+        resource(protocol_mappers_url).post(
           create_payload(mapper_representation), headers
         )
       end
@@ -37,7 +37,7 @@ module KeycloakAdmin
 
     def save(mapper_representation)
       execute_http do
-        RestClient::Resource.new(protocol_mappers_url(mapper_representation.id), @configuration.rest_client_options).put(
+        resource(protocol_mappers_url(mapper_representation.id)).put(
           create_payload(mapper_representation), headers
         )
       end
@@ -47,7 +47,7 @@ module KeycloakAdmin
 
     def delete(mapper_id)
       execute_http do
-        RestClient::Resource.new(protocol_mappers_url(mapper_id), @configuration.rest_client_options).delete(headers)
+        resource(protocol_mappers_url(mapper_id)).delete(headers)
       end
 
       true

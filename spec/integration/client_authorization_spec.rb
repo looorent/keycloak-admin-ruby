@@ -10,7 +10,7 @@ RSpec.describe 'ClientAuthorization' do
       config.client_realm_name   = "master"
       config.username            = "admin"
       config.password            = "admin"
-      config.rest_client_options = { timeout: 5, verify_ssl: false }
+      config.faraday_options = { request: { timeout: 5 }, ssl: { verify: false } }
     end
   end
 

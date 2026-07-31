@@ -68,7 +68,7 @@ RSpec.describe KeycloakAdmin::IdentityProviderClient do
       @identity_provider_client = KeycloakAdmin.realm(realm_name).identity_providers
 
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return json_response
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return json_response
     end
 
     it "lists identity providers" do
@@ -78,11 +78,11 @@ RSpec.describe KeycloakAdmin::IdentityProviderClient do
     end
 
     it "passes rest client options" do
-      rest_client_options = {timeout: 10}
-      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:rest_client_options).and_return rest_client_options
+      faraday_options = {timeout: 10}
+      allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
-      expect(RestClient::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/identity-provider/instances", rest_client_options).and_call_original
+      expect(KeycloakAdmin::Resource).to receive(:new).with(
+        "http://auth.service.io/auth/admin/realms/valid-realm/identity-provider/instances", faraday_options).and_call_original
 
       identity_providers = @identity_provider_client.list
       expect(identity_providers.length).to eq 1

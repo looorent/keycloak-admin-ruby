@@ -8,14 +8,14 @@ module KeycloakAdmin
 
     def get(id)
       response = execute_http do
-        RestClient::Resource.new(clients_url(id), @configuration.rest_client_options).get(headers)
+        resource(clients_url(id)).get(headers)
       end
       ClientRepresentation.from_hash(JSON.parse(response))
     end
 
     def save(client_representation)
       execute_http do
-        RestClient::Resource.new(clients_url, @configuration.rest_client_options).post(
+        resource(clients_url).post(
           create_payload(client_representation), headers
         )
       end
@@ -23,7 +23,7 @@ module KeycloakAdmin
 
     def list
       response = execute_http do
-        RestClient::Resource.new(clients_url, @configuration.rest_client_options).get(headers)
+        resource(clients_url).get(headers)
       end
       JSON.parse(response).map { |client_as_hash| ClientRepresentation.from_hash(client_as_hash) }
     end
@@ -34,14 +34,14 @@ module KeycloakAdmin
 
     def delete(id)
       execute_http do
-        RestClient::Resource.new(clients_url(id), @configuration.rest_client_options).delete(headers)
+        resource(clients_url(id)).delete(headers)
       end
       true
     end
 
     def update(client_representation)
       execute_http do
-        RestClient::Resource.new(clients_url(client_representation.id), @configuration.rest_client_options).put(
+        resource(clients_url(client_representation.id)).put(
           create_payload(client_representation), headers
         )
       end
@@ -51,7 +51,7 @@ module KeycloakAdmin
 
     def get_service_account_user(client_id)
       response = execute_http do
-        RestClient::Resource.new(service_account_user_url(client_id), @configuration.rest_client_options).get(headers)
+        resource(service_account_user_url(client_id)).get(headers)
       end
       UserRepresentation.from_hash(JSON.parse(response))
     end

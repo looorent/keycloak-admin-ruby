@@ -9,28 +9,28 @@ module KeycloakAdmin
     # This endpoint does not return members
     def list(brief_representation=true, exact=nil, first=nil, max=nil, query=nil, search=nil)
       response = execute_http do
-        RestClient::Resource.new(organizations_url_with_parameters(brief_representation, exact, first, max, query, search), @configuration.rest_client_options).get(headers)
+        resource(organizations_url_with_parameters(brief_representation, exact, first, max, query, search)).get(headers)
       end
       JSON.parse(response).map { |organization_as_hash| OrganizationRepresentation.from_hash(organization_as_hash) }
     end
 
     def count(exact=nil, query=nil, search=nil)
       response = execute_http do
-        RestClient::Resource.new(count_url(exact, query, search), @configuration.rest_client_options).get(headers)
+        resource(count_url(exact, query, search)).get(headers)
       end
       response.to_i
     end
 
     def delete(organization_id)
       execute_http do
-        RestClient::Resource.new(organization_url(organization_id), @configuration.rest_client_options).delete(headers)
+        resource(organization_url(organization_id)).delete(headers)
       end
       true
     end
 
     def update(organization_representation)
       execute_http do
-        RestClient::Resource.new(organization_url(organization_representation.id), @configuration.rest_client_options).put(
+        resource(organization_url(organization_representation.id)).put(
           create_payload(organization_representation), headers
         )
       end
@@ -45,7 +45,7 @@ module KeycloakAdmin
     # This operation does not associate members and identity providers
     def save(organization_representation)
       execute_http do
-        RestClient::Resource.new(organizations_url, @configuration.rest_client_options).post(
+        resource(organizations_url).post(
           create_payload(organization_representation), headers
         )
       end
@@ -54,14 +54,14 @@ module KeycloakAdmin
 
     def get(organization_id)
       response = execute_http do
-        RestClient::Resource.new(organization_url(organization_id), @configuration.rest_client_options).get(headers)
+        resource(organization_url(organization_id)).get(headers)
       end
       OrganizationRepresentation.from_hash(JSON.parse(response))
     end
 
     def identity_providers(organization_id)
       response = execute_http do
-        RestClient::Resource.new(identity_providers_url(organization_id), @configuration.rest_client_options).get(headers)
+        resource(identity_providers_url(organization_id)).get(headers)
       end
       JSON.parse(response).map { |idp_as_hash| IdentityProviderRepresentation.from_hash(idp_as_hash) }
     end
@@ -69,7 +69,7 @@ module KeycloakAdmin
     def get_identity_provider(organization_id, identity_provider_alias)
       raise ArgumentError.new("identity_provider_alias must be defined") if identity_provider_alias.nil?
       response = execute_http do
-        RestClient::Resource.new("#{identity_providers_url(organization_id)}/#{identity_provider_alias}", @configuration.rest_client_options).get(headers)
+        resource("#{identity_providers_url(organization_id)}/#{identity_provider_alias}").get(headers)
       end
       IdentityProviderRepresentation.from_hash(JSON.parse(response))
     end
@@ -77,28 +77,28 @@ module KeycloakAdmin
     def add_identity_provider(organization_id, identity_provider_alias)
       raise ArgumentError.new("identity_provider_alias must be defined") if identity_provider_alias.nil?
       execute_http do
-        RestClient::Resource.new(identity_providers_url(organization_id), @configuration.rest_client_options).post(identity_provider_alias, headers)
+        resource(identity_providers_url(organization_id)).post(identity_provider_alias, headers)
       end
       true
     end
 
     def delete_identity_provider(organization_id, identity_provider_alias)
       execute_http do
-        RestClient::Resource.new(identity_provider_url(organization_id, identity_provider_alias), @configuration.rest_client_options).delete(headers)
+        resource(identity_provider_url(organization_id, identity_provider_alias)).delete(headers)
       end
       true
     end
 
     def members_count(organization_id)
       response = execute_http do
-        RestClient::Resource.new(members_count_url(organization_id), @configuration.rest_client_options).get(headers)
+        resource(members_count_url(organization_id)).get(headers)
       end
       response.to_i
     end
 
     def members(organization_id, exact=nil, first=nil, max=nil, membership_type=nil, search=nil)
       response = execute_http do
-        RestClient::Resource.new(members_url_with_query_parameters(organization_id, exact, first, max, membership_type, search), @configuration.rest_client_options).get(headers)
+        resource(members_url_with_query_parameters(organization_id, exact, first, max, membership_type, search)).get(headers)
       end
       JSON.parse(response).map { |member_as_hash| MemberRepresentation.from_hash(member_as_hash) }
     end
@@ -106,14 +106,14 @@ module KeycloakAdmin
     def invite_existing_user(organization_id, user_id)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
       execute_http do
-        RestClient::Resource.new(invite_existing_user_url(organization_id), @configuration.rest_client_options).post({id: user_id}, headers.merge(content_type: "application/x-www-form-urlencoded"))
+        resource(invite_existing_user_url(organization_id)).post({id: user_id}, headers.merge(content_type: "application/x-www-form-urlencoded"))
       end
       true
     end
 
     def invite_user(organization_id, email, first_name, last_name)
       execute_http do
-        RestClient::Resource.new(invite_user_url(organization_id), @configuration.rest_client_options).post({
+        resource(invite_user_url(organization_id)).post({
           email: email,
           firstName: first_name,
           lastName: last_name
@@ -125,28 +125,28 @@ module KeycloakAdmin
     def add_member(organization_id, user_id)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
       execute_http do
-        RestClient::Resource.new(members_url(organization_id), @configuration.rest_client_options).post(user_id, headers)
+        resource(members_url(organization_id)).post(user_id, headers)
       end
       true
     end
 
     def delete_member(organization_id, member_id)
       execute_http do
-        RestClient::Resource.new(member_url(organization_id, member_id), @configuration.rest_client_options).delete(headers)
+        resource(member_url(organization_id, member_id)).delete(headers)
       end
       true
     end
 
     def get_member(organization_id, member_id)
       response = execute_http do
-        RestClient::Resource.new(member_url(organization_id, member_id), @configuration.rest_client_options).get(headers)
+        resource(member_url(organization_id, member_id)).get(headers)
       end
       MemberRepresentation.from_hash(JSON.parse(response))
     end
 
     def associated_with_member(member_id, brief_representation=true)
       response = execute_http do
-        RestClient::Resource.new(associated_with_member_url(member_id, brief_representation), @configuration.rest_client_options).get(headers)
+        resource(associated_with_member_url(member_id, brief_representation)).get(headers)
       end
       JSON.parse(response).map { |organization_as_hash| OrganizationRepresentation.from_hash(organization_as_hash) }
     end

@@ -33,7 +33,7 @@ RSpec.describe KeycloakAdmin::ClientScopeProtocolMapperClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return stub_response
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return stub_response
     end
 
     context "with a hardcoded claim mapper" do
@@ -77,7 +77,7 @@ RSpec.describe KeycloakAdmin::ClientScopeProtocolMapperClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return stub_response
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return stub_response
     end
 
     context "with a hardcoded claim mapper" do
@@ -130,7 +130,7 @@ RSpec.describe KeycloakAdmin::ClientScopeProtocolMapperClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return stub_response
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return stub_response
     end
 
     context "with a hardcoded claim mapper" do
@@ -177,14 +177,14 @@ RSpec.describe KeycloakAdmin::ClientScopeProtocolMapperClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:put).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:put).and_return ""
     end
 
     context "with a hardcoded claim mapper" do
       let(:mapper_representation) { KeycloakAdmin::ProtocolMapperRepresentation.from_hash(JSON.parse(mapper_json)) }
 
       it "calls put on the mapper url" do
-        expect_any_instance_of(RestClient::Resource).to receive(:put).with(anything, anything)
+        expect_any_instance_of(KeycloakAdmin::Resource).to receive(:put).with(anything, anything)
         @client.save(mapper_representation)
       end
     end
@@ -193,7 +193,7 @@ RSpec.describe KeycloakAdmin::ClientScopeProtocolMapperClient do
       let(:mapper_representation) { KeycloakAdmin::ProtocolMapperRepresentation.from_hash(JSON.parse(audience_mapper_json)) }
 
       it "calls put on the mapper url" do
-        expect_any_instance_of(RestClient::Resource).to receive(:put).with(anything, anything)
+        expect_any_instance_of(KeycloakAdmin::Resource).to receive(:put).with(anything, anything)
         @client.save(mapper_representation)
       end
     end
@@ -203,7 +203,7 @@ RSpec.describe KeycloakAdmin::ClientScopeProtocolMapperClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scope_protocol_mappers(client_scope_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:delete).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete).and_return ""
     end
 
     it "returns true" do

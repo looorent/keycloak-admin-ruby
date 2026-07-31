@@ -1,5 +1,3 @@
-require "rest-client"
-
 module KeycloakAdmin
   class TokenClient < Client
     def initialize(configuration, realm_client)
@@ -18,7 +16,7 @@ module KeycloakAdmin
 
     def get
       response = execute_http do
-        RestClient::Resource.new(token_url, @configuration.rest_client_options).post(
+        resource(token_url).post(
           @configuration.body_for_token_retrieval,
           @configuration.headers_for_token_retrieval
         )

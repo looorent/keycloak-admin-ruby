@@ -8,17 +8,17 @@ module KeycloakAdmin
 
     def list
       response = execute_http do
-        RestClient::Resource.new(roles_url, @configuration.rest_client_options).get(headers)
+        resource(roles_url).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| RoleRepresentation.from_hash(role_as_hash) }
     end
-    
+
     # Returns the role representation for the specified role name
     def get(name)
       # allows special characters in the name like space
       name = URI.encode_uri_component(name)
       response = execute_http do
-        RestClient::Resource.new(role_name_url(name), @configuration.rest_client_options).get(headers)
+        resource(role_name_url(name)).get(headers)
       end
       RoleRepresentation.from_hash JSON.parse(response)
     end
@@ -28,7 +28,7 @@ module KeycloakAdmin
       # allows special characters in the name like space
       name = URI.encode_uri_component(name)
       response = execute_http do
-        RestClient::Resource.new("#{role_name_url(name)}/groups", @configuration.rest_client_options).get(headers)
+        resource("#{role_name_url(name)}/groups").get(headers)
       end
       JSON.parse(response).map { |role_as_hash| GroupRepresentation.from_hash(role_as_hash) }
     end
@@ -37,9 +37,9 @@ module KeycloakAdmin
       execute_http do
         payload = create_payload(role_representation)
         if role_representation.id
-          RestClient::Resource.new(role_id_url(role_representation.id), @configuration.rest_client_options).put(payload, headers)
+          resource(role_id_url(role_representation.id)).put(payload, headers)
         else
-          RestClient::Resource.new(roles_url, @configuration.rest_client_options).post(payload, headers)
+          resource(roles_url).post(payload, headers)
         end
       end
     end

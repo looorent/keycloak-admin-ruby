@@ -24,7 +24,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeClient do
     before(:each) do
       @client_authz_scope = KeycloakAdmin.realm(realm_name).authz_scopes(client_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return '{"id":"c0779ce3-0900-4ea3-b1d6-b23e1f19c662","name":"GET","iconUri":"http://asdfasd1","displayName":"GET authz scope"}'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return '{"id":"c0779ce3-0900-4ea3-b1d6-b23e1f19c662","name":"GET","iconUri":"http://asdfasd1","displayName":"GET authz scope"}'
     end
 
     it "returns created authz scope" do
@@ -42,7 +42,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeClient do
     before(:each) do
       @client_authz_scope = KeycloakAdmin.realm(realm_name).authz_scopes(client_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '[{"id":"c0779ce3-0900-4ea3-b1d6-b23e1f19c662","name":"GET","iconUri":"http://asdfasd1","displayName":"GET authz scope"},{"id":"d0779ce3-0900-4ea3-b1d6-b23e1f19c662","name":"POST","iconUri":"http://asdfasd2","displayName":"POST authz scope"}]'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"c0779ce3-0900-4ea3-b1d6-b23e1f19c662","name":"GET","iconUri":"http://asdfasd1","displayName":"GET authz scope"},{"id":"d0779ce3-0900-4ea3-b1d6-b23e1f19c662","name":"POST","iconUri":"http://asdfasd2","displayName":"POST authz scope"}]'
     end
 
     it "returns list of authz scopes" do
@@ -63,7 +63,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeClient do
     before(:each) do
       @client_authz_scope = KeycloakAdmin.realm(realm_name).authz_scopes(client_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:delete).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete).and_return ""
     end
 
     it "returns true" do
@@ -79,7 +79,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeClient do
     before(:each) do
       @client_authz_scope = KeycloakAdmin.realm(realm_name).authz_scopes(client_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '{"id":"c0779ce3-0900-4ea3-b1d6-b23e1f19c662","name":"GET","iconUri":"http://asdfasd1","displayName":"GET authz scope"}'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '{"id":"c0779ce3-0900-4ea3-b1d6-b23e1f19c662","name":"GET","iconUri":"http://asdfasd1","displayName":"GET authz scope"}'
     end
 
     it "returns authz scope" do
@@ -98,7 +98,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzScopeClient do
     before(:each) do
       @client_authz_scope = KeycloakAdmin.realm(realm_name).authz_scopes(client_id)
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return '[{"id":"c0779ce3-0900-4ea3-b1d6-b23e1f19c662","name":"GET","iconUri":"http://asdfasd1","displayName":"GET authz scope"}]'
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"c0779ce3-0900-4ea3-b1d6-b23e1f19c662","name":"GET","iconUri":"http://asdfasd1","displayName":"GET authz scope"}]'
     end
 
     it "returns list of authz scopes" do

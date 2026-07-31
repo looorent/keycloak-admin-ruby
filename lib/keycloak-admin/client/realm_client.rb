@@ -7,21 +7,21 @@ module KeycloakAdmin
 
     def list
       response = execute_http do
-        RestClient::Resource.new(realm_list_url, @configuration.rest_client_options).get(headers)
+        resource(realm_list_url).get(headers)
       end
       JSON.parse(response).map { |realm_as_hash| RealmRepresentation.from_hash(realm_as_hash) }
     end
 
     def delete
       execute_http do
-        RestClient::Resource.new(realm_admin_url, @configuration.rest_client_options).delete(headers)
+        resource(realm_admin_url).delete(headers)
       end
       true
     end
 
     def save(realm_representation)
       execute_http do
-        RestClient::Resource.new(realm_list_url, @configuration.rest_client_options).post(
+        resource(realm_list_url).post(
           create_payload(realm_representation), headers
         )
       end
@@ -29,7 +29,7 @@ module KeycloakAdmin
 
     def update(realm_representation_body)
       execute_http do
-        RestClient::Resource.new(realm_admin_url, @configuration.rest_client_options).put(
+        resource(realm_admin_url).put(
           create_payload(realm_representation_body), headers
         )
       end

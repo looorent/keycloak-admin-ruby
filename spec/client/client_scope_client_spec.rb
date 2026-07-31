@@ -32,7 +32,7 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return stub_response
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return stub_response
     end
 
     context "with one scope" do
@@ -77,7 +77,7 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return stub_response
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return stub_response
     end
 
     context "without protocol mappers" do
@@ -121,7 +121,7 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:post).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return ""
     end
 
     let(:scope_representation) do
@@ -142,13 +142,13 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:put).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:put).and_return ""
     end
 
     let(:scope_representation) { KeycloakAdmin::ClientScopeRepresentation.from_hash(JSON.parse(scope_json)) }
 
     it "calls put on the scope url" do
-      expect_any_instance_of(RestClient::Resource).to receive(:put).with(anything, anything)
+      expect_any_instance_of(KeycloakAdmin::Resource).to receive(:put).with(anything, anything)
       @client.save(scope_representation)
     end
 
@@ -163,7 +163,7 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:get).and_return "[#{scope_json},#{second_scope_json}]"
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return "[#{scope_json},#{second_scope_json}]"
     end
 
     context "when the name matches one scope" do
@@ -193,7 +193,7 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(RestClient::Resource).to receive(:delete).and_return ""
+      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete).and_return ""
     end
 
     it "returns true" do

@@ -13,7 +13,7 @@ module KeycloakAdmin
 
     def save(user_representation)
       execute_http do
-        RestClient::Resource.new(users_url, @configuration.rest_client_options).post(
+        resource(users_url).post(
           create_payload(user_representation), headers
         )
       end
@@ -23,8 +23,8 @@ module KeycloakAdmin
     # pay attention that, since Keycloak 24.0.4, partial updates of attributes are not authorized anymore
     def update(user_id, user_representation_body)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
-      RestClient::Request.execute(
-        @configuration.rest_client_options.merge(
+      Resource.execute(
+        @configuration.faraday_options.merge(
           method: :put,
           url: users_url(user_id),
           payload: create_payload(user_representation_body),
@@ -34,8 +34,8 @@ module KeycloakAdmin
     end
 
     def add_group(user_id, group_id)
-      RestClient::Request.execute(
-        @configuration.rest_client_options.merge(
+      Resource.execute(
+        @configuration.faraday_options.merge(
           method: :put,
           url: "#{users_url(user_id)}/groups/#{group_id}",
           payload: create_payload({}),
@@ -45,8 +45,8 @@ module KeycloakAdmin
     end
 
     def remove_group(user_id, group_id)
-      RestClient::Request.execute(
-        @configuration.rest_client_options.merge(
+      Resource.execute(
+        @configuration.faraday_options.merge(
           method: :delete,
           url: "#{users_url(user_id)}/groups/#{group_id}",
           headers: headers
@@ -56,7 +56,7 @@ module KeycloakAdmin
 
     def add_client_roles_on_user(user_id, client_id, role_representations)
       execute_http do
-        RestClient::Resource.new(user_client_role_mappings_url(user_id, client_id), @configuration.rest_client_options).post(
+        resource(user_client_role_mappings_url(user_id, client_id)).post(
           create_payload(role_representations), headers
         )
       end
@@ -64,7 +64,7 @@ module KeycloakAdmin
 
     def get(user_id)
       response = execute_http do
-        RestClient::Resource.new(users_url(user_id), @configuration.rest_client_options).get(headers)
+        resource(users_url(user_id)).get(headers)
       end
       UserRepresentation.from_hash(JSON.parse(response))
     end
@@ -86,7 +86,7 @@ module KeycloakAdmin
                         end
 
       response = execute_http do
-        RestClient::Resource.new(users_url, @configuration.rest_client_options).get(derived_headers)
+        resource(users_url).get(derived_headers)
       end
       JSON.parse(response).map { |user_as_hash| UserRepresentation.from_hash(user_as_hash) }
     end
@@ -97,22 +97,22 @@ module KeycloakAdmin
 
     def delete(user_id)
       execute_http do
-        RestClient::Resource.new(users_url(user_id), @configuration.rest_client_options).delete(headers)
+        resource(users_url(user_id)).delete(headers)
       end
       true
     end
 
     def groups(user_id)
       response = execute_http do
-        RestClient::Resource.new(groups_url(user_id), @configuration.rest_client_options).get(headers)
+        resource(groups_url(user_id)).get(headers)
       end
       JSON.parse(response).map { |group_as_hash| GroupRepresentation.from_hash(group_as_hash) }
     end
 
     def update_password(user_id, new_password)
       execute_http do
-        RestClient::Request.execute(
-          @configuration.rest_client_options.merge(
+        Resource.execute(
+          @configuration.faraday_options.merge(
             method: :put,
             url: reset_password_url(user_id),
             payload: { type: "password", value: new_password, temporary: false }.to_json,
@@ -125,7 +125,7 @@ module KeycloakAdmin
 
     def credentials(user_id)
       response = execute_http do
-        RestClient::Resource.new(credentials_url(user_id), @configuration.rest_client_options).get(headers)
+        resource(credentials_url(user_id)).get(headers)
       end
       JSON.parse(response).map { |group_as_hash| CredentialRepresentation.from_hash(group_as_hash) }
     end
@@ -140,7 +140,7 @@ module KeycloakAdmin
         lifespan_param = lifespan.nil? ? "" : "&lifespan=#{lifespan.seconds}"
         redirect_uri_param = redirect_uri.nil? ? "" : "&redirect_uri=#{redirect_uri}"
         client_id_param = client_id.nil? ? "" : "client_id=#{client_id}"
-        RestClient.put("#{execute_actions_email_url(user_id)}?#{client_id_param}#{redirect_uri_param}#{lifespan_param}", create_payload(actions), headers)
+        Resource.put("#{execute_actions_email_url(user_id)}?#{client_id_param}#{redirect_uri_param}#{lifespan_param}", create_payload(actions), headers)
       end
       user_id
     end
@@ -148,8 +148,8 @@ module KeycloakAdmin
     def impersonate(user_id)
       impersonation = get_redirect_impersonation(user_id)
       response = execute_http do
-        RestClient::Request.execute(
-          @configuration.rest_client_options.merge(
+        Resource.execute(
+          @configuration.faraday_options.merge(
             method: :post,
             url: impersonation.impersonation_url,
             payload: impersonation.body.to_json,
@@ -164,7 +164,7 @@ module KeycloakAdmin
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
 
       response = execute_http do
-        RestClient::Resource.new("#{users_url(user_id)}/sessions", @configuration.rest_client_options).get(headers)
+        resource("#{users_url(user_id)}/sessions").get(headers)
       end
       JSON.parse(response).map { |session_as_hash| SessionRepresentation.from_hash(session_as_hash) }
     end
@@ -173,8 +173,8 @@ module KeycloakAdmin
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
 
       execute_http do
-        RestClient::Request.execute(
-          @configuration.rest_client_options.merge(
+        Resource.execute(
+          @configuration.faraday_options.merge(
             method: :post,
             url: logout_url(user_id),
             headers: headers
@@ -195,8 +195,8 @@ module KeycloakAdmin
       fed_id_rep.identity_provider = idp_id
 
       execute_http do
-        RestClient::Request.execute(
-          @configuration.rest_client_options.merge(
+        Resource.execute(
+          @configuration.faraday_options.merge(
             method: :post,
             url: federated_identity_url(user_id, idp_id),
             payload: fed_id_rep.to_json,
@@ -208,7 +208,7 @@ module KeycloakAdmin
 
     def unlink_idp(user_id, idp_id)
       execute_http do
-        RestClient::Resource.new(federated_identity_url(user_id, idp_id), @configuration.rest_client_options).delete(headers)
+        resource(federated_identity_url(user_id, idp_id)).delete(headers)
       end
     end
 

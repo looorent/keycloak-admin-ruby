@@ -8,14 +8,14 @@ module KeycloakAdmin
 
     def list_available
       response = execute_http do
-        RestClient::Resource.new(list_available_url, @configuration.rest_client_options).get(headers)
+        resource(list_available_url).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| RoleRepresentation.from_hash(role_as_hash) }
     end
 
     def save(role_representation_list)
       execute_http do
-        RestClient::Resource.new(base_url, @configuration.rest_client_options).post(
+        resource(base_url).post(
           create_payload(role_representation_list), headers
         )
       end

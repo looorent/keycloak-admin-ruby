@@ -16,8 +16,8 @@ module KeycloakAdmin
 
     def exchange_with(user_access_token, token_lifespan_in_seconds)
       response = execute_http do
-        RestClient::Request.execute(
-          @configuration.rest_client_options.merge(
+        Resource.execute(
+          @configuration.faraday_options.merge(
             method: :post,
             url: token_url,
             payload: { tokenLifespanInSeconds: token_lifespan_in_seconds }.to_json,

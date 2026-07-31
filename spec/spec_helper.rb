@@ -27,11 +27,3 @@ def stub_token_client
     "refresh_expires_in", "id_token", "not_before_policy", "session_state"
   )
 end
-
-def stub_net_http_res(res_class, code, message)
-  net_http_res = double(message:  message, code: code)
-  allow(net_http_res).to receive(:is_a?) do |target_class|
-    target_class == res_class
-  end
-  allow(@response).to receive(:net_http_res).and_return(net_http_res)
-end

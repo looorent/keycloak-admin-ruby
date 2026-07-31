@@ -18,7 +18,7 @@ module KeycloakAdmin
 
     def save(policy_representation)
       execute_http do
-        RestClient::Resource.new(authz_policy_url(@client_id, @type), @configuration.rest_client_options).post(
+        resource(authz_policy_url(@client_id, @type)).post(
           create_payload(policy_representation), headers
         )
       end
@@ -26,7 +26,7 @@ module KeycloakAdmin
 
     def get(policy_id)
       response = execute_http do
-        RestClient::Resource.new(authz_policy_url(@client_id, @type, policy_id), @configuration.rest_client_options).get(headers)
+        resource(authz_policy_url(@client_id, @type, policy_id)).get(headers)
       end
       ClientAuthzPolicyRepresentation.from_hash(JSON.parse(response))
     end
@@ -34,21 +34,21 @@ module KeycloakAdmin
     def find_by(name, type)
       response = execute_http do
         url = "#{authz_policy_url(@client_id, @type)}?permission=false&name=#{name}&type=#{type}&first=0&max=11"
-        RestClient::Resource.new(url, @configuration.rest_client_options).get(headers)
+        resource(url).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzPolicyRepresentation.from_hash(role_as_hash) }
     end
 
     def delete(policy_id)
       execute_http do
-        RestClient::Resource.new(authz_policy_url(@client_id, @type, policy_id), @configuration.rest_client_options).delete(headers)
+        resource(authz_policy_url(@client_id, @type, policy_id)).delete(headers)
       end
       true
     end
 
     def list
       response = execute_http do
-        RestClient::Resource.new(authz_policy_url(@client_id, @type), @configuration.rest_client_options).get(headers)
+        resource(authz_policy_url(@client_id, @type)).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzPolicyRepresentation.from_hash(role_as_hash) }
     end

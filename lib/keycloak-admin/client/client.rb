@@ -23,15 +23,15 @@ module KeycloakAdmin
 
     def execute_http
       yield
-    rescue RestClient::Exceptions::Timeout => e
+    rescue Faraday::TimeoutError
       raise
-    rescue RestClient::ExceptionWithResponse => e
+    rescue Faraday::ClientError, Faraday::ServerError => e
       http_error(e.response)
     end
 
     def created_id(response)
-      unless response.net_http_res.is_a? Net::HTTPCreated
-        raise "Create method returned status #{response.net_http_res.message} (Code: #{response.net_http_res.code}); expected status: Created (201)"
+      unless response.status == 201
+        raise "Create method returned status #{response.reason_phrase} (Code: #{response.status}); expected status: Created (201)"
       end
       (_head, _separator, id) = response.headers[:location].rpartition("/")
       id
@@ -49,8 +49,12 @@ module KeycloakAdmin
 
     private
 
+    def resource(url)
+      Resource.new(url, @configuration.faraday_options)
+    end
+
     def http_error(response)
-      raise "Keycloak: The request failed with response code #{response.code} and message: #{response.body}"
+      raise "Keycloak: The request failed with response code #{response[:status]} and message: #{response[:body]}"
     end
   end
 end

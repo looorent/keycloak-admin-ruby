@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0] - 2026-07-31
 
+* [Breaking] Replaced `rest-client` with `Faraday` as the underlying HTTP library. This should be transparent for callers of this gem's own API, but `config.rest_client_options` is renamed to `config.faraday_options` and its shape changes from rest-client's flat hash to Faraday's connection options (e.g. `{ timeout: 5 }` becomes `{ request: { timeout: 5 } }`, `{ verify_ssl: false }` becomes `{ ssl: { verify: false } }`). See the `Configuration` section of the README.
 * [Fix] `GroupClient#remove_realm_level_role_name!` used Ruby 3.1 hash value omission
 * [Fix] Strip trailing slashes from the configured `server_url`. Keycloak 26 rejects non-normalized request paths with `400 {"error":"missingNormalization"}`, so a `server_url` such as `http://localhost:8080/` produced an unusable `//realms/...` path. Earlier Keycloak versions tolerated it.
 * [Chore] `required_ruby_version` is now `>= 3.1` instead of `>= 2.3`
