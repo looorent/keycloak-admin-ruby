@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    keycloak-admin (2.0.0)
+    keycloak-admin (2.0.1)
       base64
       faraday (~> 2.0)
       http-cookie (~> 1.0, >= 1.0.3)

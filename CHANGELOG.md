@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [2.0.1] - 2026-07-31
 
 * [Feature] Requests are now logged through `config.logger` (method, URL, and response status) via Faraday's `:logger` middleware.
 * [Feature] The access token is now cached and reused (tracking `expires_in`) instead of being fetched before nearly every call. Previously, caching lived on the `Client` instance, but a fresh `Client` subclass is created for almost every call (e.g. `KeycloakAdmin.realm(x).users` builds a new `UserClient`), so the cache was rarely hit in practice; it now lives on the shared `Configuration`.

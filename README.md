@@ -16,7 +16,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "2.0.0"
+gem "keycloak-admin", "2.0.1"
 ```
 
 ## Login
