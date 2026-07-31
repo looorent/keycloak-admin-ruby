@@ -9,8 +9,11 @@ module KeycloakAdmin
       @configuration.server_url&.sub(/\/+\z/, "")
     end
 
+    # Cached on @configuration, not on this instance, since a new Client subclass is
+    # created for nearly every call (e.g. KeycloakAdmin.realm(x).users creates a fresh
+    # UserClient) - caching here alone would fetch a new token on almost every request.
     def current_token
-      @current_token ||= KeycloakAdmin.create_client(@configuration, @configuration.client_realm_name).token.get
+      @configuration.cached_token || @configuration.cache_token(fetch_token)
     end
 
     def headers
@@ -48,6 +51,10 @@ module KeycloakAdmin
     end
 
     private
+
+    def fetch_token
+      KeycloakAdmin.create_client(@configuration, @configuration.client_realm_name).token.get
+    end
 
     def resource(url)
       Resource.new(url, @configuration.faraday_options, @configuration.logger)

@@ -23,6 +23,46 @@ RSpec.describe KeycloakAdmin::Client do
     end
   end
 
+  describe "#current_token" do
+    def token(expires_in)
+      KeycloakAdmin::TokenRepresentation.new(
+        "access_token", "bearer", expires_in, "refresh_token",
+        "refresh_expires_in", "id_token", "not_before_policy", "session_state"
+      )
+    end
+
+    it "fetches once and reuses the cached token across Client instances sharing the same configuration" do
+      configuration = KeycloakAdmin.config
+      configuration.clear_cached_token!
+      allow_any_instance_of(KeycloakAdmin::TokenClient).to receive(:get).and_return(token(3600))
+
+      first  = KeycloakAdmin::Client.new(configuration).current_token
+      second = KeycloakAdmin::Client.new(configuration).current_token
+
+      expect(first).to be second
+      expect(second).to be second
+    end
+
+    it "fetches a new token once the cached one has expired" do
+      configuration = KeycloakAdmin.config
+      configuration.clear_cached_token!
+      # allow_any_instance_of's sequential and_return(a, b) tracks call count per instance,
+      # and a fresh TokenClient is built on every fetch, so a plain external counter is used
+      # instead to force the first fetch to be pre-expired and the second one not to be.
+      call_count = 0
+      allow_any_instance_of(KeycloakAdmin::TokenClient).to receive(:get) do
+        call_count += 1
+        call_count == 1 ? token(5) : token(3600)
+      end
+
+      expired_immediately = KeycloakAdmin::Client.new(configuration).current_token
+      refreshed            = KeycloakAdmin::Client.new(configuration).current_token
+
+      expect(expired_immediately).to_not be refreshed
+      expect(call_count).to eq 2
+    end
+  end
+
   describe "#resource" do
     it "builds a Resource with the configuration's faraday_options and logger" do
       configuration = KeycloakAdmin::Configuration.new

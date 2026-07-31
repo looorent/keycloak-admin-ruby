@@ -19,11 +19,18 @@ RSpec.configure do |config|
   end
 
   configure
+
+  # KeycloakAdmin.config is a global set up once for the whole suite (see 'configure'
+  # above), not per example, so a token cached in one example would otherwise leak into
+  # the next one and silently skip its stub_token_client expectations.
+  config.before(:each) do
+    KeycloakAdmin.config.clear_cached_token!
+  end
 end
 
 def stub_token_client
   allow_any_instance_of(KeycloakAdmin::TokenClient).to receive(:get).and_return KeycloakAdmin::TokenRepresentation.new(
-    "test_access_token", "token_type", "expires_in", "refresh_token",
+    "test_access_token", "token_type", 3600, "refresh_token",
     "refresh_expires_in", "id_token", "not_before_policy", "session_state"
   )
 end

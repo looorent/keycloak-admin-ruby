@@ -68,6 +68,43 @@ RSpec.describe KeycloakAdmin::RealmClient do
     end
   end
 
+  describe "#cached_token / #cache_token / #clear_cached_token!" do
+    def token(expires_in)
+      KeycloakAdmin::TokenRepresentation.new(
+        "access_token", "bearer", expires_in, "refresh_token",
+        "refresh_expires_in", "id_token", "not_before_policy", "session_state"
+      )
+    end
+
+    it "has no cached token initially" do
+      expect(@configuration.cached_token).to be_nil
+    end
+
+    it "returns the token it was given, while it is still within its expiry" do
+      cached = @configuration.cache_token(token(3600))
+      expect(cached.access_token).to eq "access_token"
+      expect(@configuration.cached_token).to eq cached
+    end
+
+    it "treats a token as expired a bit before its real expiry, not just after" do
+      # expires_in: 5, minus the 10s safety margin, is already in the past the moment it is cached.
+      @configuration.cache_token(token(5))
+      expect(@configuration.cached_token).to be_nil
+    end
+
+    it "does not cache a token with a non-numeric expires_in, but still returns it" do
+      returned = @configuration.cache_token(token("not-a-number"))
+      expect(returned.access_token).to eq "access_token"
+      expect(@configuration.cached_token).to be_nil
+    end
+
+    it "clears the cache" do
+      @configuration.cache_token(token(3600))
+      @configuration.clear_cached_token!
+      expect(@configuration.cached_token).to be_nil
+    end
+  end
+
   describe "#body_for_token_retrieval" do
     before(:each) do
       @body = @configuration.body_for_token_retrieval
