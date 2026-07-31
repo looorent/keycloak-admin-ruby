@@ -145,7 +145,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/users", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/users", faraday_options, anything).and_call_original
 
       expect(@user_client.save(user)).to eq user
     end
@@ -171,7 +171,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user_id", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user_id", faraday_options, anything).and_call_original
 
       user = @user_client.get('test_user_id')
       expect(user.username).to eq 'test_username'
@@ -217,7 +217,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/users", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/users", faraday_options, anything).and_call_original
 
       users = @user_client.search("test_username")
       expect(users.length).to eq 1
@@ -250,7 +250,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/users", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/users", faraday_options, anything).and_call_original
 
       users = @user_client.list
       expect(users.length).to eq 1
@@ -277,7 +277,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user_id", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user_id", faraday_options, anything).and_call_original
 
       @user_client.delete('test_user_id')
     end

@@ -50,7 +50,7 @@ module KeycloakAdmin
     private
 
     def resource(url)
-      Resource.new(url, @configuration.faraday_options)
+      Resource.new(url, @configuration.faraday_options, @configuration.logger)
     end
 
     def http_error(response)

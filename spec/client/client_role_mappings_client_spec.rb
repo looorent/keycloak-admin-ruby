@@ -37,7 +37,8 @@ RSpec.describe KeycloakAdmin::ClientRoleMappingsClient do
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
         "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/clients/test_client/available",
-        faraday_options
+        faraday_options,
+        anything
       ).and_call_original
 
       roles = @client_role_mappings_client.list_available
@@ -74,7 +75,7 @@ RSpec.describe KeycloakAdmin::ClientRoleMappingsClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/clients/test_client", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/clients/test_client", faraday_options, anything).and_call_original
 
       @client_role_mappings_client.save(role_list)
     end

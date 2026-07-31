@@ -57,7 +57,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/organizations?briefRepresentation=true", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/organizations?briefRepresentation=true", faraday_options, anything).and_call_original
 
       organizations = @organization_client.list
       expect(organizations.length).to eq 1
@@ -193,7 +193,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/organizations/2904e1a1-e5f4-4143-8725-003e54cc8b58", faraday_options).and_raise("error")
+        "http://auth.service.io/auth/admin/realms/valid-realm/organizations/2904e1a1-e5f4-4143-8725-003e54cc8b58", faraday_options, anything).and_raise("error")
 
       expect { @organization_client.delete("2904e1a1-e5f4-4143-8725-003e54cc8b58") }.to raise_error("error")
     end
@@ -336,7 +336,7 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/organizations/8f6e474e-e688-4bec-99ba-5dc862594f4b", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/organizations/8f6e474e-e688-4bec-99ba-5dc862594f4b", faraday_options, anything).and_call_original
 
       organization = @organization_client.get("8f6e474e-e688-4bec-99ba-5dc862594f4b")
       expect(organization).to be

@@ -54,7 +54,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       stub_post
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/realms/valid-realm/protocol/openid-connect/token", faraday_options).and_call_original
+        "http://auth.service.io/auth/realms/valid-realm/protocol/openid-connect/token", faraday_options, anything).and_call_original
 
       @token_client.get
     end

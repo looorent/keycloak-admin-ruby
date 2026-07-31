@@ -86,7 +86,7 @@ RSpec.describe KeycloakAdmin::ClientClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/clients", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/clients", faraday_options, anything).and_call_original
 
       clients = @client_client.list
       expect(clients.length).to eq 1
@@ -126,7 +126,7 @@ RSpec.describe KeycloakAdmin::ClientClient do
       faraday_options = {timeout: 10}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/clients/95b45037-3980-404c-ba12-784fa1baf2c2", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/clients/95b45037-3980-404c-ba12-784fa1baf2c2", faraday_options, anything).and_call_original
       @client_client.delete("95b45037-3980-404c-ba12-784fa1baf2c2")
     end
   end

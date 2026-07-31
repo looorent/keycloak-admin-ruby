@@ -14,16 +14,18 @@ module KeycloakAdmin
       url     = options.delete(:url)
       payload = options.delete(:payload)
       headers = options.delete(:headers) || {}
-      new(url, options).send(:request, method, payload, headers)
+      logger  = options.delete(:logger)
+      new(url, options, logger).send(:request, method, payload, headers)
     end
 
-    def self.put(url, payload, headers = {})
-      new(url, {}).put(payload, headers)
+    def self.put(url, payload, headers = {}, logger = nil)
+      new(url, {}, logger).put(payload, headers)
     end
 
-    def initialize(url, options = {})
+    def initialize(url, options = {}, logger = nil)
       @url     = url
       @options = options || {}
+      @logger  = logger
     end
 
     def get(headers = {})
@@ -68,6 +70,11 @@ module KeycloakAdmin
     def connection
       Faraday.new(url: @url, **@options) do |f|
         f.response :raise_error
+        # Added after :raise_error so it logs the raw response (status/duration) before
+        # :raise_error can raise, including on failures. Faraday's logger middleware logs
+        # headers by default, which would print the bearer token on every call; headers: false
+        # keeps this to method/url/status only. Bodies are already off by Faraday's own default.
+        f.response :logger, @logger, headers: false if @logger
         f.adapter Faraday.default_adapter
       end
     end

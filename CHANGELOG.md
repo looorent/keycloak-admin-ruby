@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [Feature] Requests are now logged through `config.logger` (method, URL, and response status) via Faraday's `:logger` middleware.
 * Publish the gem to RubyGems from Github Actions when a `v*` tag is pushed, using RubyGems' Trusted Publishing
 
 ## [2.0.0] - 2026-07-31

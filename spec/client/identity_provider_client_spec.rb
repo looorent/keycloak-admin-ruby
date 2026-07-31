@@ -82,7 +82,7 @@ RSpec.describe KeycloakAdmin::IdentityProviderClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/identity-provider/instances", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/identity-provider/instances", faraday_options, anything).and_call_original
 
       identity_providers = @identity_provider_client.list
       expect(identity_providers.length).to eq 1

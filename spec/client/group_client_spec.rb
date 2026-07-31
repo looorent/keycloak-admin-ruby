@@ -43,7 +43,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/groups/test_group_id", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/groups/test_group_id", faraday_options, anything).and_call_original
 
       group = @group_client.get("test_group_id")
       expect(group.id).to eq "test_group_id"
@@ -72,7 +72,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/groups", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/groups", faraday_options, anything).and_call_original
 
       groups = @group_client.list
       expect(groups.length).to eq 1
@@ -102,7 +102,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/groups/parent_group_id/children", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/groups/parent_group_id/children", faraday_options, anything).and_call_original
 
       groups = @group_client.children("parent_group_id")
       expect(groups.length).to eq 1
@@ -142,7 +142,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
         allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
         expect(KeycloakAdmin::Resource).to receive(:new).with(
-          "http://auth.service.io/auth/admin/realms/valid-realm/groups", faraday_options).and_call_original
+          "http://auth.service.io/auth/admin/realms/valid-realm/groups", faraday_options, anything).and_call_original
 
         @group_client.save(group)
       end
@@ -172,7 +172,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
         allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
         expect(KeycloakAdmin::Resource).to receive(:new).with(
-          "http://auth.service.io/auth/admin/realms/valid-realm/groups/test_group_id", faraday_options).and_call_original
+          "http://auth.service.io/auth/admin/realms/valid-realm/groups/test_group_id", faraday_options, anything).and_call_original
 
         @group_client.save(group)
       end
@@ -250,7 +250,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/groups/test_group_id", faraday_options).and_raise("error")
+        "http://auth.service.io/auth/admin/realms/valid-realm/groups/test_group_id", faraday_options, anything).and_raise("error")
 
       expect { @group_client.delete("test_group_id") }.to raise_error("error")
     end

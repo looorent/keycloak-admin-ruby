@@ -27,7 +27,8 @@ module KeycloakAdmin
             method: :delete,
             url: realm_level_url,
             payload: create_payload(role_representation_list),
-            headers: headers
+            headers: headers,
+            logger: @configuration.logger
           )
         )
       end

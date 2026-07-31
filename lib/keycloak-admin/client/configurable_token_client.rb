@@ -25,7 +25,8 @@ module KeycloakAdmin
               Authorization: "Bearer #{user_access_token}",
               content_type: :json,
               accept: :json
-            }
+            },
+            logger: @configuration.logger
           )
         )
       end

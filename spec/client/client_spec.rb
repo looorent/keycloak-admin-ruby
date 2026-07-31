@@ -23,6 +23,19 @@ RSpec.describe KeycloakAdmin::Client do
     end
   end
 
+  describe "#resource" do
+    it "builds a Resource with the configuration's faraday_options and logger" do
+      configuration = KeycloakAdmin::Configuration.new
+      configuration.faraday_options = { timeout: 5 }
+      configuration.logger          = Logger.new(IO::NULL)
+      client = KeycloakAdmin::Client.new(configuration)
+
+      expect(KeycloakAdmin::Resource).to receive(:new).with("http://x", { timeout: 5 }, configuration.logger)
+
+      client.send(:resource, "http://x")
+    end
+  end
+
   describe "#execute_http" do
     let(:realm_name) { "valid-realm" }
     before(:each) do

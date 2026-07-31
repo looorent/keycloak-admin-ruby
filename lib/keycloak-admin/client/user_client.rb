@@ -28,7 +28,8 @@ module KeycloakAdmin
           method: :put,
           url: users_url(user_id),
           payload: create_payload(user_representation_body),
-          headers: headers
+          headers: headers,
+          logger: @configuration.logger
         )
       )
     end
@@ -39,7 +40,8 @@ module KeycloakAdmin
           method: :put,
           url: "#{users_url(user_id)}/groups/#{group_id}",
           payload: create_payload({}),
-          headers: headers
+          headers: headers,
+          logger: @configuration.logger
         )
       )
     end
@@ -49,7 +51,8 @@ module KeycloakAdmin
         @configuration.faraday_options.merge(
           method: :delete,
           url: "#{users_url(user_id)}/groups/#{group_id}",
-          headers: headers
+          headers: headers,
+          logger: @configuration.logger
         )
       )
     end
@@ -116,7 +119,8 @@ module KeycloakAdmin
             method: :put,
             url: reset_password_url(user_id),
             payload: { type: "password", value: new_password, temporary: false }.to_json,
-            headers: headers
+            headers: headers,
+            logger: @configuration.logger
           )
         )
       end
@@ -140,7 +144,7 @@ module KeycloakAdmin
         lifespan_param = lifespan.nil? ? "" : "&lifespan=#{lifespan.seconds}"
         redirect_uri_param = redirect_uri.nil? ? "" : "&redirect_uri=#{redirect_uri}"
         client_id_param = client_id.nil? ? "" : "client_id=#{client_id}"
-        Resource.put("#{execute_actions_email_url(user_id)}?#{client_id_param}#{redirect_uri_param}#{lifespan_param}", create_payload(actions), headers)
+        Resource.put("#{execute_actions_email_url(user_id)}?#{client_id_param}#{redirect_uri_param}#{lifespan_param}", create_payload(actions), headers, @configuration.logger)
       end
       user_id
     end
@@ -153,7 +157,8 @@ module KeycloakAdmin
             method: :post,
             url: impersonation.impersonation_url,
             payload: impersonation.body.to_json,
-            headers: impersonation.headers
+            headers: impersonation.headers,
+            logger: @configuration.logger
           )
         )
       end
@@ -177,7 +182,8 @@ module KeycloakAdmin
           @configuration.faraday_options.merge(
             method: :post,
             url: logout_url(user_id),
-            headers: headers
+            headers: headers,
+            logger: @configuration.logger
           )
         )
       end
@@ -200,7 +206,8 @@ module KeycloakAdmin
             method: :post,
             url: federated_identity_url(user_id, idp_id),
             payload: fed_id_rep.to_json,
-            headers: headers
+            headers: headers,
+            logger: @configuration.logger
           )
         )
       end

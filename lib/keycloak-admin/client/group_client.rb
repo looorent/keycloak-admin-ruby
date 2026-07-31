@@ -118,7 +118,8 @@ module KeycloakAdmin
             url: url,
             method: :delete,
             payload: create_payload([role_representation]),
-            headers: headers
+            headers: headers,
+            logger: @configuration.logger
           )
         )
       end

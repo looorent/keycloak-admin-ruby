@@ -18,6 +18,51 @@ RSpec.describe KeycloakAdmin::Resource do
     connection
   end
 
+  describe "#connection (the real Faraday connection, not stubbed)" do
+    def middleware_classes(resource)
+      resource.send(:connection).builder.handlers
+    end
+
+    it "does not register the logger middleware when no logger is configured" do
+      resource = KeycloakAdmin::Resource.new("http://example.com")
+      expect(middleware_classes(resource)).to_not include(Faraday::Response::Logger)
+    end
+
+    it "registers the logger middleware when a logger is configured" do
+      resource = KeycloakAdmin::Resource.new("http://example.com", {}, Logger.new(IO::NULL))
+      expect(middleware_classes(resource)).to include(Faraday::Response::Logger)
+    end
+
+    it "orders :raise_error before :logger, so a response is logged even when it raises" do
+      resource = KeycloakAdmin::Resource.new("http://example.com", {}, Logger.new(IO::NULL))
+      handlers = middleware_classes(resource)
+      expect(handlers.index(Faraday::Response::RaiseError)).to be < handlers.index(Faraday::Response::Logger)
+    end
+
+    it "logs method/url/status but never headers, since Faraday logs headers by default and one of them is the bearer token" do
+      log_output = StringIO.new
+      logger     = Logger.new(log_output)
+      stubs      = Faraday::Adapter::Test::Stubs.new
+      stubs.get(//) { [200, {}, "ok"] }
+
+      resource = KeycloakAdmin::Resource.new("http://example.com/x", {}, logger)
+      allow(resource).to receive(:connection) do
+        Faraday.new(url: "http://example.com/x") do |f|
+          f.response :raise_error
+          f.response :logger, logger, headers: false
+          f.adapter :test, stubs
+        end
+      end
+
+      resource.get(Authorization: "Bearer super-secret-token")
+
+      expect(log_output.string).to include("request: GET")
+      expect(log_output.string).to include("response: Status 200")
+      expect(log_output.string).to_not include("super-secret-token")
+      expect(log_output.string).to_not include("Authorization")
+    end
+  end
+
   describe "#get" do
     it "humanizes symbol header keys into HTTP header names" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users")
@@ -140,9 +185,18 @@ RSpec.describe KeycloakAdmin::Resource do
       resource_instance  = KeycloakAdmin::Resource.new("http://example.com/x")
       expected_options   = { timeout: 5 }
       stub_connection(resource_instance, :get)
-      expect(KeycloakAdmin::Resource).to receive(:new).with("http://example.com/x", expected_options).and_return(resource_instance)
+      expect(KeycloakAdmin::Resource).to receive(:new).with("http://example.com/x", expected_options, nil).and_return(resource_instance)
 
       KeycloakAdmin::Resource.execute(method: :get, url: "http://example.com/x", headers: {}, timeout: 5)
+    end
+
+    it "extracts :logger and passes it positionally instead of leaving it in connection options" do
+      resource_instance = KeycloakAdmin::Resource.new("http://example.com/x")
+      logger             = Logger.new(IO::NULL)
+      stub_connection(resource_instance, :get)
+      expect(KeycloakAdmin::Resource).to receive(:new).with("http://example.com/x", {}, logger).and_return(resource_instance)
+
+      KeycloakAdmin::Resource.execute(method: :get, url: "http://example.com/x", headers: {}, logger: logger)
     end
   end
 
@@ -155,6 +209,15 @@ RSpec.describe KeycloakAdmin::Resource do
       KeycloakAdmin::Resource.put("http://example.com/x", "body", {})
 
       expect(fake_request.body).to eq "body"
+    end
+
+    it "forwards the given logger to the underlying Resource" do
+      resource_instance = KeycloakAdmin::Resource.new("http://example.com/x")
+      logger             = Logger.new(IO::NULL)
+      stub_connection(resource_instance, :put)
+      expect(KeycloakAdmin::Resource).to receive(:new).with("http://example.com/x", {}, logger).and_return(resource_instance)
+
+      KeycloakAdmin::Resource.put("http://example.com/x", "body", {}, logger)
     end
   end
 end

@@ -60,7 +60,7 @@ RSpec.describe KeycloakAdmin::RoleMapperClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/realm", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/realm", faraday_options, anything).and_call_original
 
       @role_mapper_client.save_realm_level(role_list)
     end

@@ -39,7 +39,7 @@ RSpec.describe KeycloakAdmin::RoleClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/roles", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/roles", faraday_options, anything).and_call_original
 
       roles = @role_client.list
       expect(roles.length).to eq 1
@@ -71,7 +71,7 @@ RSpec.describe KeycloakAdmin::RoleClient do
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/roles", faraday_options).and_call_original
+        "http://auth.service.io/auth/admin/realms/valid-realm/roles", faraday_options, anything).and_call_original
 
       @role_client.save(role)
     end
