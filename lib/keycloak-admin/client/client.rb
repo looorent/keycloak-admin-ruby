@@ -1,3 +1,5 @@
+require "uri"
+
 module KeycloakAdmin
   class Client
 
@@ -25,16 +27,24 @@ module KeycloakAdmin
     end
 
     def execute_http
-      yield
-    rescue Faraday::TimeoutError
-      raise
-    rescue Faraday::ClientError, Faraday::ServerError => e
-      http_error(e.response)
+      replayed = false
+      begin
+        yield
+      rescue Faraday::TimeoutError
+        raise
+      rescue Faraday::ClientError, Faraday::ServerError => e
+        if !replayed && e.response && e.response[:status] == 401 && !@configuration.cached_token.nil?
+          @configuration.clear_cached_token!
+          replayed = true
+          retry
+        end
+        raise ApiError.from_response(e.response)
+      end
     end
 
     def created_id(response)
       unless response.status == 201
-        raise "Create method returned status #{response.reason_phrase} (Code: #{response.status}); expected status: Created (201)"
+        raise UnexpectedResponseError.new(response.status, response.reason_phrase)
       end
       (_head, _separator, id) = response.headers[:location].rpartition("/")
       id
@@ -52,16 +62,18 @@ module KeycloakAdmin
 
     private
 
+    def build_query(parameters)
+      parameters.map do |name, value|
+        "#{URI.encode_uri_component(name.to_s)}=#{URI.encode_uri_component(value.to_s)}"
+      end.join("&")
+    end
+
     def fetch_token
       KeycloakAdmin.create_client(@configuration, @configuration.client_realm_name).token.get
     end
 
     def resource(url)
       Resource.new(url, @configuration.faraday_options, @configuration.logger)
-    end
-
-    def http_error(response)
-      raise "Keycloak: The request failed with response code #{response[:status]} and message: #{response[:body]}"
     end
   end
 end

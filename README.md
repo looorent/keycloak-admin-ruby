@@ -109,6 +109,42 @@ All options have a default value. However, all of them can be changed in your in
 | `faraday_options` | `{}`| Hash | Optional | Options to pass to `Faraday.new` (e.g. `request:`, `ssl:`, `proxy:`) | `{ request: { timeout: 5 } }` | 
 
 
+## Error handling
+
+Every HTTP failure raises a `KeycloakAdmin::ApiError` carrying the `status`, `body` and `headers`
+of the response, so you never have to parse the message. Rescue as narrowly or as broadly as you need:
+
+```ruby
+begin
+  KeycloakAdmin.realm("a-realm").users.get(user_id)
+rescue KeycloakAdmin::NotFoundError => e   # exactly 404
+  nil
+rescue KeycloakAdmin::ClientError => e     # any 4xx
+  logger.warn("Rejected with #{e.status}: #{e.body}")
+  raise
+rescue KeycloakAdmin::ServerError => e     # any 5xx
+  raise
+end
+```
+
+| Class | Raised on |
+| ---- | ---- |
+| `KeycloakAdmin::Error` | Base class of every error this gem raises |
+| `KeycloakAdmin::ApiError` | Any non-2xx answer; parent of the two families below |
+| `KeycloakAdmin::ClientError` | Any 4xx |
+| `KeycloakAdmin::BadRequestError` | 400 |
+| `KeycloakAdmin::UnauthorizedError` | 401 |
+| `KeycloakAdmin::ForbiddenError` | 403 |
+| `KeycloakAdmin::NotFoundError` | 404 |
+| `KeycloakAdmin::ConflictError` | 409 |
+| `KeycloakAdmin::ServerError` | Any 5xx |
+| `KeycloakAdmin::UnexpectedResponseError` | A create call answered something other than `201 Created` |
+
+`Faraday::TimeoutError` and the other connection-level Faraday errors are left untouched and propagate as-is, since no response ever came back to describe.
+
+A `401` is handled before it reaches you: the cached access token is dropped and the request is replayed once with a freshly fetched one, so a token revoked before its advertised expiry does not fail every call until it lapses `KeycloakAdmin::UnauthorizedError` is raised only if the replay is
+refused too.
+
 ## Use Cases
 
 ### Supported features
