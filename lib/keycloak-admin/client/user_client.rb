@@ -141,10 +141,14 @@ module KeycloakAdmin
     def execute_actions_email(user_id, actions=[], lifespan=nil, redirect_uri=nil, client_id=nil)
       raise ArgumentError.new("client_id must be defined") if client_id.nil? && !redirect_uri.nil?
       execute_http do
-        lifespan_param = lifespan.nil? ? "" : "&lifespan=#{lifespan.seconds}"
-        redirect_uri_param = redirect_uri.nil? ? "" : "&redirect_uri=#{redirect_uri}"
-        client_id_param = client_id.nil? ? "" : "client_id=#{client_id}"
-        Resource.put("#{execute_actions_email_url(user_id)}?#{client_id_param}#{redirect_uri_param}#{lifespan_param}", create_payload(actions), headers, @configuration.logger)
+        query = {}
+        query[:client_id]    = client_id     unless client_id.nil?
+        query[:redirect_uri] = redirect_uri  unless redirect_uri.nil?
+        query[:lifespan]     = lifespan.to_i unless lifespan.nil?
+
+        url = execute_actions_email_url(user_id)
+        url = "#{url}?#{build_query(query)}" unless query.empty?
+        Resource.put(url, create_payload(actions), headers, @configuration.logger)
       end
       user_id
     end

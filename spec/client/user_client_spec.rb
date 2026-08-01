@@ -416,3 +416,92 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
   end
 end
+
+RSpec.describe "KeycloakAdmin::UserClient#execute_actions_email" do
+  let(:realm_name) { "valid-realm" }
+  let(:user_id)    { "95985b21-d884-4bbd-b852-cb8cd365afc2" }
+  let(:base_url)   { "http://auth.service.io/auth/admin/realms/valid-realm/users/#{user_id}/execute-actions-email" }
+  let(:user_client) { KeycloakAdmin.realm(realm_name).users }
+
+  before(:each) { stub_token_client }
+
+  it "sends the actions as the body" do
+    request = stub_request(:put, base_url).with(body: '["UPDATE_PASSWORD"]').to_return(status: 204)
+
+    user_client.execute_actions_email(user_id, ["UPDATE_PASSWORD"])
+
+    expect(request).to have_been_requested
+  end
+
+  it "omits the query string entirely when no optional parameter is given" do
+    requested_uri = nil
+    stub_request(:put, /execute-actions-email/).with { |req| requested_uri = req.uri.to_s; true }.to_return(status: 204)
+
+    user_client.execute_actions_email(user_id, ["UPDATE_PASSWORD"])
+
+    expect(requested_uri).to_not include "?"
+  end
+
+  # Regression: this used ActiveSupport's Numeric#seconds, which raised NoMethodError outside Rails.
+  it "sends the lifespan in seconds without depending on ActiveSupport" do
+    request = stub_request(:put, base_url).with(query: {"lifespan" => "300"}).to_return(status: 204)
+
+    user_client.execute_actions_email(user_id, ["UPDATE_PASSWORD"], 300)
+
+    expect(request).to have_been_requested
+  end
+
+  it "accepts anything that responds to to_i as a lifespan" do
+    request = stub_request(:put, base_url).with(query: {"lifespan" => "300"}).to_return(status: 204)
+
+    duration = double("ActiveSupport::Duration", to_i: 300)
+    user_client.execute_actions_email(user_id, ["UPDATE_PASSWORD"], duration)
+
+    expect(request).to have_been_requested
+  end
+
+  # Regression: redirect_uri was interpolated raw, so its own '?'/'&' forged extra parameters.
+  it "percent-encodes a redirect_uri that carries its own query string" do
+    redirect_uri = "https://app.example.com/landing?next=/home&flag=a b"
+    request = stub_request(:put, base_url).with(
+      query: {"client_id" => "my-app", "redirect_uri" => redirect_uri}
+    ).to_return(status: 204)
+
+    user_client.execute_actions_email(user_id, ["UPDATE_PASSWORD"], nil, redirect_uri, "my-app")
+
+    expect(request).to have_been_requested
+  end
+
+  it "sends client_id, redirect_uri and lifespan together" do
+    request = stub_request(:put, base_url).with(
+      query: {"client_id" => "my-app", "redirect_uri" => "https://app.example.com/cb", "lifespan" => "60"}
+    ).to_return(status: 204)
+
+    user_client.execute_actions_email(user_id, ["UPDATE_PASSWORD"], 60, "https://app.example.com/cb", "my-app")
+
+    expect(request).to have_been_requested
+  end
+
+  it "rejects a redirect_uri given without a client_id" do
+    expect {
+      user_client.execute_actions_email(user_id, ["UPDATE_PASSWORD"], nil, "https://app.example.com/cb")
+    }.to raise_error(ArgumentError, "client_id must be defined")
+  end
+
+  it "returns the user id" do
+    stub_request(:put, /execute-actions-email/).to_return(status: 204)
+
+    expect(user_client.execute_actions_email(user_id, ["UPDATE_PASSWORD"])).to eq user_id
+  end
+
+  describe "#forgot_password" do
+    it "delegates to execute_actions_email with UPDATE_PASSWORD" do
+      request = stub_request(:put, base_url)
+        .with(body: '["UPDATE_PASSWORD"]', query: {"lifespan" => "120"}).to_return(status: 204)
+
+      user_client.forgot_password(user_id, 120)
+
+      expect(request).to have_been_requested
+    end
+  end
+end

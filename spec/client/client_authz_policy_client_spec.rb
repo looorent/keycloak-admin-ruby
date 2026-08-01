@@ -168,3 +168,39 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyClient do
     end
   end
 end
+RSpec.describe "KeycloakAdmin::ClientAuthzPolicyClient#find_by" do
+  let(:realm_name) { "valid-realm" }
+  let(:client_id)  { "valid-client-id" }
+  let(:base_url) do
+    "http://auth.service.io/auth/admin/realms/valid-realm/clients/#{client_id}/authz/resource-server/policy/role"
+  end
+
+  before(:each) { stub_token_client }
+
+  # Regression: find_by opened a second '?', which folded every filter into the value of
+  # 'permission' and made Keycloak answer with an unfiltered list.
+  it "chains its filters onto the existing query with '&' so each one is a real parameter" do
+    request = stub_request(:get, base_url).with(
+      query: {
+        "permission" => "false",
+        "name"       => "policy name",
+        "type"       => "role",
+        "first"      => "0",
+        "max"        => "11"
+      }
+    ).to_return(body: "[]")
+
+    KeycloakAdmin.realm(realm_name).authz_policies(client_id, :role).find_by("policy name", "role")
+
+    expect(request).to have_been_requested
+  end
+
+  it "builds a url holding exactly one '?'" do
+    requested_uri = nil
+    stub_request(:get, /policy/).with { |req| requested_uri = req.uri.to_s; true }.to_return(body: "[]")
+
+    KeycloakAdmin.realm(realm_name).authz_policies(client_id, :role).find_by("policy name", "role")
+
+    expect(requested_uri.count("?")).to eq 1
+  end
+end

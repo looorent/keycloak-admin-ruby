@@ -33,7 +33,7 @@ module KeycloakAdmin
 
     def find_by(name, type)
       response = execute_http do
-        url = "#{authz_policy_url(@client_id, @type)}?permission=false&name=#{name}&type=#{type}&first=0&max=11"
+        url = "#{authz_policy_url(@client_id, @type)}&#{build_query(name: name, type: type, first: 0, max: 11)}"
         resource(url).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzPolicyRepresentation.from_hash(role_as_hash) }

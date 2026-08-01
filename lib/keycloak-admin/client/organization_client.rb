@@ -170,24 +170,24 @@ module KeycloakAdmin
     end
 
     def count_url(exact, query, search)
-      query_parameters = {exact: exact, q: query, search: search}.compact.to_a.map { |e| "#{e[0]}=#{e[1]}" }.join("&")
+      query_parameters = build_query({exact: exact, q: query, search: search}.compact)
       "#{organizations_url}/count?#{query_parameters}"
     end
 
     def organizations_url_with_parameters(brief_representation, exact, first, max, query, search)
-      query_parameters = {
+      query_parameters = build_query({
         briefRepresentation: brief_representation,
         exact: exact,
         first: first,
         max: max,
         q: query,
         search: search
-      }.compact.to_a.map { |e| "#{e[0]}=#{e[1]}" }.join("&")
+      }.compact)
       "#{organizations_url}?#{query_parameters}"
     end
 
     def associated_with_member_url(member_id, brief_representation=true)
-      "#{organizations_url}/members/#{member_id}/organizations?briefRepresentation=#{brief_representation}"
+      "#{organizations_url}/members/#{member_id}/organizations?#{build_query(briefRepresentation: brief_representation)}"
     end
 
     def members_count_url(organization_id)
@@ -212,19 +212,19 @@ module KeycloakAdmin
     end
 
     def members_url_with_query_parameters(organization_id, exact, first, max, membership_type, search)
-      query_parameters = {
+      query_parameters = build_query({
         exact: exact,
         first: first,
         max: max,
         membershipType: membership_type,
         search: search
-      }.compact.to_a.map { |e| "#{e[0]}=#{e[1]}" }.join("&")
+      }.compact)
       "#{organization_url(organization_id)}/members?#{query_parameters}"
     end
 
     def build(name, alias_name, enabled, description, redirect_url=nil, domains=[], attributes={})
       unless domains.is_a?(Array)
-        raise ArgumentError.new("domains must be an Array, got #{new_domains.class}")
+        raise ArgumentError.new("domains must be an Array, got #{domains.class}")
       end
 
       unless domains.all? { |domain| domain.is_a?(KeycloakAdmin::OrganizationDomainRepresentation) }

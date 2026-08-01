@@ -35,7 +35,7 @@ module KeycloakAdmin
     end
 
     def search(name)
-      url = "#{authz_scopes_url(@client_id)}?first=0&max=11&deep=false&name=#{name}"
+      url = "#{authz_scopes_url(@client_id)}?#{build_query(first: 0, max: 11, deep: false, name: name)}"
       response = execute_http do
         resource(url).get(headers)
       end

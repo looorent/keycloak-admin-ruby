@@ -129,9 +129,9 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
         let(:exact)  { true }
         let(:query)  { "a query" }
         let(:search) { "a name" }
-        it "return a proper url" do
-          expect(@count_url).to eq "http://auth.service.io/auth/admin/realms/valid-realm/organizations/count?exact=true&q=a query&search=a name"
-        end 
+        it "percent-encodes the values instead of pasting them raw into the query" do
+          expect(@count_url).to eq "http://auth.service.io/auth/admin/realms/valid-realm/organizations/count?exact=true&q=a%20query&search=a%20name"
+        end
       end
     end
   end
@@ -591,5 +591,67 @@ RSpec.describe KeycloakAdmin::OrganizationClient do
         }
       )
     end
+  end
+end
+
+RSpec.describe "KeycloakAdmin::OrganizationClient#build" do
+  let(:organization_client) { KeycloakAdmin.realm("valid-realm").organizations }
+
+  # Regression: the guard interpolated an undefined local (new_domains), so it blew up with a
+  # NameError instead of reporting the offending type through the intended ArgumentError.
+  it "reports the offending type when domains is not an Array" do
+    expect {
+      organization_client.build("name", "alias", true, "description", nil, "not-an-array")
+    }.to raise_error(ArgumentError, "domains must be an Array, got String")
+  end
+
+  it "rejects an Array holding anything but OrganizationDomainRepresentations" do
+    expect {
+      organization_client.build("name", "alias", true, "description", nil, ["example.com"])
+    }.to raise_error(ArgumentError, "All items in domains must be of type OrganizationDomainRepresentation")
+  end
+
+  it "builds the representation when the domains are valid" do
+    domain = KeycloakAdmin::OrganizationDomainRepresentation.new("example.com", false)
+
+    organization = organization_client.build("name", "alias", true, "description", "https://x", [domain])
+
+    expect(organization.name).to eq "name"
+    expect(organization.alias).to eq "alias"
+    expect(organization.domains).to eq [domain]
+  end
+end
+
+RSpec.describe "KeycloakAdmin::OrganizationClient query encoding" do
+  let(:realm_name)      { "valid-realm" }
+  let(:organization_id) { "org-1" }
+  let(:client)          { KeycloakAdmin.realm(realm_name).organizations }
+
+  before(:each) { stub_token_client }
+
+  it "percent-encodes a member search term instead of letting it forge parameters" do
+    request = stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/organizations/org-1/members")
+      .with(query: {"search" => "a b&max=1"}).to_return(body: "[]")
+
+    client.members(organization_id, nil, nil, nil, nil, "a b&max=1")
+
+    expect(request).to have_been_requested
+  end
+
+  it "percent-encodes the list search term" do
+    request = stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/organizations")
+      .with(query: {"briefRepresentation" => "true", "search" => "acme & co"}).to_return(body: "[]")
+
+    client.list(true, nil, nil, nil, nil, "acme & co")
+
+    expect(request).to have_been_requested
+  end
+
+  it "percent-encodes the count search term" do
+    request = stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/organizations/count")
+      .with(query: {"search" => "acme & co"}).to_return(body: "3")
+
+    expect(client.count(nil, nil, "acme & co")).to eq 3
+    expect(request).to have_been_requested
   end
 end

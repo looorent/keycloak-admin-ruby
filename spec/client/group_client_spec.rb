@@ -326,3 +326,47 @@ RSpec.describe KeycloakAdmin::GroupClient do
     end
   end
 end
+
+RSpec.describe "KeycloakAdmin::GroupClient#members" do
+  let(:realm_name) { "valid-realm" }
+  let(:group_id)   { "95985b21-d884-4bbd-b852-cb8cd365afc2" }
+  let(:base_url)   { "http://auth.service.io/auth/admin/realms/valid-realm/groups/#{group_id}/members" }
+
+  before(:each) { stub_token_client }
+
+  it "paginates with the default bounds" do
+    request = stub_request(:get, base_url).with(query: {"first" => "0", "max" => "100"}).to_return(body: "[]")
+
+    KeycloakAdmin.realm(realm_name).groups.members(group_id)
+
+    expect(request).to have_been_requested
+  end
+
+  # Regression: this used ActiveSupport's Object#try, which raised NoMethodError outside Rails.
+  it "coerces the bounds to integers without depending on ActiveSupport" do
+    request = stub_request(:get, base_url).with(query: {"first" => "5", "max" => "20"}).to_return(body: "[]")
+
+    KeycloakAdmin.realm(realm_name).groups.members(group_id, "5", "20")
+
+    expect(request).to have_been_requested
+  end
+
+  it "omits the query string entirely when both bounds are nil" do
+    requested_uri = nil
+    stub_request(:get, /members/).with { |request| requested_uri = request.uri.to_s; true }.to_return(body: "[]")
+
+    KeycloakAdmin.realm(realm_name).groups.members(group_id, nil, nil)
+
+    expect(requested_uri).to_not include "?"
+    expect(requested_uri).to end_with "/groups/#{group_id}/members"
+  end
+
+  it "maps the response onto UserRepresentations" do
+    stub_request(:get, base_url).with(query: hash_including({}))
+      .to_return(body: '[{"id":"u1","username":"alice"}]')
+
+    members = KeycloakAdmin.realm(realm_name).groups.members(group_id)
+
+    expect(members.map(&:username)).to eq ["alice"]
+  end
+end

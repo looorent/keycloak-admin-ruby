@@ -20,7 +20,7 @@ module KeycloakAdmin
 
     def find_by(name, resource_param, scope = nil)
       response = execute_http do
-        url = "#{authz_permission_url(@client_id)}?name=#{name}&resource=#{resource_param}&type=#{@type}&scope=#{scope}&deep=true&first=0&max=100"
+        url = "#{authz_permission_url(@client_id)}?#{build_query(name: name, resource: resource_param, type: @type, scope: scope, deep: true, first: 0, max: 100)}"
         resource(url).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzPermissionRepresentation.from_hash(role_as_hash) }

@@ -47,7 +47,7 @@ module KeycloakAdmin
 
     def find_by(name, type, uris, owner, scope)
       response = execute_http do
-        url = "#{authz_resources_url(@client_id)}?name=#{name}&type=#{type}&uris=#{uris}&owner=#{owner}&scope=#{scope}&deep=true&first=0&max=100"
+        url = "#{authz_resources_url(@client_id)}?#{build_query(name: name, type: type, uris: uris, owner: owner, scope: scope, deep: true, first: 0, max: 100)}"
         resource(url).get(headers)
       end
       JSON.parse(response).map { |role_as_hash| ClientAuthzResourceRepresentation.from_hash(role_as_hash) }

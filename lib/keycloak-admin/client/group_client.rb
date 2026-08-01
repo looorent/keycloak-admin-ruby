@@ -75,11 +75,8 @@ module KeycloakAdmin
 
     def members(group_id, first=0, max=100)
       url = "#{groups_url(group_id)}/members"
-      query = {first: first.try(:to_i), max: max.try(:to_i)}.compact
-      unless query.empty?
-        query_string = query.to_a.map { |e| "#{e[0]}=#{e[1]}" }.join("&")
-        url = "#{url}?#{query_string}"
-      end
+      query = {first: first&.to_i, max: max&.to_i}.compact
+      url = "#{url}?#{build_query(query)}" unless query.empty?
       response = execute_http do
         resource(url).get(headers)
       end
