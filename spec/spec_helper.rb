@@ -1,6 +1,9 @@
 require_relative "../lib/keycloak-admin"
 
 require "byebug"
+require "webmock/rspec"
+
+WebMock.disable_net_connect!(allow_localhost: true)
 
 def configure
   KeycloakAdmin.configure do |config|
@@ -10,6 +13,7 @@ def configure
     config.client_secret       = "aaaaaaaa"
     config.client_realm_name   = "master2"
     config.use_service_account = true
+    config.logger              = ::Logger.new(IO::NULL)
   end
 end
 
@@ -20,9 +24,6 @@ RSpec.configure do |config|
 
   configure
 
-  # KeycloakAdmin.config is a global set up once for the whole suite (see 'configure'
-  # above), not per example, so a token cached in one example would otherwise leak into
-  # the next one and silently skip its stub_token_client expectations.
   config.before(:each) do
     KeycloakAdmin.config.clear_cached_token!
   end
