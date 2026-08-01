@@ -32,7 +32,7 @@ GEM
     logger (1.7.0)
     net-http (0.9.1)
       uri (>= 0.11.1)
-    public_suffix (7.0.5)
+    public_suffix (6.0.2)
     rake (13.4.2)
     rexml (3.4.4)
     rspec (3.13.2)
@@ -60,6 +60,7 @@ PLATFORMS
 DEPENDENCIES
   byebug (= 12.0.0)
   keycloak-admin!
+  public_suffix (< 7)
   rake (>= 13.0)
   rspec (= 3.13.2)
   webmock (~> 3.0)
