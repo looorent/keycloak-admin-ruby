@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.2] - 2026-08-01
+
+* [Breaking] HTTP failures now raise a `KeycloakAdmin::ApiError` subclass instead of a bare `RuntimeError`. 
+  * Messages are unchanged, so code matching on the text keeps working. 
+  * Code rescuing `RuntimeError` explicitly must be updated. 
+  * A create call answering something other than `201 Created` now raises `KeycloakAdmin::UnexpectedResponseError`.
+* [Feature] A `401` answer now drops the cached access token and replays the request once with a freshly fetched one, so a token revoked before its advertised expiry no longer fails every call until it lapses.
+* [Fix] `GroupClient#members` called ActiveSupport's `Object#try` and raised `NoMethodError` outside a Rails application.
+* [Fix] `UserClient#execute_actions_email` (and `#forgot_password`) called ActiveSupport's `Numeric#seconds` and raised `NoMethodError` outside a Rails application whenever a `lifespan` was passed.
+* [Fix] `ClientAuthzPolicyClient#find_by` opened a second `?` in its URL, which folded `name`, `type`, `first` and `max` into the value of `permission`; Keycloak silently returned an unfiltered list.
+* [Fix] Query parameters are now percent-encoded everywhere they are built. Search terms, and the `redirect_uri` of `UserClient#execute_actions_email`, containing a space, `&` or `=` used to break the URL or forge extra parameters.
+* [Fix] `OrganizationClient#build` raised `NameError` instead of the intended `ArgumentError` when `domains` was not an `Array`.
+
 ## [2.0.1] - 2026-07-31
 
 * [Feature] Requests are now logged through `config.logger` (method, URL, and response status) via Faraday's `:logger` middleware.
