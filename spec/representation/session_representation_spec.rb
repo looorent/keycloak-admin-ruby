@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.describe KeycloakAdmin::SessionRepresentation do
+  describe 'accessors' do
+    it 'does not define spurious accessors from a trailing comma' do
+      expect(described_class.instance_methods(false)).not_to include(:from_hash, :from_hash=)
+    end
+  end
+
   describe '.from_hash' do
     it 'converts json response to class structure' do
       rep = described_class.from_hash({

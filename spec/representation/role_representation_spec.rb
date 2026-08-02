@@ -1,5 +1,11 @@
 # frozen_string_literal: true
 RSpec.describe KeycloakAdmin::RoleRepresentation do
+  describe "accessors" do
+    it "does not define spurious accessors from a trailing comma" do
+      expect(described_class.instance_methods(false)).not_to include(:from_hash, :from_hash=)
+    end
+  end
+
   describe "#to_json" do
     before(:each) do
       @mapper = KeycloakAdmin::RoleRepresentation.from_hash(

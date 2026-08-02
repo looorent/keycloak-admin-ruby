@@ -5,7 +5,7 @@ module KeycloakAdmin
       :name,
       :composite,
       :client_role,
-      :container_id,
+      :container_id
 
     def self.from_hash(hash)
       role             = new

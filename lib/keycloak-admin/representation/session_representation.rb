@@ -7,7 +7,7 @@ module KeycloakAdmin
       :ip_address,
       :start,
       :last_access,
-      :remember_me,
+      :remember_me
 
     def self.from_hash(hash)
       rep                   = new
