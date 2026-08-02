@@ -23,16 +23,17 @@ jobs:
 
     environment: release
 
+    timeout-minutes: 20
+
     permissions:
       contents: write # 'rake release' pushes the version tag when it does not exist yet
       id-token: write # mandatory to request the OIDC token used by trusted publishing
 
     steps:
-    # The test suite includes an integration spec that talks to a real Keycloak
-    # (spec/integration/client_authorization_spec.rb, gated on ENV["GITHUB_ACTIONS"],
-    # which GitHub Actions sets on every run regardless of workflow). Keycloak is
-    # provisioned here the same way ci.yml does it, so 'bundle exec rspec' below is a
-    # real, complete gate rather than skipping that spec for lack of a server.
+    # 'rake integration' talks to a real Keycloak, so one is booted here exactly as ci.yml does
+    # it, making the test steps below a real gate rather than something that passes for lack of
+    # a server. The realm and client the suite needs are created by spec/integration_helper.rb
+    # itself, which is why there is no provisioning step here either.
     - name: Start Keycloak
       run: |
         docker run -d --name keycloak -p 8080:8080 \
@@ -60,37 +61,7 @@ jobs:
         docker logs keycloak
         exit 1
 
-    - name: create realm
-      run: |
-         TOKEN=$(curl --silent --location --request POST "http://localhost:8080/realms/master/protocol/openid-connect/token" \
-            --header 'Content-Type: application/x-www-form-urlencoded' \
-            --data-urlencode 'grant_type=password' \
-            --data-urlencode 'username=admin' \
-            --data-urlencode 'password=admin' \
-            --data-urlencode 'client_id=admin-cli' | jq -r '.access_token')
-
-         curl --silent --show-error -L -X POST "http://localhost:8080/admin/realms" \
-            --header "Content-Type: application/json" \
-            --header "Authorization: Bearer ${TOKEN}" \
-            --data '{"realm":"dummy","enabled":true}'
-
-         curl --silent --show-error --request POST 'http://localhost:8080/admin/realms/dummy/clients' \
-           --header 'Authorization: Bearer '$TOKEN \
-           --header 'Content-Type: application/json' \
-           --data-raw '{
-             "clientId":"dummy-client",
-             "enabled":true,
-             "consentRequired": false,
-             "attributes":{},
-             "serviceAccountsEnabled": true,
-             "protocol":"openid-connect",
-             "publicClient":false,
-             "authorizationServicesEnabled": true,
-             "clientAuthenticatorType":"client-secret",
-             "redirectUris":["http://localhost:8180/demo"]
-           }'
-
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
@@ -112,8 +83,6 @@ jobs:
 
     - name: Run integration tests
       run: bundle exec rake integration
-      env:
-        GITHUB_ACTIONS: true
 
     # Builds the gem, pushes it to RubyGems.org and waits for it to be available.
     - uses: rubygems/release-gem@v1
