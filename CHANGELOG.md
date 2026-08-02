@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Fix] `Configuration#inspect` no longer renders `client_secret`, `password` or the cached access token, showing `[FILTERED]` instead. The default `#inspect` printed every attribute, so these credentials travelled into console sessions, `pp` output, and whatever local-variable dump an exception reporter attaches to a crash. A credential that is not set still renders as `nil`, so an inspect stays useful when authentication misbehaves.
 * [Fix] The access token cache introduced in 2.0.1 is now thread-safe.
 * [Fix] Identifiers are now percent-encoded before being interpolated into a URL path.
+* [Feature] `config.faraday_adapter` selects the Faraday adapter requests run through.
 * [Fix] `UserClient#impersonate` now takes part in the `401` replay introduced in 2.0.2. It called `get_redirect_impersonation` outside `execute_http`, so its `Authorization` header was built before the replay cleared the cached token: the second attempt resent the very bearer that had just been rejected and failed with the same `401`. It was the last call in the gem where the replay was inert.
 * [Fix] `CamelJson#camelize` no longer raises `NoMethodError` on an empty word.
 * [Fix] Query parameters built from an Array are now rendered as the key repeated once per element, instead of the array's Ruby `inspect` form: a list value used to be sent as `name=%5B%22a%22%2C%20%22b%22%5D`. An empty array now contributes no parameter at all; a `nil` still renders as `name=`, unchanged.

@@ -20,8 +20,10 @@ module KeycloakAdmin
     end
 
     def initialize(url, options = {}, logger = nil)
+      options  = (options || {}).dup
+      @adapter = options.delete(:adapter)
       @url     = url
-      @options = options || {}
+      @options = options
       @logger  = logger
     end
 
@@ -72,7 +74,10 @@ module KeycloakAdmin
         # headers by default, which would print the bearer token on every call; headers: false
         # keeps this to method/url/status only. Bodies are already off by Faraday's own default.
         f.response :logger, @logger, headers: false if @logger
-        f.adapter Faraday.default_adapter
+        # Faraday's default net_http adapter wraps every request in http.start, which reopens
+        # the connection each time; config.faraday_adapter lets a caller swap in a pooling one.
+        # Splatted so an adapter needing arguments can be given as [:name, options].
+        f.adapter(*Array(@adapter || Faraday.default_adapter))
       end
     end
 

@@ -26,7 +26,7 @@ module KeycloakAdmin
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
       execute_http do
         Resource.execute(
-          @configuration.faraday_options.merge(
+          connection_options.merge(
             method: :put,
             url: users_url(user_id),
             payload: create_payload(user_representation_body),
@@ -40,7 +40,7 @@ module KeycloakAdmin
     def add_group(user_id, group_id)
       execute_http do
         Resource.execute(
-          @configuration.faraday_options.merge(
+          connection_options.merge(
             method: :put,
             url: "#{users_url(user_id)}/groups/#{encode_segment(group_id)}",
             payload: create_payload({}),
@@ -54,7 +54,7 @@ module KeycloakAdmin
     def remove_group(user_id, group_id)
       execute_http do
         Resource.execute(
-          @configuration.faraday_options.merge(
+          connection_options.merge(
             method: :delete,
             url: "#{users_url(user_id)}/groups/#{encode_segment(group_id)}",
             headers: headers,
@@ -122,7 +122,7 @@ module KeycloakAdmin
     def update_password(user_id, new_password)
       execute_http do
         Resource.execute(
-          @configuration.faraday_options.merge(
+          connection_options.merge(
             method: :put,
             url: reset_password_url(user_id),
             payload: { type: "password", value: new_password, temporary: false }.to_json,
@@ -164,7 +164,7 @@ module KeycloakAdmin
       response = execute_http do
         impersonation = get_redirect_impersonation(user_id)
         Resource.execute(
-          @configuration.faraday_options.merge(
+          connection_options.merge(
             method: :post,
             url: impersonation.impersonation_url,
             payload: impersonation.body.to_json,
@@ -190,7 +190,7 @@ module KeycloakAdmin
 
       execute_http do
         Resource.execute(
-          @configuration.faraday_options.merge(
+          connection_options.merge(
             method: :post,
             url: logout_url(user_id),
             headers: headers,
@@ -213,7 +213,7 @@ module KeycloakAdmin
 
       execute_http do
         Resource.execute(
-          @configuration.faraday_options.merge(
+          connection_options.merge(
             method: :post,
             url: federated_identity_url(user_id, idp_id),
             payload: fed_id_rep.to_json,

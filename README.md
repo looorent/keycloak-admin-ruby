@@ -107,6 +107,30 @@ All options have a default value. However, all of them can be changed in your in
 | `password` | `nil`| String | Optional | Clear password to access the Admin REST API. Recommended if `user_service_account` is set to `false`. | `bobby` |
 | `logger` | `Logger.new(STDOUT)`| Logger | Optional | The logger used by `keycloak-admin` | `Rails.logger` | 
 | `faraday_options` | `{}`| Hash | Optional | Options to pass to `Faraday.new` (e.g. `request:`, `ssl:`, `proxy:`) | `{ request: { timeout: 5 } }` | 
+| `faraday_adapter` | `nil`| Symbol or Array | Optional | Faraday adapter to run requests through. `nil` uses `Faraday.default_adapter`. See _Connection reuse_ below. | `:net_http_persistent` |
+
+### Connection reuse
+
+By default this gem runs on `Faraday.default_adapter` (`net_http`), which wraps every request in `Net::HTTP#start`: the TCP connection is opened and closed again for each call. On a loop of admin calls, that handshake dominates the time spent.
+
+Set `faraday_adapter` to a pooling adapter to keep connections alive between calls. The adapter is not bundled, so add its gem to your own `Gemfile` alongside this one:
+
+```ruby
+# Gemfile
+gem "faraday-net_http_persistent"
+```
+
+```ruby
+KeycloakAdmin.configure do |config|
+  config.faraday_adapter = :net_http_persistent
+end
+```
+
+An adapter needing arguments is given as an array, splatted into Faraday's `adapter` call:
+
+```ruby
+config.faraday_adapter = [:net_http_persistent, { pool_size: 5 }]
+```
 
 
 ## Error handling

@@ -76,8 +76,17 @@ module KeycloakAdmin
       KeycloakAdmin.create_client(@configuration, @configuration.client_realm_name).token.get
     end
 
+    def connection_options
+      adapter = @configuration.faraday_adapter
+      if adapter.nil?
+        @configuration.faraday_options
+      else
+        @configuration.faraday_options.merge(adapter: adapter)
+      end
+    end
+
     def resource(url)
-      Resource.new(url, @configuration.faraday_options, @configuration.logger)
+      Resource.new(url, connection_options, @configuration.logger)
     end
   end
 end

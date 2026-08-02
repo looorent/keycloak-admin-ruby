@@ -89,6 +89,7 @@ module KeycloakAdmin
       config.username            = nil
       config.password            = nil
       config.faraday_options     = {}
+      config.faraday_adapter     = nil
     end
   end
 

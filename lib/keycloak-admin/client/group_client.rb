@@ -112,7 +112,7 @@ module KeycloakAdmin
       url = "#{groups_url(group_id)}/role-mappings/realm"
       execute_http do
         Resource.execute(
-          @configuration.faraday_options.merge(
+          connection_options.merge(
             url: url,
             method: :delete,
             payload: create_payload([role_representation]),

@@ -3,7 +3,7 @@ require "base64"
 
 module KeycloakAdmin
   class Configuration
-    attr_accessor :server_url, :server_domain, :client_id, :client_secret, :client_realm_name, :use_service_account, :username, :password, :logger, :faraday_options
+    attr_accessor :server_url, :server_domain, :client_id, :client_secret, :client_realm_name, :use_service_account, :username, :password, :logger, :faraday_options, :faraday_adapter
 
     # Treat a cached token as expired this many seconds before its real expiry, so it
     # cannot go stale between the check below and the request that relies on it.

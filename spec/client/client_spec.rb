@@ -85,6 +85,25 @@ RSpec.describe KeycloakAdmin::Client do
 
       client.send(:resource, "http://x")
     end
+
+    it "passes the configured faraday_adapter along to the Resource" do
+      configuration = KeycloakAdmin::Configuration.new
+      configuration.faraday_options = { timeout: 5 }
+      configuration.faraday_adapter = :test
+      client = KeycloakAdmin::Client.new(configuration)
+
+      expect(KeycloakAdmin::Resource).to receive(:new).with("http://x", { timeout: 5, adapter: :test }, nil)
+
+      client.send(:resource, "http://x")
+    end
+
+    it "omits the adapter key entirely when none is configured" do
+      configuration = KeycloakAdmin::Configuration.new
+      configuration.faraday_options = { timeout: 5 }
+      client = KeycloakAdmin::Client.new(configuration)
+
+      expect(client.send(:connection_options)).to eq({ timeout: 5 })
+    end
   end
 
   describe "#execute_http" do

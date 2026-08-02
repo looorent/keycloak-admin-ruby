@@ -38,6 +38,38 @@ RSpec.describe KeycloakAdmin::Resource do
     end
   end
 
+  describe "#connection adapter" do
+    def adapter_class(resource)
+      resource.send(:connection).builder.adapter.klass
+    end
+
+    it "mounts Faraday's default adapter when none is configured" do
+      resource = KeycloakAdmin::Resource.new("http://example.com")
+      expect(adapter_class(resource)).to eq Faraday::Adapter::NetHttp
+    end
+
+    it "mounts the configured adapter instead" do
+      resource = KeycloakAdmin::Resource.new("http://example.com", adapter: :test)
+      expect(adapter_class(resource)).to eq Faraday::Adapter::Test
+    end
+
+    it "accepts an adapter given with its arguments" do
+      resource = KeycloakAdmin::Resource.new("http://example.com", adapter: [:test, Faraday::Adapter::Test::Stubs.new])
+      expect(adapter_class(resource)).to eq Faraday::Adapter::Test
+    end
+
+    it "does not forward :adapter to Faraday as a connection option" do
+      expect(Faraday).to receive(:new).with(hash_excluding(:adapter)).and_call_original
+      KeycloakAdmin::Resource.new("http://example.com", adapter: :test).send(:connection)
+    end
+
+    it "does not mutate the options hash it was given" do
+      options = { adapter: :test, request: { timeout: 5 } }
+      KeycloakAdmin::Resource.new("http://example.com", options)
+      expect(options).to eq({ adapter: :test, request: { timeout: 5 } })
+    end
+  end
+
   describe "#get" do
     it "humanizes symbol header keys into HTTP header names" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users")

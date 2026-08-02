@@ -24,7 +24,7 @@ module KeycloakAdmin
     def remove_realm_level(role_representation_list)
       execute_http do
         Resource.execute(
-          @configuration.faraday_options.merge(
+          connection_options.merge(
             method: :delete,
             url: realm_level_url,
             payload: create_payload(role_representation_list),
