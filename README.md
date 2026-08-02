@@ -16,7 +16,7 @@ This gem *does not* require Rails.
 For example, using `bundle`, add this line to your Gemfile.
 
 ```ruby
-gem "keycloak-admin", "2.0.2"
+gem "keycloak-admin", "2.0.3"
 ```
 
 ## Login
@@ -429,7 +429,7 @@ KeycloakAdmin.realm("a_realm").groups.list(first: 0, max: 100)
 
 Returns an array of `KeycloakAdmin::GroupRepresentation`.
 
-According to [the documentation](https://www.keycloak.org/docs-api/22.0.2/rest-api/index.html#_groups):
+According to [the documentation](https://www.keycloak.org/docs-api/latest/rest-api/index.html#_groups):
 * When providing a `String` parameter, this produces an arbitrary search string
 * When providing a `Hash`, you can specify other fields (_e.g_ q, max, first)
 
@@ -995,6 +995,6 @@ scoped RubyGems credential.
 3. Tag the commit and push the tag:
 
 ```
-  $ git tag -a v2.0.2 -m "Version 2.0.2"
-  $ git push origin v2.0.2
+  $ git tag -a v2.0.3 -m "Version 2.0.3"
+  $ git push origin v2.0.3
 ```
