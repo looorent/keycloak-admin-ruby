@@ -248,6 +248,13 @@ Returns an array of `KeycloakAdmin::UserRepresentation`.
 KeycloakAdmin.realm("a_realm").users.list
 ```
 
+Keycloak answers this endpoint with **at most 100 users** unless told otherwise, so a bare `list` silently truncates a larger realm. Pass `max` (and `first` to walk the pages) to go past it:
+
+```ruby
+KeycloakAdmin.realm("a_realm").users.list(max: 500)
+KeycloakAdmin.realm("a_realm").users.list(first: 100, max: 100)
+```
+
 ### Save a user
 
 Returns the provided `user`, which must be of type `KeycloakAdmin::UserRepresentation`.
@@ -402,6 +409,12 @@ Returns an array of `KeycloakAdmin::GroupRepresentation`.
 
 ```ruby
 KeycloakAdmin.realm("a_realm").groups.list
+```
+
+This endpoint applies no default cap, so a bare `list` already returns every group. `first` and `max` are still accepted, to page through a realm holding a lot of them:
+
+```ruby
+KeycloakAdmin.realm("a_realm").groups.list(first: 0, max: 100)
 ```
 
 ### Search for a group

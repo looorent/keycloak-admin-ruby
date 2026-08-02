@@ -79,6 +79,38 @@ RSpec.describe KeycloakAdmin::GroupClient do
       expect(groups.length).to eq 1
       expect(groups[0].name).to eq "test_group_name"
     end
+
+    it "sends no pagination parameter when neither bound is given" do
+      @group_client.list
+      expect(a_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/groups")).to have_been_made
+    end
+
+    it "sends both bounds when they are given" do
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/groups?first=10&max=5").
+        to_return(body: '[]')
+
+      @group_client.list(first: 10, max: 5)
+
+      expect(a_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/groups?first=10&max=5")).to have_been_made
+    end
+
+    # Keycloak 19 ignores a lone max on this endpoint and returns everything.
+    it "pairs a lone max with first=0, which Keycloak 19 needs to paginate at all" do
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/groups?first=0&max=5").
+        to_return(body: '[]')
+
+      @group_client.list(max: 5)
+
+      expect(a_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/groups?first=0&max=5")).to have_been_made
+    end
+
+    it "leaves a lone first alone" do
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/groups?first=10").to_return(body: '[]')
+
+      @group_client.list(first: 10)
+
+      expect(a_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/groups?first=10")).to have_been_made
+    end
   end
 
 

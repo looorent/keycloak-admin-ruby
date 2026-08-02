@@ -22,8 +22,16 @@ module KeycloakAdmin
       JSON.parse(response).map { |group_as_hash| GroupRepresentation.from_hash(group_as_hash) }
     end
 
-    def list
-      search(nil)
+    # Unlike the users endpoint, this one applies no default cap: a bare list already returns
+    # every group. Passing neither bound sends no query parameter at all, exactly as before.
+    #
+    # Keycloak 19 only paginates here when both bounds are present - a lone `max` is ignored and
+    # the whole list comes back. Sending `first=0` alongside it makes the call behave the same on
+    # every supported version, and is a no-op from Keycloak 23 on.
+    def list(first: nil, max: nil)
+      first = 0 if first.nil? && !max.nil?
+      pagination = {first: first, max: max}.compact
+      search(pagination.empty? ? nil : pagination)
     end
 
     def search(query)

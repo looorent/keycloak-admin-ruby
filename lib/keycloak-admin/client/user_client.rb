@@ -101,8 +101,12 @@ module KeycloakAdmin
       JSON.parse(response).map { |user_as_hash| UserRepresentation.from_hash(user_as_hash) }
     end
 
-    def list
-      search(nil)
+    # Keycloak answers this endpoint with at most 100 users unless `max` says otherwise, so a
+    # bare `list` silently truncates a larger realm. Passing neither bound sends no query
+    # parameter at all, exactly as before.
+    def list(first: nil, max: nil)
+      pagination = {first: first, max: max}.compact
+      search(pagination.empty? ? nil : pagination)
     end
 
     def delete(user_id)

@@ -292,6 +292,28 @@ RSpec.describe KeycloakAdmin::TokenClient do
       expect(users.length).to eq 1
       expect(users[0].username).to eq "test_username"
     end
+
+    it "sends no pagination parameter when neither bound is given" do
+      @user_client.list
+      expect(a_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/users")).to have_been_made
+    end
+
+    it "sends both bounds when they are given" do
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/users?first=100&max=500").
+        to_return(body: '[]')
+
+      @user_client.list(first: 100, max: 500)
+
+      expect(a_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/users?first=100&max=500")).to have_been_made
+    end
+
+    it "sends only the bound that is given" do
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/users?max=500").to_return(body: '[]')
+
+      @user_client.list(max: 500)
+
+      expect(a_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/users?max=500")).to have_been_made
+    end
   end
 
   describe "#delete" do
