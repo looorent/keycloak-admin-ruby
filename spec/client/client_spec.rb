@@ -255,5 +255,17 @@ RSpec.describe KeycloakAdmin::Client do
     it "returns an empty string for no parameters" do
       expect(build_query({})).to eq ""
     end
+
+    it "repeats the key for array values" do
+      expect(build_query(uri: ["a", "b"])).to eq "uri=a&uri=b"
+    end
+
+    it "encodes each element of an array separately" do
+      expect(build_query(uri: ["/tmp/*", "a b&c"])).to eq "uri=%2Ftmp%2F*&uri=a%20b%26c"
+    end
+
+    it "drops an empty array rather than rendering an empty value" do
+      expect(build_query(first: 0, uri: [], max: 11)).to eq "first=0&max=11"
+    end
   end
 end

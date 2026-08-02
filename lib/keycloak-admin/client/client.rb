@@ -65,8 +65,10 @@ module KeycloakAdmin
     private
 
     def build_query(parameters)
-      parameters.map do |name, value|
-        "#{URI.encode_uri_component(name.to_s)}=#{URI.encode_uri_component(value.to_s)}"
+      parameters.flat_map do |name, value|
+        encoded_name = URI.encode_uri_component(name.to_s)
+        values       = value.is_a?(Array) ? value : [value]
+        values.map { |single_value| "#{encoded_name}=#{URI.encode_uri_component(single_value.to_s)}" }
       end.join("&")
     end
 
