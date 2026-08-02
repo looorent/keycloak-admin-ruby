@@ -30,7 +30,10 @@ module KeycloakAdmin
     end
 
     def find_by_client_id(client_id)
-      list.find { |client| client.client_id == client_id }
+      response = execute_http do
+        resource("#{clients_url}?#{build_query(clientId: client_id)}").get(headers)
+      end
+      JSON.parse(response).map { |client_as_hash| ClientRepresentation.from_hash(client_as_hash) }.first
     end
 
     def delete(id)

@@ -52,8 +52,10 @@ RSpec.describe KeycloakAdmin::ClientClient do
       @client_client = KeycloakAdmin.realm(realm_name).clients
 
       stub_token_client
-      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients")
-        .to_return(body: '[{"id":"test_client_id","clientId": "my_client_id","name":"test_client_name"},{"id":"test_client_id_2","clientId":"client_id_2","name":"test_client_name_2"}]')
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients?clientId=my_client_id")
+        .to_return(body: '[{"id":"test_client_id","clientId": "my_client_id","name":"test_client_name"}]')
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients?clientId=client_id_3")
+        .to_return(body: '[]')
     end
 
     it "finds a client it has" do
@@ -65,6 +67,21 @@ RSpec.describe KeycloakAdmin::ClientClient do
     it "returns nil if it doesn't have the client" do
       client = @client_client.find_by_client_id("client_id_3")
       expect(client).to be_nil
+    end
+
+    it "asks Keycloak to filter instead of listing the whole realm" do
+      @client_client.find_by_client_id(client_id)
+
+      expect(a_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients?clientId=my_client_id")).to have_been_made
+      expect(a_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients")).to_not have_been_made
+    end
+
+    it "percent-encodes a client id holding characters that would otherwise forge parameters" do
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients?clientId=a%20b%26c%3Dd")
+        .to_return(body: '[]')
+
+      expect(@client_client.find_by_client_id("a b&c=d")).to be_nil
+      expect(a_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients?clientId=a%20b%26c%3Dd")).to have_been_made
     end
   end
 
