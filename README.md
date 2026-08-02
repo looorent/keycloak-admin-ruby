@@ -305,6 +305,14 @@ new_password = "coco"
 KeycloakAdmin.realm("a_realm").users.update_password(user_id, new_password)
 ```
 
+Pass `temporary: true` to force the user to choose a new password at their next login. Keycloak
+records this as an `UPDATE_PASSWORD` required action on the account; a later permanent reset
+clears it.
+
+```ruby
+KeycloakAdmin.realm("a_realm").users.update_password(user_id, new_password, temporary: true)
+```
+
 ### List credentials
 
 ```ruby

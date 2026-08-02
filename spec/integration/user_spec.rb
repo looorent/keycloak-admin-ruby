@@ -50,6 +50,44 @@ RSpec.describe 'User Integration' do
     }.to raise_error(KeycloakAdmin::ApiError)
   end
 
+  describe '#update_password' do
+    let(:users_client) { KeycloakAdmin.realm(realm_name).users }
+
+    around(:each) do |example|
+      @user = users_client.create!(username, "#{username}@example.com", "initial-password", true, "en")
+      begin
+        example.run
+      ensure
+        users_client.delete(@user.id)
+      end
+    end
+
+    it 'leaves no required action behind by default' do
+      users_client.update_password(@user.id, "permanent-#{SecureRandom.hex(4)}")
+
+      expect(users_client.get(@user.id).required_actions).to_not include("UPDATE_PASSWORD")
+    end
+
+    it 'forces a password change at next login when temporary' do
+      users_client.update_password(@user.id, "temporary-#{SecureRandom.hex(4)}", temporary: true)
+
+      expect(users_client.get(@user.id).required_actions).to include("UPDATE_PASSWORD")
+    end
+
+    it 'clears the required action when a permanent password replaces a temporary one' do
+      users_client.update_password(@user.id, "temporary-#{SecureRandom.hex(4)}", temporary: true)
+      expect(users_client.get(@user.id).required_actions).to include("UPDATE_PASSWORD")
+
+      users_client.update_password(@user.id, "permanent-#{SecureRandom.hex(4)}")
+
+      expect(users_client.get(@user.id).required_actions).to_not include("UPDATE_PASSWORD")
+    end
+
+    it 'returns the user id' do
+      expect(users_client.update_password(@user.id, "permanent-#{SecureRandom.hex(4)}")).to eq @user.id
+    end
+  end
+
   it 'handles errors properly when creating a duplicate user' do
     users_client = KeycloakAdmin.realm(realm_name).users
     duplicate_username = "duplicate-#{SecureRandom.hex(4)}"

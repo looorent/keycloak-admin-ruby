@@ -48,6 +48,42 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
   end
 
+  describe "#update_password" do
+    let(:realm_name) { "valid-realm" }
+    let(:user_id)    { "42" }
+    let(:url)        { "http://auth.service.io/auth/admin/realms/valid-realm/users/42/reset-password" }
+
+    before(:each) do
+      @client = KeycloakAdmin.realm(realm_name).users
+      stub_token_client
+      stub_request(:put, url).to_return(status: 204)
+    end
+
+    def sent_payload
+      payload = nil
+      expect(a_request(:put, url).with { |request| payload = JSON.parse(request.body) }).to have_been_made
+      payload
+    end
+
+    it "sends a permanent password by default" do
+      @client.update_password(user_id, "s3cr3t")
+      expect(sent_payload).to eq({"type" => "password", "value" => "s3cr3t", "temporary" => false})
+    end
+
+    it "sends a temporary password when asked" do
+      @client.update_password(user_id, "s3cr3t", temporary: true)
+      expect(sent_payload["temporary"]).to be true
+    end
+
+    it "returns the user id" do
+      expect(@client.update_password(user_id, "s3cr3t")).to eq user_id
+    end
+
+    it "raises when the user id is missing" do
+      expect { @client.update_password(nil, "s3cr3t") }.to raise_error(ArgumentError)
+    end
+  end
+
   describe "#reset_password_url" do
     let(:realm_name) { "valid-realm" }
     let(:user_id)    { nil }

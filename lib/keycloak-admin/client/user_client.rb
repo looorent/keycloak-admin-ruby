@@ -123,13 +123,13 @@ module KeycloakAdmin
       JSON.parse(response).map { |group_as_hash| GroupRepresentation.from_hash(group_as_hash) }
     end
 
-    def update_password(user_id, new_password)
+    def update_password(user_id, new_password, temporary: false)
       execute_http do
         Resource.execute(
           connection_options.merge(
             method: :put,
             url: reset_password_url(user_id),
-            payload: { type: "password", value: new_password, temporary: false }.to_json,
+            payload: { type: "password", value: new_password, temporary: temporary }.to_json,
             headers: headers,
             logger: @configuration.logger
           )
