@@ -27,7 +27,6 @@ module KeycloakAdmin
                   :authentication_flow_binding_overrides,
                   :full_scope_allowed,
                   :node_re_registration_timeout,
-                  :attributes,
                   :protocol_mappers,
                   :default_client_scopes,
                   :optional_client_scopes,
@@ -42,9 +41,9 @@ module KeycloakAdmin
       client.client_authenticator_type             = hash["clientAuthenticatorType"]
       client.always_display_in_console             = hash["alwaysDisplayInConsole"] || false
       client.surrogate_auth_required               = hash["surrogateAuthRequired"] || false
-      client.redirect_uris                         = hash["redirectUris"] || false
-      client.web_origins                           = hash["webOrigins"] || false
-      client.not_before                            = hash["notBefore"] || false
+      client.redirect_uris                         = hash["redirectUris"] || []
+      client.web_origins                           = hash["webOrigins"] || []
+      client.not_before                            = hash["notBefore"] || 0
       client.bearer_only                           = hash["bearerOnly"] || false
       client.consent_required                      = hash["consentRequired"] || false
       client.standard_flow_enabled                 = hash["standardFlowEnabled"] || false
@@ -61,7 +60,6 @@ module KeycloakAdmin
       client.authentication_flow_binding_overrides = hash["authenticationFlowBindingOverrides"] || {}
       client.full_scope_allowed                    = hash["fullScopeAllowed"] || false
       client.node_re_registration_timeout          = hash["nodeReRegistrationTimeout"] || -1
-      client.attributes                            = hash["attributes"]
       client.protocol_mappers                      = (hash["protocolMappers"] || []).map { |protocol_mapper_hash| ProtocolMapperRepresentation.from_hash(protocol_mapper_hash) }
       client.default_client_scopes                 = hash["defaultClientScopes"] || []
       client.optional_client_scopes                = hash["optionalClientScopes"] || []

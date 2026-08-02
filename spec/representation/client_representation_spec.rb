@@ -1,5 +1,28 @@
 # frozen_string_literal: true
 RSpec.describe KeycloakAdmin::ClientRepresentation do
+  describe ".from_hash" do
+    context "when the payload omits optional fields" do
+      subject { described_class.from_hash({"id" => "x", "clientId" => "my-client"}) }
+
+      it "defaults attributes to an empty hash" do
+        expect(subject.attributes).to eq({})
+      end
+
+      it "defaults collections to empty arrays rather than false" do
+        expect(subject.redirect_uris).to eq([])
+        expect(subject.web_origins).to eq([])
+      end
+
+      it "defaults not_before to zero rather than false" do
+        expect(subject.not_before).to eq(0)
+      end
+
+      it "round-trips without sending a boolean where Keycloak expects a list" do
+        expect(subject.to_json).to include("\"redirectUris\":[]", "\"webOrigins\":[]", "\"notBefore\":0")
+      end
+    end
+  end
+
   describe "#to_json" do
     before(:each) do
       @client = KeycloakAdmin::ClientRepresentation.from_hash(

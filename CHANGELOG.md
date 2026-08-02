@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Fix] `Configuration#inspect` no longer renders `client_secret`, `password` or the cached access token, showing `[FILTERED]` instead. The default `#inspect` printed every attribute, so these credentials travelled into console sessions, `pp` output, and whatever local-variable dump an exception reporter attaches to a crash. A credential that is not set still renders as `nil`, so an inspect stays useful when authentication misbehaves.
 * [Fix] The access token cache introduced in 2.0.1 is now thread-safe.
 * [Fix] Identifiers are now percent-encoded before being interpolated into a URL path.
+* [Fix] `ClientRepresentation.from_hash` no longer produces wrongly typed defaults when the payload omits a field.
 * [Fix] `RoleRepresentation` and `SessionRepresentation` no longer define spurious `from_hash` and `from_hash=` instance accessors. A trailing comma after the last symbol of their `attr_accessor` list continued the argument list into the following `def`, which evaluates to a Symbol, so `attr_accessor` also received `:from_hash`. The class method `self.from_hash` was never shadowed, so parsing was unaffected.
 
 * [Fix] `UserClient#update`, `#add_group` and `#remove_group` built their request outside `execute_http`. They were the only methods on this client that raised a bare `Faraday::Error` instead of the documented `KeycloakAdmin::ApiError` hierarchy, and the only ones that did not replay a request rejected on a stale `401`.

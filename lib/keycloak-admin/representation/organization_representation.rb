@@ -10,7 +10,6 @@ module KeycloakAdmin
       :attributes,
       :domains,
       :members,
-      :attributes,
       :identity_providers
 
     def self.from_hash(hash)
