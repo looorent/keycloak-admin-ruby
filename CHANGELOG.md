@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [Fix] `Configuration#inspect` no longer renders `client_secret`, `password` or the cached access token, showing `[FILTERED]` instead. The default `#inspect` printed every attribute, so these credentials travelled into console sessions, `pp` output, and whatever local-variable dump an exception reporter attaches to a crash. A credential that is not set still renders as `nil`, so an inspect stays useful when authentication misbehaves.
 * [Fix] The access token cache introduced in 2.0.1 is now thread-safe.
 * [Fix] Identifiers are now percent-encoded before being interpolated into a URL path.
 

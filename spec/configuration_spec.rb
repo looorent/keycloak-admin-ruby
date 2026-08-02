@@ -105,6 +105,54 @@ RSpec.describe KeycloakAdmin::RealmClient do
     end
   end
 
+  describe "#inspect" do
+    def token
+      KeycloakAdmin::TokenRepresentation.new(
+        "BEARER-TOKEN", "bearer", 3600, "REFRESH-TOKEN",
+        "refresh_expires_in", "id_token", "not_before_policy", "session_state"
+      )
+    end
+
+    it "does not render the client secret" do
+      expect(@configuration.inspect).to_not include client_secret
+      expect(@configuration.inspect).to include "@client_secret=[FILTERED]"
+    end
+
+    it "does not render the password" do
+      expect(@configuration.inspect).to_not include password
+      expect(@configuration.inspect).to include "@password=[FILTERED]"
+    end
+
+    it "does not render the cached access token" do
+      @configuration.cache_token(token)
+
+      expect(@configuration.inspect).to_not include "BEARER-TOKEN"
+      expect(@configuration.inspect).to_not include "REFRESH-TOKEN"
+    end
+
+    it "still renders the attributes that are not credentials" do
+      expect(@configuration.inspect).to include %(@server_url="http://auth.service.io/auth")
+      expect(@configuration.inspect).to include %(@client_id="admin-cli")
+      expect(@configuration.inspect).to include %(@client_realm_name="master2")
+    end
+
+    it "renders a credential that is not set as nil rather than as filtered" do
+      @configuration.client_secret = nil
+
+      expect(@configuration.inspect).to include "@client_secret=nil"
+    end
+
+    it "keeps the secret out of pp, which renders through #inspect" do
+      require "pp"
+
+      expect(PP.pp(@configuration, +"")).to_not include client_secret
+    end
+
+    it "keeps the secret out of an object that holds the configuration" do
+      expect(KeycloakAdmin::Client.new(@configuration).inspect).to_not include client_secret
+    end
+  end
+
   describe "#fetch_token_once" do
     def token(expires_in)
       KeycloakAdmin::TokenRepresentation.new(

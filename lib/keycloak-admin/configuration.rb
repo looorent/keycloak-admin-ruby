@@ -8,8 +8,24 @@ module KeycloakAdmin
     # cannot go stale between the check below and the request that relies on it.
     TOKEN_EXPIRY_SAFETY_MARGIN_SECONDS = 10
 
+    FILTERED_ATTRIBUTES  = %i[@client_secret @password @cached_token].freeze
+    FILTERED_PLACEHOLDER = "[FILTERED]".freeze
+
     def initialize
       @token_mutex = Mutex.new
+    end
+
+    def inspect
+      rendered = instance_variables.map do |name|
+        value = instance_variable_get(name)
+        shown  = if FILTERED_ATTRIBUTES.include?(name) && !value.nil?
+          FILTERED_PLACEHOLDER
+        else
+          value.inspect
+        end
+        "#{name}=#{shown}"
+      end
+      "#<#{self.class.name} #{rendered.join(", ")}>"
     end
 
     # Returns the cached token, fetching one through the block if there is none.
