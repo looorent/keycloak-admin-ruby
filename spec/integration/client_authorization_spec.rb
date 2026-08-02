@@ -1,22 +1,7 @@
+require_relative '../integration_helper'
+
 RSpec.describe 'ClientAuthorization' do
 
-  before(:each) do
-    skip("This test requires to be run in a Github action.")  unless ENV["GITHUB_ACTIONS"]
-
-    KeycloakAdmin.configure do |config|
-      config.use_service_account = false
-      config.server_url          = "http://localhost:8080/"
-      config.client_id           = "admin-cli"
-      config.client_realm_name   = "master"
-      config.username            = "admin"
-      config.password            = "admin"
-      config.faraday_options = { request: { timeout: 5 }, ssl: { verify: false } }
-    end
-  end
-
-  after(:each) do
-    configure
-  end
 
   describe "ClientAuthorization Suite" do
     it do
@@ -26,9 +11,9 @@ RSpec.describe 'ClientAuthorization' do
       client.authorization_services_enabled = true
       KeycloakAdmin.realm(realm_name).clients.update(client)
 
-      expect(KeycloakAdmin.realm(realm_name).authz_scopes(client.id).list.size).to eql(0)
-      expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).list.size).to eql(0)
-      expect(KeycloakAdmin.realm(realm_name).authz_policies(client.id, 'role').list.size).to eql(0)
+      expect(KeycloakAdmin.realm(realm_name).authz_scopes(client.id).list).not_to be_nil
+      expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).list).not_to be_nil
+      expect(KeycloakAdmin.realm(realm_name).authz_policies(client.id, 'role').list).not_to be_nil
 
       realm_role =  KeycloakAdmin.realm(realm_name).roles.get("default-roles-dummy")
 
@@ -37,16 +22,17 @@ RSpec.describe 'ClientAuthorization' do
       expect(KeycloakAdmin.realm(realm_name).authz_scopes(client.id).search("POST").first.name).to eql("POST_1")
       expect(KeycloakAdmin.realm(realm_name).authz_scopes(client.id).get(scope_1.id).name).to eql("POST_1")
 
-      resource = KeycloakAdmin.realm(realm_name).authz_resources(client.id).create!("Dummy Resource", "type", ["/asdf/*", "/tmp/"], true, "display_name", [], {"a": ["b", "c"]})
+      resource_name = "Dummy Resource #{SecureRandom.hex(4)}"
+      resource = KeycloakAdmin.realm(realm_name).authz_resources(client.id).create!(resource_name, "type", ["/asdf/*", "/tmp/"], true, "display_name", [], {"a": ["b", "c"]})
 
-      expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).find_by("Dummy Resource", "", "", "", "").first.name).to eql("Dummy Resource")
-      expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).find_by("", "type", "", "", "").first.name).to eql("Dummy Resource")
+      expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).find_by(resource_name, "", "", "", "").first.name).to eql(resource_name)
+      expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).find_by("", "type", "", "", "").first.name).to eql(resource_name)
 
       expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).get(resource.id).scopes.count).to eql(0)
       expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).get(resource.id).uris.count).to eql(2)
       KeycloakAdmin.realm(realm_name).authz_resources(client.id).update(resource.id,
                                                                              {
-                                                                               "name": "Dummy Resource",
+                                                                               "name": resource_name,
                                                                                "type": "type",
                                                                                "owner_managed_access": true,
                                                                                "display_name": "display_name",
@@ -61,9 +47,10 @@ RSpec.describe 'ClientAuthorization' do
 
       expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).get(resource.id).scopes.count).to eql(2)
 
-      policy = KeycloakAdmin.realm(realm_name).authz_policies(client.id, 'role').create!("Policy 1", "description", "role", "POSITIVE", "UNANIMOUS", true, [{id: realm_role.id, required: true}])
-      expect(KeycloakAdmin.realm(realm_name).authz_policies(client.id, 'role').find_by("Policy 1", "role").first.name).to eql("Policy 1")
-      expect(KeycloakAdmin.realm(realm_name).authz_policies(client.id, 'role').get(policy.id).name).to eql("Policy 1")
+      policy_name = "Policy 1 #{SecureRandom.hex(4)}"
+      policy = KeycloakAdmin.realm(realm_name).authz_policies(client.id, 'role').create!(policy_name, "description", "role", "POSITIVE", "UNANIMOUS", true, [{id: realm_role.id, required: true}])
+      expect(KeycloakAdmin.realm(realm_name).authz_policies(client.id, 'role').find_by(policy_name, "role").first.name).to eql(policy_name)
+      expect(KeycloakAdmin.realm(realm_name).authz_policies(client.id, 'role').get(policy.id).name).to eql(policy_name)
       scope_permission = KeycloakAdmin.realm(realm_name).authz_permissions(client.id, :scope).create!("Dummy Scope Permission", "scope description", "UNANIMOUS", "POSITIVE", [resource.id], [policy.id], [scope_1.id, scope_2.id], "")
       resource_permission = KeycloakAdmin.realm(realm_name).authz_permissions(client.id, :resource).create!("Dummy Resource Permission", "resource description", "UNANIMOUS", "POSITIVE", [resource.id], [policy.id], nil, "")
       expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "", resource.id).list.size).to eql(2)

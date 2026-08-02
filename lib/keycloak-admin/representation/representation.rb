@@ -5,7 +5,10 @@ class Representation
   include ::KeycloakAdmin::CamelJson
 
   def as_json(options=nil)
-    Hash[instance_variables.map { |ivar| [ivar.to_s[1..-1], instance_variable_get(ivar)] }]
+    Hash[instance_variables.map do |ivar|
+      val = instance_variable_get(ivar)
+      [ivar.to_s[1..-1], val] unless val.nil?
+    end.compact]
   end
 
   def to_json(options=nil)
