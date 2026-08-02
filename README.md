@@ -960,7 +960,23 @@ KeycloakAdmin.realm("a_realm").client_scope_protocol_mappers(client_scope_id).de
 
 ## How to execute library tests
 
-From the `keycloak-admin-api` directory:
+Unit tests need nothing but the gems:
+
+```
+  $ bundle install
+  $ bundle exec rake spec
+```
+
+Integration tests run against a real Keycloak. `docker-compose.yml` boots one configured like the one CI uses, so a green run locally means the same thing as a green run in CI:
+
+```
+  $ docker compose up -d
+  $ bundle exec rake integration
+```
+
+To reproduce a failure specific to an older Keycloak, pin `image:` in `docker-compose.yml` to that version and start over with `docker compose down -v && docker compose up -d`. The suite is exercised in CI against Keycloak 19.0, 21.0, 23.0, 25.0 and 26.7.0.
+
+Everything can also run inside a container:
 
 ```
   $ docker build . -t keycloak-admin:test

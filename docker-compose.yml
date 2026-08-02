@@ -1,12 +1,31 @@
-version: '3.8'
-
 services:
   keycloak:
-    image: quay.io/keycloak/keycloak:19.0
+    image: quay.io/keycloak/keycloak:26.7.0
     command: start-dev
     environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME: http://localhost:8080
+      KC_HOSTNAME_ADMIN: http://localhost:8080
       KC_HTTP_ENABLED: 'true'
+      KC_DB: dev-file
+      KC_HOSTNAME_STRICT: 'false'
+      KC_HOSTNAME_STRICT_HTTPS: 'false'
     ports:
       - "8080:8080"
+  keycloak-init:
+    image: quay.io/keycloak/keycloak:26.7.0
+    depends_on:
+      - keycloak
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        until /opt/keycloak/bin/kcadm.sh config credentials --server http://keycloak:8080 --realm master --user admin --password admin; do
+          echo "waiting for keycloak..."
+          sleep 3
+        done
+        /opt/keycloak/bin/kcadm.sh update realms/master -s sslRequired=NONE
+        echo "master realm now accepts plain HTTP"
+    restart: "no"
