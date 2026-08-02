@@ -9,7 +9,14 @@ RSpec.describe 'User Integration' do
     users_client = KeycloakAdmin.realm(realm_name).users
 
     # 1. Create a user
-    created_user = users_client.create!(username, "#{username}@example.com", "password", true, "en")
+    created_user = users_client.create!(
+      username, 
+      "#{username}@example.com", 
+      "password", 
+      true, # email_verified
+      "en", # locale
+      { "customAttr" => "value1" } # attributes
+    )
     expect(created_user).not_to be_nil
     expect(created_user.id).not_to be_nil
 
@@ -19,6 +26,9 @@ RSpec.describe 'User Integration' do
     fetched_user = search_results.first
     expect(fetched_user.id).to eq(created_user.id)
     expect(fetched_user.email).to eq("#{username}@example.com")
+    expect(fetched_user.email_verified).to be_truthy
+    expect(fetched_user.attributes["locale"]).to include("en")
+    expect(fetched_user.attributes["customAttr"]).to include("value1")
 
     # 3. Fetch the user by ID
     user_by_id = users_client.get(created_user.id)
@@ -36,6 +46,26 @@ RSpec.describe 'User Integration' do
     
     expect {
       users_client.get(created_user.id)
+    }.to raise_error(KeycloakAdmin::ApiError)
+  end
+
+  it 'handles errors properly when creating a duplicate user' do
+    users_client = KeycloakAdmin.realm(realm_name).users
+    duplicate_username = "duplicate-#{SecureRandom.hex(4)}"
+
+    # Create first time
+    users_client.create!(duplicate_username, "#{duplicate_username}@example.com", "password", true, "en")
+
+    # Create second time
+    expect {
+      users_client.create!(duplicate_username, "#{duplicate_username}@example.com", "password", true, "en")
+    }.to raise_error(KeycloakAdmin::ApiError) # Or ConflictError depending on library wrapping
+  end
+
+  it 'handles errors when getting a non-existent user' do
+    users_client = KeycloakAdmin.realm(realm_name).users
+    expect {
+      users_client.get("invalid-uuid-1234")
     }.to raise_error(KeycloakAdmin::ApiError)
   end
 end
