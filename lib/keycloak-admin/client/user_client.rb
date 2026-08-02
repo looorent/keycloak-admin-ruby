@@ -6,17 +6,17 @@ module KeycloakAdmin
       @realm_client = realm_client
     end
 
+    # Reads the id of the new user off the Location header rather than searching for it
+    # afterwards: Keycloak's `search` parameter matches a substring of the username, email,
+    # first name or last name, so an existing user merely containing this email was returned
+    # instead of the one just created.
     def create!(username, email, password, email_verified, locale, attributes={})
-      user = save(build(username, email, password, email_verified, locale, attributes))
-      search(user.email)&.first
+      response = post_user(build(username, email, password, email_verified, locale, attributes))
+      get(created_id(response))
     end
 
     def save(user_representation)
-      execute_http do
-        resource(users_url).post(
-          create_payload(user_representation), headers
-        )
-      end
+      post_user(user_representation)
       user_representation
     end
 
@@ -279,6 +279,14 @@ module KeycloakAdmin
     end
 
     private
+
+    def post_user(user_representation)
+      execute_http do
+        resource(users_url).post(
+          create_payload(user_representation), headers
+        )
+      end
+    end
 
     def build(username, email, password, email_verified, locale, attributes={})
       user                     = UserRepresentation.new

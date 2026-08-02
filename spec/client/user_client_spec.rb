@@ -614,3 +614,90 @@ RSpec.describe "KeycloakAdmin::UserClient error handling" do
     end
   end
 end
+
+RSpec.describe "KeycloakAdmin::UserClient#create!" do
+  let(:realm_name)  { "valid-realm" }
+  let(:users_url)   { "http://auth.service.io/auth/admin/realms/valid-realm/users" }
+  let(:new_id)      { "0f6b1e4c-8b7a-4f21-9c3d-2e5a7b9c1d3f" }
+  let(:user_client) { KeycloakAdmin.realm(realm_name).users }
+
+  before(:each) { stub_token_client }
+
+  def stub_creation(location: "#{users_url}/#{new_id}", status: 201)
+    stub_request(:post, users_url).to_return(status: status, headers: location ? {"Location" => location} : {})
+  end
+
+  def stub_fetch(id: new_id, body: nil)
+    stub_request(:get, "#{users_url}/#{id}").to_return(
+      status: 200,
+      body: (body || {"id" => id, "username" => "pioupioux", "email" => "pioupioux@email.com"}).to_json
+    )
+  end
+
+  it "returns the created user" do
+    stub_creation
+    stub_fetch
+
+    user = user_client.create!("pioupioux", "pioupioux@email.com", "acme0", true, "en")
+
+    expect(user).to be_a KeycloakAdmin::UserRepresentation
+    expect(user.id).to eq new_id
+    expect(user.username).to eq "pioupioux"
+  end
+
+  it "reads the new id from the Location header instead of searching for it" do
+    stub_creation
+    fetch  = stub_fetch
+    search = stub_request(:get, /users\?/)
+
+    user_client.create!("pioupioux", "pioupioux@email.com", "acme0", true, "en")
+
+    expect(fetch).to have_been_requested
+    expect(search).to_not have_been_requested
+  end
+
+  # Regression: create! used to return search(email).first, and Keycloak's `search` parameter
+  # matches a substring of the username, email, first name or last name. Creating
+  # "pioupioux@email.com" while "vieuxpioupioux@email.com" already existed returned the
+  # pre-existing user, so the caller silently operated on somebody else's account.
+  it "returns the new user even when another account matches the email as a substring" do
+    stub_creation
+    stub_fetch
+    stub_request(:get, /users\?/).to_return(
+      status: 200,
+      body: [{"id" => "a-pre-existing-user", "email" => "vieuxpioupioux@email.com"}].to_json
+    )
+
+    user = user_client.create!("pioupioux", "pioupioux@email.com", "acme0", true, "en")
+
+    expect(user.id).to eq new_id
+  end
+
+  it "sends the username, email and password" do
+    request = stub_creation.with { |req|
+      body = JSON.parse(req.body)
+      body["username"] == "pioupioux" &&
+        body["email"] == "pioupioux@email.com" &&
+        body["credentials"].first["value"] == "acme0"
+    }
+    stub_fetch
+
+    user_client.create!("pioupioux", "pioupioux@email.com", "acme0", true, "en")
+
+    expect(request).to have_been_requested
+  end
+
+  it "raises when the creation is not answered with 201 Created" do
+    stub_creation(status: 204, location: nil)
+
+    expect { user_client.create!("pioupioux", "pioupioux@email.com", "acme0", true, "en") }
+      .to raise_error(KeycloakAdmin::UnexpectedResponseError)
+  end
+
+  it "raises a typed error when the creation is rejected" do
+    stub_request(:post, users_url).to_return(status: 409, body: "User exists with same username")
+
+    expect { user_client.create!("pioupioux", "pioupioux@email.com", "acme0", true, "en") }
+      .to raise_error(KeycloakAdmin::ConflictError)
+  end
+end
