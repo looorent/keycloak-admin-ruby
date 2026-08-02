@@ -289,33 +289,31 @@ RSpec.describe KeycloakAdmin::TokenClient do
       @user_client = KeycloakAdmin.realm(realm_name).users
 
       stub_token_client
-      allow(KeycloakAdmin::Resource).to receive(:execute).and_return "write a better test"
     end
 
     context 'when user_id is defined' do
       let(:user_id) { '95985b21-d884-4bbd-b852-cb8cd365afc2' }
+      let(:url)     { "http://auth.service.io/auth/admin/realms/valid-realm/users/#{user_id}" }
 
       it 'updates the user details' do
-        ## TODO use this expected payload to check whether it has been sent or not
-        expected_payload = {
-          method:  :put,
-          url:     "http://auth.service.io/auth/admin/realms/valid-realm/users/95985b21-d884-4bbd-b852-cb8cd365afc2",
-          payload: '{"firstName":"Test","enabled":false}',
+        request = stub_request(:put, url).with(
+          body:    '{"firstName":"Test","enabled":false}',
           headers: {
-            Authorization: "Bearer test_access_token",
-            content_type: :json,
-            accept: :json
+            "Authorization" => "Bearer test_access_token",
+            "Content-Type"  => "application/json",
+            "Accept"        => "application/json"
           }
-        }
-        response = @user_client.update(user_id, { firstName: 'Test', enabled: false })
-        expect(response).to eq "write a better test"
+        ).to_return(status: 204)
+
+        @user_client.update(user_id, { firstName: 'Test', enabled: false })
+
+        expect(request).to have_been_requested
       end
     end
 
     context 'when user_id is not defined' do
-      let(:user_id) { '95985b21-d884-4bbd-b852-cb8cd365afc2' }
-
       let(:user_id) { nil }
+
       it 'raise argument error' do
         expect { @user_client.update(user_id, { firstName: 'Test', enabled: false }) }.to raise_error(ArgumentError)
       end
@@ -502,6 +500,93 @@ RSpec.describe "KeycloakAdmin::UserClient#execute_actions_email" do
       user_client.forgot_password(user_id, 120)
 
       expect(request).to have_been_requested
+    end
+  end
+end
+
+RSpec.describe "KeycloakAdmin::UserClient error handling" do
+  let(:realm_name)  { "valid-realm" }
+  let(:user_id)     { "95985b21-d884-4bbd-b852-cb8cd365afc2" }
+  let(:group_id)    { "8a1e1b1c-3b28-4a3a-9d0f-1a2b3c4d5e6f" }
+  let(:user_url)    { "http://auth.service.io/auth/admin/realms/valid-realm/users/#{user_id}" }
+  let(:group_url)   { "#{user_url}/groups/#{group_id}" }
+  let(:user_client) { KeycloakAdmin.realm(realm_name).users }
+
+  before(:each) { stub_token_client }
+
+  describe "#add_group" do
+    it "adds the user to the group" do
+      request = stub_request(:put, group_url).with(body: "{}").to_return(status: 204)
+
+      user_client.add_group(user_id, group_id)
+
+      expect(request).to have_been_requested
+    end
+  end
+
+  describe "#remove_group" do
+    it "removes the user from the group" do
+      request = stub_request(:delete, group_url).to_return(status: 204)
+
+      user_client.remove_group(user_id, group_id)
+
+      expect(request).to have_been_requested
+    end
+  end
+
+  {
+    "#update"       => [:put,    ->(c, u, g) { c.update(u, {enabled: false}) }],
+    "#add_group"    => [:put,    ->(c, u, g) { c.add_group(u, g) }],
+    "#remove_group" => [:delete, ->(c, u, g) { c.remove_group(u, g) }]
+  }.each do |method_name, (verb, call)|
+    describe method_name do
+      let(:url) { method_name == "#update" ? user_url : group_url }
+
+      it "raises a typed KeycloakAdmin error on 404" do
+        stub_request(verb, url).to_return(status: 404, body: "not found")
+
+        expect { call.call(user_client, user_id, group_id) }
+          .to raise_error(KeycloakAdmin::NotFoundError) { |error|
+            expect(error.status).to eq 404
+            expect(error.body).to eq "not found"
+          }
+      end
+
+      it "raises a typed KeycloakAdmin error on 500" do
+        stub_request(verb, url).to_return(status: 500, body: "boom")
+
+        expect { call.call(user_client, user_id, group_id) }.to raise_error(KeycloakAdmin::ServerError)
+      end
+
+      it "drops the cached token and replays once on 401" do
+        token_calls = 0
+        allow_any_instance_of(KeycloakAdmin::TokenClient).to receive(:get) do
+          token_calls += 1
+          KeycloakAdmin::TokenRepresentation.new(
+            "test_access_token", "token_type", 3600, "refresh_token",
+            "refresh_expires_in", "id_token", "not_before_policy", "session_state"
+          )
+        end
+        request = stub_request(verb, url).to_return({status: 401, body: "expired"}, {status: 204})
+
+        call.call(user_client, user_id, group_id)
+
+        expect(request).to have_been_requested.twice
+        expect(token_calls).to eq 2
+      end
+
+      it "gives up after a single replay" do
+        allow_any_instance_of(KeycloakAdmin::TokenClient).to receive(:get).and_return(
+          KeycloakAdmin::TokenRepresentation.new(
+            "test_access_token", "token_type", 3600, "refresh_token",
+            "refresh_expires_in", "id_token", "not_before_policy", "session_state"
+          )
+        )
+        request = stub_request(verb, url).to_return(status: 401, body: "still expired")
+
+        expect { call.call(user_client, user_id, group_id) }.to raise_error(KeycloakAdmin::UnauthorizedError)
+        expect(request).to have_been_requested.twice
+      end
     end
   end
 end

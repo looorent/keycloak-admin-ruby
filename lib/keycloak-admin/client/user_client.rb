@@ -23,38 +23,44 @@ module KeycloakAdmin
     # pay attention that, since Keycloak 24.0.4, partial updates of attributes are not authorized anymore
     def update(user_id, user_representation_body)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
-      Resource.execute(
-        @configuration.faraday_options.merge(
-          method: :put,
-          url: users_url(user_id),
-          payload: create_payload(user_representation_body),
-          headers: headers,
-          logger: @configuration.logger
+      execute_http do
+        Resource.execute(
+          @configuration.faraday_options.merge(
+            method: :put,
+            url: users_url(user_id),
+            payload: create_payload(user_representation_body),
+            headers: headers,
+            logger: @configuration.logger
+          )
         )
-      )
+      end
     end
 
     def add_group(user_id, group_id)
-      Resource.execute(
-        @configuration.faraday_options.merge(
-          method: :put,
-          url: "#{users_url(user_id)}/groups/#{group_id}",
-          payload: create_payload({}),
-          headers: headers,
-          logger: @configuration.logger
+      execute_http do
+        Resource.execute(
+          @configuration.faraday_options.merge(
+            method: :put,
+            url: "#{users_url(user_id)}/groups/#{group_id}",
+            payload: create_payload({}),
+            headers: headers,
+            logger: @configuration.logger
+          )
         )
-      )
+      end
     end
 
     def remove_group(user_id, group_id)
-      Resource.execute(
-        @configuration.faraday_options.merge(
-          method: :delete,
-          url: "#{users_url(user_id)}/groups/#{group_id}",
-          headers: headers,
-          logger: @configuration.logger
+      execute_http do
+        Resource.execute(
+          @configuration.faraday_options.merge(
+            method: :delete,
+            url: "#{users_url(user_id)}/groups/#{group_id}",
+            headers: headers,
+            logger: @configuration.logger
+          )
         )
-      )
+      end
     end
 
     def add_client_roles_on_user(user_id, client_id, role_representations)
