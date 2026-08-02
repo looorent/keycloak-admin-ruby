@@ -8,6 +8,24 @@ module KeycloakAdmin
     # cannot go stale between the check below and the request that relies on it.
     TOKEN_EXPIRY_SAFETY_MARGIN_SECONDS = 10
 
+    def initialize
+      @token_mutex = Mutex.new
+    end
+
+    # Returns the cached token, fetching one through the block if there is none.
+    # The block runs at most once across threads.
+    def fetch_token_once
+      token = cached_token
+      if token.nil?
+        @token_mutex.synchronize do
+          token = cached_token
+          token.nil? ? cache_token(yield) : token
+        end
+      else
+        token
+      end
+    end
+
     # Returns the cached TokenRepresentation, or nil if there is none or it is (about to be) expired.
     def cached_token
       return nil if @token_expires_at.nil? || Time.now >= @token_expires_at
@@ -22,8 +40,8 @@ module KeycloakAdmin
     end
 
     def clear_cached_token!
-      @cached_token     = nil
       @token_expires_at = nil
+      @cached_token     = nil
     end
 
     def body_for_token_retrieval

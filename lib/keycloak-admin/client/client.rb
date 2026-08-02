@@ -16,7 +16,7 @@ module KeycloakAdmin
     # created for nearly every call (e.g. KeycloakAdmin.realm(x).users creates a fresh
     # UserClient) - caching here alone would fetch a new token on almost every request.
     def current_token
-      @configuration.cached_token || @configuration.cache_token(fetch_token)
+      @configuration.fetch_token_once { fetch_token }
     end
 
     def headers

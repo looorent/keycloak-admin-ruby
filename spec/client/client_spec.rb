@@ -61,6 +61,16 @@ RSpec.describe KeycloakAdmin::Client do
       expect(expired_immediately).to_not be refreshed
       expect(call_count).to eq 2
     end
+
+    it "does not deadlock when the token request itself is rejected" do
+      configuration = KeycloakAdmin.config
+      configuration.clear_cached_token!
+      stub_request(:post, "http://auth.service.io/auth/realms/master2/protocol/openid-connect/token")
+        .to_return(status: 401, body: "invalid_client")
+
+      expect { KeycloakAdmin::Client.new(configuration).current_token }
+        .to raise_error(KeycloakAdmin::UnauthorizedError)
+    end
   end
 
   describe "#resource" do

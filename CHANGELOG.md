@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [Fix] The access token cache introduced in 2.0.1 is now thread-safe.
 * [Fix] Identifiers are now percent-encoded before being interpolated into a URL path.
 
 * [Fix] `UserClient#update`, `#add_group` and `#remove_group` built their request outside `execute_http`. They were the only methods on this client that raised a bare `Faraday::Error` instead of the documented `KeycloakAdmin::ApiError` hierarchy, and the only ones that did not replay a request rejected on a stale `401`.

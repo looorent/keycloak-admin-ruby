@@ -105,6 +105,52 @@ RSpec.describe KeycloakAdmin::RealmClient do
     end
   end
 
+  describe "#fetch_token_once" do
+    def token(expires_in)
+      KeycloakAdmin::TokenRepresentation.new(
+        "access_token", "bearer", expires_in, "refresh_token",
+        "refresh_expires_in", "id_token", "not_before_policy", "session_state"
+      )
+    end
+
+    it "runs the block when there is nothing cached, and caches its result" do
+      fetched = @configuration.fetch_token_once { token(3600) }
+
+      expect(fetched.access_token).to eq "access_token"
+      expect(@configuration.cached_token).to eq fetched
+    end
+
+    it "does not run the block when a valid token is already cached" do
+      cached = @configuration.cache_token(token(3600))
+
+      expect(@configuration.fetch_token_once { raise "should not be called" }).to be cached
+    end
+
+    it "runs the block again once the cached token has expired" do
+      @configuration.cache_token(token(5)) # already past the safety margin
+
+      expect(@configuration.fetch_token_once { token(3600) }.access_token).to eq "access_token"
+    end
+
+    it "fetches a single token when several threads race for one" do
+      fetches = 0
+      counter = Mutex.new
+
+      tokens = 8.times.map do
+        Thread.new do
+          @configuration.fetch_token_once do
+            counter.synchronize { fetches += 1 }
+            sleep 0.05
+            token(3600)
+          end
+        end
+      end.map(&:value)
+
+      expect(fetches).to eq 1
+      expect(tokens.uniq(&:object_id).size).to eq 1
+    end
+  end
+
   describe "#body_for_token_retrieval" do
     before(:each) do
       @body = @configuration.body_for_token_retrieval
