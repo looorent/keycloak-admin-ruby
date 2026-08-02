@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::ClientAuthzScopeClient do
   describe "#initialize" do
     let(:realm_name) { nil }

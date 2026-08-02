@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class SessionRepresentation < Representation
     attr_accessor :id,

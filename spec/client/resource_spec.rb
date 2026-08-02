@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::Resource do
   describe "#connection (the real Faraday connection, not stubbed)" do
     def middleware_classes(resource)

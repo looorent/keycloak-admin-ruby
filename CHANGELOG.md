@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [Performance] Added `# frozen_string_literal: true` across all Ruby files to significantly reduce string object allocations and lower memory consumption.
+* [Performance] Refactored `Representation` JSON serialization (`as_json` and `to_json`) to eliminate intermediate Array and Hash allocations, improving CPU performance and memory footprint.
+* [Fix] `Representation#as_json` now strips `nil` values when generating JSON payloads. This fixes `HTTP 400 Bad Request` errors caused by strict API requirements in Keycloak 19+ (such as refusing `null` for `subGroupCount` and other restricted fields).
+* [Chore] Expanded the integration test suite to cover 100% of the REST clients against live Keycloak instances.
 * [Fix] `Configuration#inspect` no longer renders `client_secret`, `password` or the cached access token, showing `[FILTERED]` instead. The default `#inspect` printed every attribute, so these credentials travelled into console sessions, `pp` output, and whatever local-variable dump an exception reporter attaches to a crash. A credential that is not set still renders as `nil`, so an inspect stays useful when authentication misbehaves.
 * [Fix] The access token cache introduced in 2.0.1 is now thread-safe.
 * [Fix] Identifiers are now percent-encoded before being interpolated into a URL path.

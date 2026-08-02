@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::ApiError do
   describe ".from_response" do
     def error_for(status)

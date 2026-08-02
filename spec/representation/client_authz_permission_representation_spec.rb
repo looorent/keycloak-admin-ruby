@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::ClientAuthzPermissionRepresentation do
   describe '.from_hash, #resource based permission' do
     it 'converts json response to class structure' do

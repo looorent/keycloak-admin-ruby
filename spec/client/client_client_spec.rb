@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::ClientClient do
   describe "#clients_url" do
     let(:realm_name) { "valid-realm" }

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::IdentityProviderRepresentation do
   describe "#from_hash" do
     before(:each) do

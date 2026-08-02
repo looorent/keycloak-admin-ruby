@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe "keycloak-admin.gemspec" do
   let(:gemspec_path) { File.expand_path("../keycloak-admin.gemspec", __dir__) }
   let(:gemspec)      { Gem::Specification.load(gemspec_path) }

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class ProtocolMapperRepresentation < Representation
     attr_accessor :config,

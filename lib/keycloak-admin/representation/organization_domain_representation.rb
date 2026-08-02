@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class OrganizationDomainRepresentation < Representation
     attr_accessor :name, :verified

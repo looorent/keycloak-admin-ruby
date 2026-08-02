@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class AttackDetectionClient < Client
     def initialize(configuration, realm_client)

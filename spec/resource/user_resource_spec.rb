@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::UserResource do
   describe "#resource_url" do
     let(:realm_name) { "valid-realm" }

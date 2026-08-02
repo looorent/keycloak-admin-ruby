@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class AttackDetectionRepresentation < Representation
     attr_accessor :num_failures,

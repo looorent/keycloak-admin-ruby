@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::ClientScopeClient do
   let(:realm_name)      { "valid-realm" }
   let(:client_scope_id) { "valid-scope-id" }

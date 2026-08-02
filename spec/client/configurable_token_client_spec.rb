@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::ConfigurableTokenClient do
   describe "#initialize" do
     context "when realm_name is defined" do

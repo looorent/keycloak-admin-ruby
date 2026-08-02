@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe "URL path encoding" do
   let(:realm_name) { "valid-realm" }
   let(:admin_url)  { "http://auth.service.io/auth/admin/realms/valid-realm" }

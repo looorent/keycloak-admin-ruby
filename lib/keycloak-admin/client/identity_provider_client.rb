@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class IdentityProviderClient < Client
     def initialize(configuration, realm_client)

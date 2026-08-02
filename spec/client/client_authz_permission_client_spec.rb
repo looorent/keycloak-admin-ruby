@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::ClientAuthzPermissionClient do
 
   describe "#initialize" do

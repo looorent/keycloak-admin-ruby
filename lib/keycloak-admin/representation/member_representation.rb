@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class MemberRepresentation < UserRepresentation
     attr_accessor :membership_type

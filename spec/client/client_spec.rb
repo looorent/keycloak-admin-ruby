@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::Client do
   describe "#server_url" do
     def client_with_server_url(server_url)

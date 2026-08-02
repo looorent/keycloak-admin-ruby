@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::RealmClient do
 
   let(:client_id)           { "admin-cli" }

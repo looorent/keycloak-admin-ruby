@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::ImpersonationRepresentation do
   describe "#parse_set_cookie_string" do
 

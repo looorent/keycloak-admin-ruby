@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::Response do
   def fake_faraday_response(status: 200, body: "", headers: {}, reason_phrase: "OK")
     double(status: status, body: body, headers: headers, reason_phrase: reason_phrase)

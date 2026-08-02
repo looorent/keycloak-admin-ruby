@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class ImpersonationRedirectionRepresentation < Representation
     attr_reader :headers, :impersonation_url, :http_method, :body

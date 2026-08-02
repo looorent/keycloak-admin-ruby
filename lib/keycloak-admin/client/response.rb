@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   # Wraps a Faraday::Response the way RestClient::Response used to: as the body string
   # itself (RestClient::Response < String), so existing call sites that do JSON.parse(response)

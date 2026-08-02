@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class ClientAuthzPermissionClient < Client
     def initialize(configuration, realm_client, client_id, type, resource_id = nil)

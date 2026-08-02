@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class ClientScopeProtocolMapperClient < Client
     def initialize(configuration, realm_client, client_scope_id)

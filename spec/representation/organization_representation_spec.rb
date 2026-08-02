@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 RSpec.describe KeycloakAdmin::OrganizationRepresentation do
   describe ".from_json" do

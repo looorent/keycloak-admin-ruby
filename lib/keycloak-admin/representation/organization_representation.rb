@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class OrganizationRepresentation < Representation
     attr_accessor :id,

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class FederatedIdentityRepresentation < Representation
     attr_accessor :identity_provider,

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module KeycloakAdmin
   class ClientRoleMappingsClient < Client
     def initialize(configuration, user_resource, client_id)

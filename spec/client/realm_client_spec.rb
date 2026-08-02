@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::RealmClient do
   describe "#realm_url" do
 

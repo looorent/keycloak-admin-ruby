@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 RSpec.describe KeycloakAdmin::IdentityProviderClient do
   describe "#identity_providers_url" do
     let(:realm_name)  { "valid-realm" }
