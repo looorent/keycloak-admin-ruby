@@ -5,7 +5,7 @@ RSpec.describe KeycloakAdmin::RealmClient do
   let(:client_realm_name)   { "master2" }
   let(:use_service_account) { true }
   let(:username)            { "a" }
-  let(:password)            { "b" }
+  let(:password)            { "my_secret" }
   let(:faraday_options) { {timeout: 10 } }
 
   before(:each) do
