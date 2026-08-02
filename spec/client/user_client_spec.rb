@@ -492,6 +492,30 @@ RSpec.describe "KeycloakAdmin::UserClient#execute_actions_email" do
     expect(user_client.execute_actions_email(user_id, ["UPDATE_PASSWORD"])).to eq user_id
   end
 
+  # Regression: this went through Resource.put, whose signature hardcoded {} as the connection
+  # options, so this was the one call in the gem that ran with no timeout and ignored any
+  # configured SSL or proxy settings.
+  it "passes rest client options" do
+    faraday_options = {request: {timeout: 10}}
+    allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
+    stub_request(:put, /execute-actions-email/).to_return(status: 204)
+
+    expect(KeycloakAdmin::Resource).to receive(:new).with(base_url, faraday_options, anything).and_call_original
+
+    user_client.execute_actions_email(user_id, ["UPDATE_PASSWORD"])
+  end
+
+  it "passes rest client options when a query string is appended" do
+    faraday_options = {request: {timeout: 10}}
+    allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
+    stub_request(:put, /execute-actions-email/).to_return(status: 204)
+
+    expect(KeycloakAdmin::Resource).to receive(:new).with(
+      "#{base_url}?lifespan=300", faraday_options, anything).and_call_original
+
+    user_client.execute_actions_email(user_id, ["UPDATE_PASSWORD"], 300)
+  end
+
   describe "#forgot_password" do
     it "delegates to execute_actions_email with UPDATE_PASSWORD" do
       request = stub_request(:put, base_url)

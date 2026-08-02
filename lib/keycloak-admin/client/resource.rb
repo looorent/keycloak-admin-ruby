@@ -18,10 +18,6 @@ module KeycloakAdmin
       new(url, options, logger).send(:request, method, payload, headers)
     end
 
-    def self.put(url, payload, headers = {}, logger = nil)
-      new(url, {}, logger).put(payload, headers)
-    end
-
     def initialize(url, options = {}, logger = nil)
       @url     = url
       @options = options || {}

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 * [Fix] `UserClient#update`, `#add_group` and `#remove_group` built their request outside `execute_http`. They were the only methods on this client that raised a bare `Faraday::Error` instead of the documented `KeycloakAdmin::ApiError` hierarchy, and the only ones that did not replay a request rejected on a stale `401`.
+* [Fix] `UserClient#execute_actions_email` (and `#forgot_password`) ignored `config.faraday_options`. It was the only call in the gem running with no timeout, and any configured SSL or proxy setting was silently dropped. The internal `KeycloakAdmin::Resource.put` shorthand it relied on is removed; its signature could not carry connection options.
 
 ## [2.0.2] - 2026-08-01
 

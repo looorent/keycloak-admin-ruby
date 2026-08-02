@@ -154,7 +154,7 @@ module KeycloakAdmin
 
         url = execute_actions_email_url(user_id)
         url = "#{url}?#{build_query(query)}" unless query.empty?
-        Resource.put(url, create_payload(actions), headers, @configuration.logger)
+        resource(url).put(create_payload(actions), headers)
       end
       user_id
     end

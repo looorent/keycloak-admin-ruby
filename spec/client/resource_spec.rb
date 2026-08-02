@@ -199,25 +199,4 @@ RSpec.describe KeycloakAdmin::Resource do
       KeycloakAdmin::Resource.execute(method: :get, url: "http://example.com/x", headers: {}, logger: logger)
     end
   end
-
-  describe ".put (RestClient.put shorthand)" do
-    it "posts without requiring any connection options" do
-      resource_instance = KeycloakAdmin::Resource.new("http://example.com/x")
-      allow(KeycloakAdmin::Resource).to receive(:new).and_return(resource_instance)
-      stub_connection(resource_instance, :put)
-
-      KeycloakAdmin::Resource.put("http://example.com/x", "body", {})
-
-      expect(fake_request.body).to eq "body"
-    end
-
-    it "forwards the given logger to the underlying Resource" do
-      resource_instance = KeycloakAdmin::Resource.new("http://example.com/x")
-      logger             = Logger.new(IO::NULL)
-      stub_connection(resource_instance, :put)
-      expect(KeycloakAdmin::Resource).to receive(:new).with("http://example.com/x", {}, logger).and_return(resource_instance)
-
-      KeycloakAdmin::Resource.put("http://example.com/x", "body", {}, logger)
-    end
-  end
 end
