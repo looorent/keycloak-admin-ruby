@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 require_relative '../integration_helper'
+require 'securerandom'
 
 RSpec.describe 'ClientAuthorization' do
 
@@ -60,11 +61,11 @@ RSpec.describe 'ClientAuthorization' do
         expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "resource").get(resource_permission.id).name).to eql("Dummy Resource Permission")
         expect(KeycloakAdmin.realm(realm_name).authz_scopes(client.id, resource.id).list.size).to eql(2)
 
-      expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, 'scope').list.size).to eql(2)
-      expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, 'resource').list.size).to eql(2)
-      expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "resource").find_by(resource_permission.name, nil).first.name).to eql("Dummy Resource Permission")
-        expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, 'scope').list.size).to eql(2)
-        expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, 'resource').list.size).to eql(2)
+        # `list` returns every permission of the resource server, whatever its type, and some
+        # Keycloak versions (25) seed an extra "Default Permission" when authorization
+        # services are enabled: assert on the permissions created here, not on a total count.
+        expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, 'scope').list.map(&:name)).to include("Dummy Scope Permission", "Dummy Resource Permission")
+        expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, 'resource').list.map(&:name)).to include("Dummy Scope Permission", "Dummy Resource Permission")
         expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "resource").find_by(resource_permission.name, nil).first.name).to eql("Dummy Resource Permission")
         expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "resource").find_by(resource_permission.name, resource.id).first.name).to eql("Dummy Resource Permission")
         expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "scope").find_by(scope_permission.name, resource.id).first.name).to eql("Dummy Scope Permission")
@@ -74,9 +75,12 @@ RSpec.describe 'ClientAuthorization' do
         expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "scope").find_by(nil, resource.id, "POST_1").first.name).to eql("Dummy Scope Permission")
         expect(KeycloakAdmin.realm(realm_name).authz_permissions(client.id, "scope").find_by(scope_permission.name, nil).first.name).to eql("Dummy Scope Permission")
 
-        KeycloakAdmin.realm(realm_name).authz_policies(client.id, 'role').delete(policy.id)
+        # Permissions must be deleted before the policy they depend on: since Keycloak 25,
+        # deleting a policy cascades to every permission referencing it, so deleting the
+        # policy first would make the permission deletions below fail with a 404.
         KeycloakAdmin.realm(realm_name).authz_permissions(client.id, :scope).delete(scope_permission.id)
         KeycloakAdmin.realm(realm_name).authz_permissions(client.id, :resource).delete(resource_permission.id)
+        KeycloakAdmin.realm(realm_name).authz_policies(client.id, 'role').delete(policy.id)
         KeycloakAdmin.realm(realm_name).authz_resources(client.id).delete(resource.id)
         KeycloakAdmin.realm(realm_name).authz_scopes(client.id).delete(scope_1.id)
         KeycloakAdmin.realm(realm_name).authz_scopes(client.id).delete(scope_2.id)

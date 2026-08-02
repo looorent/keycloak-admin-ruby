@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require 'spec_helper'
+require_relative '../integration_helper'
+require 'securerandom'
 
 RSpec.describe 'Organization Integration' do
   let(:realm_name) { "dummy" }

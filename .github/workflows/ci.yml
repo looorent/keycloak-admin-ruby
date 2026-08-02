@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   test:
-    name: Ruby ${{ matrix.ruby-version }}
+    name: Ruby ${{ matrix.ruby-version }} / Keycloak ${{ matrix.keycloak-version }}
     runs-on: ubuntu-24.04
 
     strategy:

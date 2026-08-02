@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-require 'spec_helper'
+require_relative '../integration_helper'
 
 RSpec.describe 'Configurable Token Integration' do
   let(:realm_name) { "dummy" }

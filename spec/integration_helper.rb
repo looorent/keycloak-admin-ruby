@@ -60,6 +60,37 @@ RSpec.configure do |config|
       req.body = { realm: 'dummy', enabled: true }.to_json
     end
 
+    # Enable internationalization in the dummy realm.
+    # Since Keycloak 24 the "locale" user attribute is a reserved one, only persisted when
+    # the realm supports internationalization. Done through an update so it also applies to
+    # a realm left over by a previous run.
+    conn.put("/admin/realms/dummy") do |req|
+      req.headers['Authorization'] = "Bearer #{token}"
+      req.headers['Content-Type'] = 'application/json'
+      req.body = {
+        realm: 'dummy',
+        internationalizationEnabled: true,
+        supportedLocales: ["en"],
+        defaultLocale: "en"
+      }.to_json
+    end
+
+    # Allow unmanaged user attributes in the dummy realm.
+    # Since Keycloak 24 the declarative user profile is always enabled, and unmanaged
+    # attributes are rejected by default: any attribute not declared in the profile
+    # (locale, custom ones) is silently dropped on write and never read back.
+    # Older versions do not expose this endpoint, hence the best-effort handling.
+    profile_response = conn.get("/admin/realms/dummy/users/profile") do |req|
+      req.headers['Authorization'] = "Bearer #{token}"
+    end
+    if profile_response.status == 200 && profile_response.body.is_a?(Hash)
+      conn.put("/admin/realms/dummy/users/profile") do |req|
+        req.headers['Authorization'] = "Bearer #{token}"
+        req.headers['Content-Type'] = 'application/json'
+        req.body = profile_response.body.merge("unmanagedAttributePolicy" => "ENABLED").to_json
+      end
+    end
+
     # Create dummy-client in dummy realm
     conn.post("/admin/realms/dummy/clients") do |req|
       req.headers['Authorization'] = "Bearer #{token}"
