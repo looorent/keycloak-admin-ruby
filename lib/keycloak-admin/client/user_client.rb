@@ -161,8 +161,8 @@ module KeycloakAdmin
     end
 
     def impersonate(user_id)
-      impersonation = get_redirect_impersonation(user_id)
       response = execute_http do
+        impersonation = get_redirect_impersonation(user_id)
         Resource.execute(
           @configuration.faraday_options.merge(
             method: :post,

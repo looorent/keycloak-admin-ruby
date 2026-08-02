@@ -98,6 +98,41 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
   end
 
+  describe "#impersonate" do
+    let(:realm_name)        { "valid-realm" }
+    let(:user_id)           { 42 }
+    let(:token_url)         { "http://auth.service.io/auth/realms/master2/protocol/openid-connect/token" }
+    let(:impersonation_url) { "http://auth.service.io/auth/admin/realms/valid-realm/users/42/impersonation" }
+
+    before(:each) do
+      # HTTP::Cookie.parse needs a scheme to derive the cookie domain from the origin.
+      allow(KeycloakAdmin.config).to receive(:server_domain).and_return("http://auth.service.io")
+      stub_request(:post, token_url).to_return(
+        {body: '{"access_token":"stale_token","expires_in":3600}'},
+        {body: '{"access_token":"fresh_token","expires_in":3600}'}
+      )
+      stub_request(:post, impersonation_url).to_return(
+        {status: 401, body: '{"error":"expired"}'},
+        {status: 200, body: '{"sameRealm":true,"redirect":"http://auth.service.io/"}',
+         headers: {"Set-Cookie" => "KEYCLOAK_IDENTITY=abc; Path=/; HttpOnly"}}
+      )
+    end
+
+    it "replays the request with a freshly fetched token after a 401" do
+      KeycloakAdmin.realm(realm_name).users.impersonate(user_id)
+
+      expect(a_request(:post, impersonation_url).with(headers: {"Authorization" => "Bearer stale_token"})).to have_been_made.once
+      expect(a_request(:post, impersonation_url).with(headers: {"Authorization" => "Bearer fresh_token"})).to have_been_made.once
+    end
+
+    it "returns the impersonation representation built from the replayed response" do
+      response = KeycloakAdmin.realm(realm_name).users.impersonate(user_id)
+
+      expect(response.same_realm).to be true
+      expect(response.set_cookies.first.name).to eq "KEYCLOAK_IDENTITY"
+    end
+  end
+
   describe "#impersonation_url" do
     let(:realm_name) { "valid-realm" }
     let(:user_id)    { nil }
