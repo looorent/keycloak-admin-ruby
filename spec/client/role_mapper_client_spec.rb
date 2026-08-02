@@ -20,8 +20,8 @@ RSpec.describe KeycloakAdmin::RoleMapperClient do
       @role_mapper_client = KeycloakAdmin.realm(realm_name).user(user_id).role_mapper
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get)
-        .and_return '[{"id":"test_role_id","name":"test_role_name","composite": false}]'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/realm")
+        .to_return(body: '[{"id":"test_role_id","name":"test_role_name","composite": false}]')
     end
 
     it "list user realm-level role mappings" do
@@ -48,21 +48,27 @@ RSpec.describe KeycloakAdmin::RoleMapperClient do
       @role_mapper_client = KeycloakAdmin.realm(realm_name).user(user_id).role_mapper
 
       stub_token_client
-      expect_any_instance_of(KeycloakAdmin::Resource).to receive(:post).with(role_list.to_json, anything)
     end
 
     it "saves realm-elevel role mappings" do
+      stub = stub_request(:post, "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/realm")
+        .with(body: role_list.to_json)
       @role_mapper_client.save_realm_level(role_list)
+      expect(stub).to have_been_requested
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
+
+      stub = stub_request(:post, "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/realm")
+        .with(body: role_list.to_json)
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
         "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user/role-mappings/realm", faraday_options, anything).and_call_original
 
       @role_mapper_client.save_realm_level(role_list)
+      expect(stub).to have_been_requested
     end
   end
 
@@ -83,31 +89,28 @@ RSpec.describe KeycloakAdmin::RoleMapperClient do
     end
 
     it "removes realm-level role mappings" do
-      expect(KeycloakAdmin::Resource).to receive(:execute).with(
-        hash_including(
-          method: :delete,
-          url: expected_url,
-          payload: role_list.to_json
-        )
-      )
-
+      stub = stub_request(:delete, expected_url).with(body: role_list.to_json)
       @role_mapper_client.remove_realm_level(role_list)
+      expect(stub).to have_been_requested
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
       
+      stub = stub_request(:delete, expected_url).with(body: role_list.to_json)
+
       expect(KeycloakAdmin::Resource).to receive(:execute).with(
         hash_including(
           method: :delete,
           url: expected_url,
           payload: role_list.to_json,
-          timeout: 10
+          request: {timeout: 10}
         )
-      )
+      ).and_call_original
 
       @role_mapper_client.remove_realm_level(role_list)
+      expect(stub).to have_been_requested
     end
   end
 end

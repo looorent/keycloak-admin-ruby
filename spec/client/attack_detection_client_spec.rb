@@ -25,7 +25,8 @@ RSpec.describe KeycloakAdmin::AttackDetectionClient do
     before(:each) do
       @attack_detections = KeycloakAdmin.realm(realm_name).attack_detections
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '{"numFailures":1,"disabled":true, "lastFailure":123456}'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/attack-detection/brute-force/users/test_user_id").
+        to_return(body: '{"numFailures":1,"disabled":true, "lastFailure":123456}')
     end
 
     context "when user_id is defined" do
@@ -49,7 +50,7 @@ RSpec.describe KeycloakAdmin::AttackDetectionClient do
     before(:each) do
       @attack_detections = KeycloakAdmin.realm(realm_name).attack_detections
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete)
+      stub_request(:delete, "http://auth.service.io/auth/admin/realms/valid-realm/attack-detection/brute-force/users/test_user_id")
     end
 
     context "when user_id is defined" do
@@ -72,7 +73,7 @@ RSpec.describe KeycloakAdmin::AttackDetectionClient do
     before(:each) do
       @attack_detections = KeycloakAdmin.realm(realm_name).attack_detections
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete)
+      stub_request(:delete, "http://auth.service.io/auth/admin/realms/valid-realm/attack-detection/brute-force/users")
     end
     it "returns true" do
       expect(@attack_detections.unlock_users).to be_truthy

@@ -25,7 +25,8 @@ RSpec.describe KeycloakAdmin::RoleClient do
       @role_client = KeycloakAdmin.realm(realm_name).roles
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"test_role_id","name":"test_role_name"}]'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/roles").
+        to_return(body: '[{"id":"test_role_id","name":"test_role_name"}]')
     end
 
     it "lists roles" do
@@ -35,7 +36,7 @@ RSpec.describe KeycloakAdmin::RoleClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -59,7 +60,9 @@ RSpec.describe KeycloakAdmin::RoleClient do
       @role_client = KeycloakAdmin.realm(realm_name).roles
 
       stub_token_client
-      expect_any_instance_of(KeycloakAdmin::Resource).to receive(:post).with(role.to_json, anything)
+      stub_request(:post, "http://auth.service.io/auth/admin/realms/valid-realm/roles").
+        with(body: role.to_json).
+        to_return(status: 201)
     end
 
     it "saves a role" do
@@ -67,7 +70,7 @@ RSpec.describe KeycloakAdmin::RoleClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(

@@ -1,23 +1,4 @@
 RSpec.describe KeycloakAdmin::Resource do
-  # A real, mutable stand-in for the Faraday::Request builder yielded by
-  # connection.get/post/put/delete { |req| ... }.
-  FakeRequest = Struct.new(:params, :headers) do
-    attr_accessor :body
-  end
-
-  let(:fake_request)  { FakeRequest.new({}, {}) }
-  let(:fake_response) { double(status: 200, body: "ok", headers: {}, reason_phrase: "OK") }
-
-  def stub_connection(resource, verb)
-    connection = double
-    allow(connection).to receive(verb) do |&block|
-      block.call(fake_request) if block
-      fake_response
-    end
-    allow(resource).to receive(:connection).and_return(connection)
-    connection
-  end
-
   describe "#connection (the real Faraday connection, not stubbed)" do
     def middleware_classes(resource)
       resource.send(:connection).builder.handlers
@@ -42,18 +23,11 @@ RSpec.describe KeycloakAdmin::Resource do
     it "logs method/url/status but never headers, since Faraday logs headers by default and one of them is the bearer token" do
       log_output = StringIO.new
       logger     = Logger.new(log_output)
-      stubs      = Faraday::Adapter::Test::Stubs.new
-      stubs.get(//) { [200, {}, "ok"] }
+      
+      stub_request(:get, "http://example.com/x").to_return(status: 200, body: "ok")
 
       resource = KeycloakAdmin::Resource.new("http://example.com/x", {}, logger)
-      allow(resource).to receive(:connection) do
-        Faraday.new(url: "http://example.com/x") do |f|
-          f.response :raise_error
-          f.response :logger, logger, headers: false
-          f.adapter :test, stubs
-        end
-      end
-
+      
       resource.get(Authorization: "Bearer super-secret-token")
 
       expect(log_output.string).to include("request: GET")
@@ -66,48 +40,58 @@ RSpec.describe KeycloakAdmin::Resource do
   describe "#get" do
     it "humanizes symbol header keys into HTTP header names" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users")
-      stub_connection(resource, :get)
+      
+      req = stub_request(:get, "http://example.com/users").with(
+        headers: {
+          "Authorization" => "Bearer token",
+          "Content-Type"  => "application/json",
+          "Accept"        => "application/json"
+        }
+      ).to_return(status: 200, body: "ok")
 
       resource.get(Authorization: "Bearer token", content_type: :json, accept: :json)
 
-      expect(fake_request.headers).to eq(
-        "Authorization" => "Bearer token",
-        "Content-Type"  => "application/json",
-        "Accept"        => "application/json"
-      )
+      expect(req).to have_been_requested
     end
 
     it "extracts :params into the query string instead of sending it as a header" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users")
-      stub_connection(resource, :get)
+      
+      req = stub_request(:get, "http://example.com/users?search=jean").with(
+        headers: { "Authorization" => "Bearer token" }
+      ).to_return(status: 200, body: "ok")
 
       resource.get(Authorization: "Bearer token", params: { search: "jean" })
 
-      expect(fake_request.params).to eq(search: "jean")
-      expect(fake_request.headers).to eq("Authorization" => "Bearer token")
+      expect(req).to have_been_requested
     end
 
     it "passes a string content_type through unchanged" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users")
-      stub_connection(resource, :get)
+      
+      req = stub_request(:get, "http://example.com/users").with(
+        headers: { "Content-Type" => "application/x-www-form-urlencoded" }
+      ).to_return(status: 200, body: "ok")
 
       resource.get(content_type: "application/x-www-form-urlencoded")
 
-      expect(fake_request.headers["Content-Type"]).to eq "application/x-www-form-urlencoded"
+      expect(req).to have_been_requested
     end
 
     it "does not set a body" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users")
-      stub_connection(resource, :get)
+      
+      req = stub_request(:get, "http://example.com/users").with { |request| request.body.nil? || request.body.empty? }.to_return(status: 200, body: "ok")
 
       resource.get({})
 
-      expect(fake_request.body).to be_nil
+      expect(req).to have_been_requested
     end
 
     it "wraps the Faraday response in a KeycloakAdmin::Response" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users")
-      stub_connection(resource, :get)
+      
+      stub_request(:get, "http://example.com/users").to_return(status: 200, body: "ok")
 
       expect(resource.get({})).to be_a KeycloakAdmin::Response
     end
@@ -116,59 +100,74 @@ RSpec.describe KeycloakAdmin::Resource do
   describe "#post" do
     it "sends a pre-serialized string payload as the body unchanged" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users")
-      stub_connection(resource, :post)
+      
+      req = stub_request(:post, "http://example.com/users").with(
+        body: '{"username":"jean"}',
+        headers: { "Content-Type" => "application/json" }
+      ).to_return(status: 200, body: "ok")
 
       resource.post('{"username":"jean"}', content_type: :json)
 
-      expect(fake_request.body).to eq '{"username":"jean"}'
-      expect(fake_request.headers["Content-Type"]).to eq "application/json"
+      expect(req).to have_been_requested
     end
 
     it "form-encodes a Hash payload" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users")
-      stub_connection(resource, :post)
+      
+      req = stub_request(:post, "http://example.com/users").with(
+        body: "email=a%40b.com&firstName=Jean+Yves"
+      ).to_return(status: 200, body: "ok")
 
       resource.post({ email: "a@b.com", firstName: "Jean Yves" }, {})
 
-      expect(fake_request.body).to eq "email=a%40b.com&firstName=Jean+Yves"
+      expect(req).to have_been_requested
     end
 
     it "stamps Content-Type: application/x-www-form-urlencoded for a Hash payload when none was set" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users")
-      stub_connection(resource, :post)
+      
+      req = stub_request(:post, "http://example.com/users").with(
+        headers: { "Content-Type" => "application/x-www-form-urlencoded" }
+      ).to_return(status: 200, body: "ok")
 
       resource.post({ id: "42" }, {})
 
-      expect(fake_request.headers["Content-Type"]).to eq "application/x-www-form-urlencoded"
+      expect(req).to have_been_requested
     end
 
     it "does not override an explicit Content-Type for a Hash payload" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users")
-      stub_connection(resource, :post)
+      
+      req = stub_request(:post, "http://example.com/users").with(
+        headers: { "Content-Type" => "application/vnd.custom+form" }
+      ).to_return(status: 200, body: "ok")
 
       resource.post({ id: "42" }, content_type: "application/vnd.custom+form")
 
-      expect(fake_request.headers["Content-Type"]).to eq "application/vnd.custom+form"
+      expect(req).to have_been_requested
     end
   end
 
   describe "#delete" do
     it "sends no body and only the given headers" do
       resource = KeycloakAdmin::Resource.new("http://example.com/users/1")
-      stub_connection(resource, :delete)
+      
+      req = stub_request(:delete, "http://example.com/users/1").with(
+        headers: { "Authorization" => "Bearer token" }
+      ).with { |request| request.body.nil? || request.body.empty? }.to_return(status: 200, body: "ok")
 
       resource.delete(Authorization: "Bearer token")
 
-      expect(fake_request.body).to be_nil
-      expect(fake_request.headers).to eq("Authorization" => "Bearer token")
+      expect(req).to have_been_requested
     end
   end
 
   describe ".execute (RestClient::Request.execute equivalent)" do
     it "dispatches an arbitrary method with a payload, including DELETE with a body" do
-      resource_instance = KeycloakAdmin::Resource.new("http://example.com/mappings")
-      allow(KeycloakAdmin::Resource).to receive(:new).and_return(resource_instance)
-      stub_connection(resource_instance, :delete)
+      req = stub_request(:delete, "http://example.com/mappings").with(
+        body: '[{"id":"1"}]',
+        headers: { "Content-Type" => "application/json" }
+      ).to_return(status: 200, body: "ok")
 
       KeycloakAdmin::Resource.execute(
         method: :delete,
@@ -177,24 +176,23 @@ RSpec.describe KeycloakAdmin::Resource do
         headers: { content_type: :json }
       )
 
-      expect(fake_request.body).to eq '[{"id":"1"}]'
-      expect(fake_request.headers["Content-Type"]).to eq "application/json"
+      expect(req).to have_been_requested
     end
 
     it "forwards non-method/url/payload/headers keys as connection options" do
-      resource_instance  = KeycloakAdmin::Resource.new("http://example.com/x")
-      expected_options   = { timeout: 5 }
-      stub_connection(resource_instance, :get)
-      expect(KeycloakAdmin::Resource).to receive(:new).with("http://example.com/x", expected_options, nil).and_return(resource_instance)
+      stub_request(:get, "http://example.com/x").to_return(status: 200, body: "ok")
+      
+      expected_options = { request: { timeout: 5 } }
+      expect(KeycloakAdmin::Resource).to receive(:new).with("http://example.com/x", expected_options, nil).and_call_original
 
-      KeycloakAdmin::Resource.execute(method: :get, url: "http://example.com/x", headers: {}, timeout: 5)
+      KeycloakAdmin::Resource.execute(method: :get, url: "http://example.com/x", headers: {}, request: { timeout: 5 })
     end
 
     it "extracts :logger and passes it positionally instead of leaving it in connection options" do
-      resource_instance = KeycloakAdmin::Resource.new("http://example.com/x")
-      logger             = Logger.new(IO::NULL)
-      stub_connection(resource_instance, :get)
-      expect(KeycloakAdmin::Resource).to receive(:new).with("http://example.com/x", {}, logger).and_return(resource_instance)
+      stub_request(:get, "http://example.com/x").to_return(status: 200, body: "ok")
+      
+      logger = Logger.new(IO::NULL)
+      expect(KeycloakAdmin::Resource).to receive(:new).with("http://example.com/x", {}, logger).and_call_original
 
       KeycloakAdmin::Resource.execute(method: :get, url: "http://example.com/x", headers: {}, logger: logger)
     end

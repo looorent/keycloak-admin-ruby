@@ -42,7 +42,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzPermissionClient do
     let(:client_authz_permission) {  KeycloakAdmin.realm(realm_name).authz_permissions(client_id, "resource") }
     before(:each) do
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete).and_return 'true'
+      stub_request(:delete, /.*/).to_return(body: 'true')
     end
 
     it "deletes a permission" do
@@ -56,7 +56,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzPermissionClient do
     let(:client_authz_permission) {  KeycloakAdmin.realm(realm_name).authz_permissions(client_id, "resource") }
     before(:each) do
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"245ce612-ccdc-4426-8ea7-e0e29a718033","name":"Default Permission","description":"A permission that applies to the default resource type","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"urn:dummy-client:resources:default"},{"id":"06a21e38-4e92-466d-8647-ffcd9c7b51c3","name":"delme policy","description":"delme polidy ","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"asdfasdf"}]'
+      stub_request(:get, /.*/).to_return(body: '[{"id":"245ce612-ccdc-4426-8ea7-e0e29a718033","name":"Default Permission","description":"A permission that applies to the default resource type","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"urn:dummy-client:resources:default"},{"id":"06a21e38-4e92-466d-8647-ffcd9c7b51c3","name":"delme policy","description":"delme polidy ","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"asdfasdf"}]')
     end
 
     it "finds permissions" do
@@ -72,7 +72,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzPermissionClient do
     let(:client_authz_permission) {  KeycloakAdmin.realm(realm_name).authz_permissions(client_id, "resource") }
     before(:each) do
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return '{"id":"245ce612-ccdc-4426-8ea7-e0e29a718033","name":"Default Permission","description":"A permission that applies to the default resource type","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"urn:dummy-client:resources:default"}'
+      stub_request(:post, /.*/).to_return(body: '{"id":"245ce612-ccdc-4426-8ea7-e0e29a718033","name":"Default Permission","description":"A permission that applies to the default resource type","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"urn:dummy-client:resources:default"}')
     end
 
     it "creates a permission" do
@@ -92,7 +92,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzPermissionClient do
     before(:each) do
       @client_authz_permission = KeycloakAdmin.realm(realm_name).authz_permissions(client_id, "resource")
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"245ce612-ccdc-4426-8ea7-e0e29a718033","name":"Default Permission","description":"A permission that applies to the default resource type","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"urn:dummy-client:resources:default"},{"id":"06a21e38-4e92-466d-8647-ffcd9c7b51c3","name":"delme policy","description":"delme polidy ","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"asdfasdf"}]'
+      stub_request(:get, /.*/).to_return(body: '[{"id":"245ce612-ccdc-4426-8ea7-e0e29a718033","name":"Default Permission","description":"A permission that applies to the default resource type","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"urn:dummy-client:resources:default"},{"id":"06a21e38-4e92-466d-8647-ffcd9c7b51c3","name":"delme policy","description":"delme polidy ","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"asdfasdf"}]')
 
     end
 
@@ -114,7 +114,7 @@ RSpec.describe KeycloakAdmin::ClientAuthzPermissionClient do
     let(:client_authz_permission) {  KeycloakAdmin.realm(realm_name).authz_permissions(client_id, "resource") }
     before(:each) do
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '{"id":"245ce612-ccdc-4426-8ea7-e0e29a718033","name":"Default Permission","description":"A permission that applies to the default resource type","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"urn:dummy-client:resources:default"}'
+      stub_request(:get, /.*/).to_return(body: '{"id":"245ce612-ccdc-4426-8ea7-e0e29a718033","name":"Default Permission","description":"A permission that applies to the default resource type","type":"resource","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","resourceType":"urn:dummy-client:resources:default"}')
     end
 
     it "gets a permission" do

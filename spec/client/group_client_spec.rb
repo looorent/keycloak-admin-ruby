@@ -29,7 +29,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       @group_client = KeycloakAdmin.realm(realm_name).groups
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '{"id":"test_group_id","name":"test_group_name"}'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/groups/test_group_id").to_return(body: '{"id":"test_group_id","name":"test_group_name"}')
     end
 
     it "get a group" do
@@ -39,7 +39,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -58,7 +58,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       @group_client = KeycloakAdmin.realm(realm_name).groups
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"test_group_id","name":"test_group_name"}]'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/groups").to_return(body: '[{"id":"test_group_id","name":"test_group_name"}]')
     end
 
     it "lists groups" do
@@ -68,7 +68,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -88,7 +88,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       @group_client = KeycloakAdmin.realm(realm_name).groups
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"test_group_id","name":"test_group_name"}]'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/groups/parent_group_id/children").to_return(body: '[{"id":"test_group_id","name":"test_group_name"}]')
     end
 
     it "lists children groups" do
@@ -98,7 +98,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -125,12 +125,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       )}
 
       before do
-        response = double
-        allow(response).to receive(:headers).and_return(
-          { location: 'http://auth.service.io/auth/admin/realms/valid-realm/groups/be061c48-6edd-4783-a726-1a57d4bfa22b' }
-        )
-
-        expect_any_instance_of(KeycloakAdmin::Resource).to receive(:post).with(group.to_json, anything).and_return response
+        stub_request(:post, "http://auth.service.io/auth/admin/realms/valid-realm/groups").with(body: group.to_json).to_return(headers: { location: 'http://auth.service.io/auth/admin/realms/valid-realm/groups/be061c48-6edd-4783-a726-1a57d4bfa22b' }, status: 201)
       end
 
       it "saves a group" do
@@ -138,7 +133,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       end
 
       it "passes rest client options" do
-        faraday_options = {timeout: 10}
+        faraday_options = {request: {timeout: 10}}
         allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
         expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -155,12 +150,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       )}
 
       before do
-        response = double
-        allow(response).to receive(:headers).and_return(
-          { location: 'http://auth.service.io/auth/admin/realms/valid-realm/groups/be061c48-6edd-4783-a726-1a57d4bfa22b' }
-        )
-
-        expect_any_instance_of(KeycloakAdmin::Resource).to receive(:put).with(group.to_json, anything).and_return response
+        stub_request(:put, "http://auth.service.io/auth/admin/realms/valid-realm/groups/test_group_id").with(body: group.to_json).to_return(headers: { location: 'http://auth.service.io/auth/admin/realms/valid-realm/groups/be061c48-6edd-4783-a726-1a57d4bfa22b' }, status: 200)
       end
 
       it "saves a group" do
@@ -168,7 +158,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       end
 
       it "passes rest client options" do
-        faraday_options = {timeout: 10}
+        faraday_options = {request: {timeout: 10}}
         allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
         expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -186,12 +176,10 @@ RSpec.describe KeycloakAdmin::GroupClient do
       @group_client = KeycloakAdmin.realm(realm_name).groups
 
       stub_token_client
-      @response = double(
+      stub_request(:post, "http://auth.service.io/auth/admin/realms/valid-realm/groups").to_return(
         headers: { location: 'http://auth.service.io/auth/admin/realms/valid-realm/groups/be061c48-6edd-4783-a726-1a57d4bfa22b' },
-        status: 201,
-        reason_phrase: 'Created'
+        status: [201, 'Created']
       )
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return @response
     end
 
     it "creates a group" do
@@ -200,8 +188,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
     end
 
     it "detects unexpected response to create a group" do
-      allow(@response).to receive(:status).and_return 200
-      allow(@response).to receive(:reason_phrase).and_return 'OK'
+      stub_request(:post, "http://auth.service.io/auth/admin/realms/valid-realm/groups").to_return(status: [200, 'OK'])
 
       expect{ @group_client.create!("test_group_name") }.to raise_error(
         'Create method returned status OK (Code: 200); expected status: Created (201)'
@@ -216,12 +203,10 @@ RSpec.describe KeycloakAdmin::GroupClient do
       @group_client = KeycloakAdmin.realm(realm_name).groups
 
       stub_token_client
-      @response = double(
+      stub_request(:post, "http://auth.service.io/auth/admin/realms/valid-realm/groups/be061c48-6edd-4783-a726-1a57d4bfa22b/children").to_return(
         headers: { location: 'http://auth.service.io/auth/admin/realms/valid-realm/groups/7686af34-204c-4515-8122-78d19febbf6e' },
-        status: 201,
-        reason_phrase: 'Created'
+        status: [201, 'Created']
       )
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return @response
     end
 
     it "creates a subgroup" do
@@ -237,7 +222,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       @group_client = KeycloakAdmin.realm(realm_name).groups
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete).and_return ''
+      stub_request(:delete, "http://auth.service.io/auth/admin/realms/valid-realm/groups/test_group_id").to_return(body: '')
     end
 
     it "deletes a group" do
@@ -246,7 +231,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
     end
 
     it "raises a delete error" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -261,7 +246,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
     before(:each) do
       @group_client = KeycloakAdmin.realm(realm_name).groups
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"role-id","name":"role-name"}]'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/groups/test-group-id/role-mappings/realm").to_return(body: '[{"id":"role-id","name":"role-name"}]')
     end
 
     it 'gets all realm-level roles for a group' do
@@ -279,7 +264,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       @group_client = KeycloakAdmin.realm(realm_name).groups
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return ''
+      stub_request(:post, "http://auth.service.io/auth/admin/realms/valid-realm/groups/test-group-id/role-mappings/realm").to_return(body: '')
     end
 
     it 'adds a realm-level role to a group' do
@@ -302,7 +287,7 @@ RSpec.describe KeycloakAdmin::GroupClient do
       @group_client = KeycloakAdmin.realm(realm_name).groups
 
       stub_token_client
-      allow(KeycloakAdmin::Resource).to receive(:execute).and_return ''
+      stub_request(:delete, "http://auth.service.io/auth/admin/realms/valid-realm/groups/test-group-id/role-mappings/realm").to_return(body: '')
     end
 
     it 'deletes a realm-level role from a group' do
@@ -315,14 +300,9 @@ RSpec.describe KeycloakAdmin::GroupClient do
 
       result = @group_client.remove_realm_level_role_name!('test-group-id', 'test-role-name')
       expect(result).to be(true)
-      expect(KeycloakAdmin::Resource).to have_received(:execute).with(
-        hash_including(
-          url: "http://auth.service.io/auth/admin/realms/valid-realm/groups/test-group-id/role-mappings/realm",
-          method: :delete,
-          payload: @group_client.send(:create_payload, [role_representation]),
-          headers: @group_client.send(:headers)
-        )
-      )
+      expect(a_request(:delete, "http://auth.service.io/auth/admin/realms/valid-realm/groups/test-group-id/role-mappings/realm").with(
+        body: @group_client.send(:create_payload, [role_representation])
+      )).to have_been_made.once
     end
   end
 end

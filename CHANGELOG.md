@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * [Fix] `UserClient#create!` could return a different user than the one it had just created. It looked the new user up with `search(email)`, and Keycloak's `search` parameter matches a *substring* of the username, email, first name or last name: creating `pioupioux@email.com` while `vieuxpioupioux@email.com` already existed returned the pre-existing account. The new user's id is now read from the `Location` header of the creation response, like `GroupClient#create!` already did. Two consequences: a creation not answered with `201 Created` now raises `KeycloakAdmin::UnexpectedResponseError` instead of returning `nil`, and the returned representation is fetched by id.
 * [Fix] `UserClient#create!` wrote the `locale` into the very `attributes` hash it was given, mutating the caller's object.
 * [Fix] `UserClient#execute_actions_email` (and `#forgot_password`) ignored `config.faraday_options`. It was the only call in the gem running with no timeout, and any configured SSL or proxy setting was silently dropped. The internal `KeycloakAdmin::Resource.put` shorthand it relied on is removed; its signature could not carry connection options.
+* [Chore] Migrated test suites to use WebMock `stub_request` instead of stubbing `KeycloakAdmin::Resource` directly, ensuring tests validate the actual network payload.
 
 ## [2.0.2] - 2026-08-01
 

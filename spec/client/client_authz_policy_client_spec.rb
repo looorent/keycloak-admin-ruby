@@ -50,7 +50,8 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyClient do
 
     before(:each) do
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return '{"id":"234f6f33-ef03-4f3f-a8c0-ad7bca27b720","name":"policy name","description":"policy description","type":"role","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","config":{"roles":"[{\"id\":\"1d305dbe-6379-4900-8e63-96541006160a\",\"required\":false}]"}}'
+      stub_request(:post, "http://auth.service.io/auth/admin/realms/valid-realm/clients/valid-client-id/authz/resource-server/policy/role?permission=false").
+        to_return(body: '{"id":"234f6f33-ef03-4f3f-a8c0-ad7bca27b720","name":"policy name","description":"policy description","type":"role","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","config":{"roles":"[{\"id\":\"1d305dbe-6379-4900-8e63-96541006160a\",\"required\":false}]"}}')
     end
 
     it "creates a new authz policy" do
@@ -72,7 +73,8 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyClient do
     let(:client_authz_policy){ KeycloakAdmin.realm(realm_name).authz_policies(client_id, type) }
     before(:each) do
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '{"id":"234f6f33-ef03-4f3f-a8c0-ad7bca27b720","name":"policy name","description":"policy description","type":"role","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","config":{"roles":"[{\"id\":\"1d305dbe-6379-4900-8e63-96541006160a\",\"required\":false}]"}}'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients/valid-client-id/authz/resource-server/policy/role/234f6f33-ef03-4f3f-a8c0-ad7bca27b720").
+        to_return(body: '{"id":"234f6f33-ef03-4f3f-a8c0-ad7bca27b720","name":"policy name","description":"policy description","type":"role","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","config":{"roles":"[{\"id\":\"1d305dbe-6379-4900-8e63-96541006160a\",\"required\":false}]"}}')
     end
 
     it "returns an authz policy" do
@@ -94,7 +96,8 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyClient do
     let(:client_authz_policy){ KeycloakAdmin.realm(realm_name).authz_policies(client_id, type) }
     before(:each) do
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"234f6f33-ef03-4f3f-a8c0-ad7bca27b720","name":"policy name","description":"policy description","type":"role","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","config":{"roles":"[{\"id\":\"1d305dbe-6379-4900-8e63-96541006160a\",\"required\":false}]"}}]'
+      stub_request(:get, /.*/).
+        to_return(body: '[{"id":"234f6f33-ef03-4f3f-a8c0-ad7bca27b720","name":"policy name","description":"policy description","type":"role","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","config":{"roles":"[{\"id\":\"1d305dbe-6379-4900-8e63-96541006160a\",\"required\":false}]"}}]')
     end
 
     it "returns list of authz policies" do
@@ -117,7 +120,8 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyClient do
     before(:each) do
       @client_authz_policy = KeycloakAdmin.realm(realm_name).authz_policies(client_id, type)
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete).and_return 'true'
+      stub_request(:delete, "http://auth.service.io/auth/admin/realms/valid-realm/clients/valid-client-id/authz/resource-server/policy/role/234f6f33-ef03-4f3f-a8c0-ad7bca27b720").
+        to_return(body: 'true')
     end
 
     it "deletes an authz policy" do
@@ -133,7 +137,8 @@ RSpec.describe KeycloakAdmin::ClientAuthzPolicyClient do
     before(:each) do
       @client_authz_policy = KeycloakAdmin.realm(realm_name).authz_policies(client_id, type)
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"234f6f33-ef03-4f3f-a8c0-ad7bca27b720","name":"policy name","description":"policy description","type":"role","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","config":{"roles":"[{\"id\":\"1d305dbe-6379-4900-8e63-96541006160a\",\"required\":false}]"}}]'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients/valid-client-id/authz/resource-server/policy/role?permission=false").
+        to_return(body: '[{"id":"234f6f33-ef03-4f3f-a8c0-ad7bca27b720","name":"policy name","description":"policy description","type":"role","logic":"POSITIVE","decisionStrategy":"UNANIMOUS","config":{"roles":"[{\"id\":\"1d305dbe-6379-4900-8e63-96541006160a\",\"required\":false}]"}}]')
     end
 
     it "returns list of authz policies" do

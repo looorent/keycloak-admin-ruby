@@ -32,7 +32,7 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return stub_response
+      stub_request(:get, %r{/admin/realms/#{realm_name}/client-scopes}).to_return(body: stub_response)
     end
 
     context "with one scope" do
@@ -77,7 +77,7 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return stub_response
+      stub_request(:get, %r{/admin/realms/#{realm_name}/client-scopes/#{client_scope_id}}).to_return(body: stub_response)
     end
 
     context "without protocol mappers" do
@@ -121,7 +121,7 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return ""
+      stub_request(:post, %r{/admin/realms/#{realm_name}/client-scopes}).to_return(body: "")
     end
 
     let(:scope_representation) do
@@ -142,14 +142,14 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:put).and_return ""
+      stub_request(:put, %r{/admin/realms/#{realm_name}/client-scopes/valid-scope-id}).to_return(body: "")
     end
 
     let(:scope_representation) { KeycloakAdmin::ClientScopeRepresentation.from_hash(JSON.parse(scope_json)) }
 
     it "calls put on the scope url" do
-      expect_any_instance_of(KeycloakAdmin::Resource).to receive(:put).with(anything, anything)
       @client.save(scope_representation)
+      expect(WebMock).to have_requested(:put, %r{/admin/realms/#{realm_name}/client-scopes/valid-scope-id})
     end
 
     it "returns true" do
@@ -163,7 +163,7 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return "[#{scope_json},#{second_scope_json}]"
+      stub_request(:get, %r{/admin/realms/#{realm_name}/client-scopes}).to_return(body: "[#{scope_json},#{second_scope_json}]")
     end
 
     context "when the name matches one scope" do
@@ -193,7 +193,7 @@ RSpec.describe KeycloakAdmin::ClientScopeClient do
     before(:each) do
       @client = KeycloakAdmin.realm(realm_name).client_scopes
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete).and_return ""
+      stub_request(:delete, %r{/admin/realms/#{realm_name}/client-scopes/#{client_scope_id}}).to_return(body: "")
     end
 
     it "returns true" do

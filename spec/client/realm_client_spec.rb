@@ -50,7 +50,8 @@ RSpec.describe KeycloakAdmin::RealmClient do
       @realm_client = KeycloakAdmin.realm('master')
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"test_realm","realm":"test_realm"}]'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms").
+        to_return(body: '[{"id":"test_realm","realm":"test_realm"}]')
     end
 
     it "lists realms" do
@@ -60,11 +61,14 @@ RSpec.describe KeycloakAdmin::RealmClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
         "http://auth.service.io/auth/admin/realms", faraday_options, anything).and_call_original
+
+      stub_request(:get, "http://auth.service.io/auth/admin/realms").
+        to_return(body: '[{"id":"test_realm","realm":"test_realm"}]')
 
       realms = @realm_client.list
       expect(realms.length).to eq 1
@@ -79,7 +83,7 @@ RSpec.describe KeycloakAdmin::RealmClient do
       @realm_client = KeycloakAdmin.realm(realm_name)
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete)
+      stub_request(:delete, "http://auth.service.io/auth/admin/realms/valid-realm")
     end
 
     it "delete realm" do
@@ -87,11 +91,13 @@ RSpec.describe KeycloakAdmin::RealmClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
         "http://auth.service.io/auth/admin/realms/valid-realm", faraday_options, anything).and_call_original
+
+      stub_request(:delete, "http://auth.service.io/auth/admin/realms/valid-realm")
 
       expect(@realm_client.delete).to be_truthy
     end
@@ -109,15 +115,17 @@ RSpec.describe KeycloakAdmin::RealmClient do
 
       stub_token_client
 
-      expect_any_instance_of(KeycloakAdmin::Resource).to receive(:post).with(realm.to_json, anything)
+      @post_stub = stub_request(:post, "http://auth.service.io/auth/admin/realms").
+        with(body: realm.to_json)
     end
 
     it "saves a realm" do
       @realm_client.save(realm)
+      expect(@post_stub).to have_been_requested
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -135,15 +143,17 @@ RSpec.describe KeycloakAdmin::RealmClient do
       @realm_client = KeycloakAdmin.realm(realm_name)
 
       stub_token_client
-      expect_any_instance_of(KeycloakAdmin::Resource).to receive(:put).with(realm_json.to_json, anything)
+      @put_stub = stub_request(:put, "http://auth.service.io/auth/admin/realms/valid-realm").
+        with(body: realm_json.to_json)
     end
 
     it "updates a realm" do
       @realm_client.update(realm_json)
+      expect(@put_stub).to have_been_requested
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(

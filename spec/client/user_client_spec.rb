@@ -133,7 +133,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       @user_client = KeycloakAdmin.realm(realm_name).users
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post)
+      stub_request(:post, "http://auth.service.io/auth/admin/realms/valid-realm/users").to_return(status: 201)
     end
 
     it "saves a user" do
@@ -141,7 +141,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -158,7 +158,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       @user_client = KeycloakAdmin.realm(realm_name).users
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '{"username":"test_username","createdTimestamp":1559347200, "requiredActions":["CONFIGURE_TOTP"], "totp": true}'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user_id").to_return(body: '{"username":"test_username","createdTimestamp":1559347200, "requiredActions":["CONFIGURE_TOTP"], "totp": true}')
     end
 
     it "parses the response" do
@@ -167,7 +167,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -191,7 +191,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       @user_client = KeycloakAdmin.realm(realm_name).users
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"username":"test_username","createdTimestamp":1559347200}]'
+      stub_request(:get, /users/).to_return(body: '[{"username":"test_username","createdTimestamp":1559347200}]')
     end
 
     it "finds a user using a string" do
@@ -213,7 +213,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -236,7 +236,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       @user_client = KeycloakAdmin.realm(realm_name).users
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"username":"test_username","createdTimestamp":1559347200}]'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/users").to_return(body: '[{"username":"test_username","createdTimestamp":1559347200}]')
     end
 
     it "lists users" do
@@ -246,7 +246,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -265,7 +265,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
       @user_client = KeycloakAdmin.realm(realm_name).users
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete)
+      stub_request(:delete, "http://auth.service.io/auth/admin/realms/valid-realm/users/test_user_id").to_return(status: 204)
     end
 
     it "does not fail" do
@@ -273,7 +273,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
 
       expect(KeycloakAdmin::Resource).to receive(:new).with(
@@ -326,7 +326,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
     before(:each) do
       @user_client = KeycloakAdmin.realm(realm_name).users
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"95985b21-d884-4bbd-b852-dsfsdfsd","username":"test_username", "ip_address":"0.0.0.0"}]'
+      stub_request(:get, /sessions/).to_return(body: '[{"id":"95985b21-d884-4bbd-b852-dsfsdfsd","username":"test_username", "ip_address":"0.0.0.0"}]')
     end
 
     context 'when user_id is defined' do
@@ -351,7 +351,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
     before(:each) do
       @user_client = KeycloakAdmin.realm(realm_name).users
       stub_token_client
-      allow(KeycloakAdmin::Resource).to receive(:execute)
+      stub_request(:post, /logout/).to_return(status: 204)
     end
 
     context 'when user_id is defined' do
@@ -393,7 +393,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
           }
         ]
       payload
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return json_payload
+      stub_request(:get, /credentials/).to_return(body: json_payload)
     end
 
     context 'when user_id is defined' do

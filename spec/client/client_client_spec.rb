@@ -31,7 +31,8 @@ RSpec.describe KeycloakAdmin::ClientClient do
       @client_client = KeycloakAdmin.realm(realm_name).clients
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '{"id":"test_client_id","name":"test_client_name"}'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients/test_client_id")
+        .to_return(body: '{"id":"test_client_id","name":"test_client_name"}')
     end
 
     it "finds a client" do
@@ -50,7 +51,8 @@ RSpec.describe KeycloakAdmin::ClientClient do
       @client_client = KeycloakAdmin.realm(realm_name).clients
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"test_client_id","clientId": "my_client_id","name":"test_client_name"},{"id":"test_client_id_2","clientId":"client_id_2","name":"test_client_name_2"}]'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients")
+        .to_return(body: '[{"id":"test_client_id","clientId": "my_client_id","name":"test_client_name"},{"id":"test_client_id_2","clientId":"client_id_2","name":"test_client_name_2"}]')
     end
 
     it "finds a client it has" do
@@ -72,7 +74,8 @@ RSpec.describe KeycloakAdmin::ClientClient do
       @client_client = KeycloakAdmin.realm(realm_name).clients
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '[{"id":"test_client_id","name":"test_client_name"}]'
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients")
+        .to_return(body: '[{"id":"test_client_id","name":"test_client_name"}]')
     end
 
     it "lists clients" do
@@ -82,11 +85,8 @@ RSpec.describe KeycloakAdmin::ClientClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
-
-      expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/clients", faraday_options, anything).and_call_original
 
       clients = @client_client.list
       expect(clients.length).to eq 1
@@ -102,8 +102,10 @@ RSpec.describe KeycloakAdmin::ClientClient do
       @client_client = KeycloakAdmin.realm(realm_name).clients
 
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:put).and_return ''
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:get).and_return '{"id":"test_client_id", "clientId": "my-client","name":"new_name"}'
+      stub_request(:put, "http://auth.service.io/auth/admin/realms/valid-realm/clients/test_client_id").
+        to_return(body: '')
+      stub_request(:get, "http://auth.service.io/auth/admin/realms/valid-realm/clients/test_client_id").
+        to_return(body: '{"id":"test_client_id", "clientId": "my-client","name":"new_name"}')
     end
 
     it "updates a client" do
@@ -119,14 +121,12 @@ RSpec.describe KeycloakAdmin::ClientClient do
     before(:each) do
       @client_client = KeycloakAdmin.realm(realm_name).clients
       stub_token_client
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:delete).and_return ''
+      stub_request(:delete, "http://auth.service.io/auth/admin/realms/valid-realm/clients/95b45037-3980-404c-ba12-784fa1baf2c2").to_return(body: '')
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
-      expect(KeycloakAdmin::Resource).to receive(:new).with(
-        "http://auth.service.io/auth/admin/realms/valid-realm/clients/95b45037-3980-404c-ba12-784fa1baf2c2", faraday_options, anything).and_call_original
       @client_client.delete("95b45037-3980-404c-ba12-784fa1baf2c2")
     end
   end

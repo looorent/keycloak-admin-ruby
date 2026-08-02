@@ -49,7 +49,7 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
 
     it "passes rest client options" do
-      faraday_options = {timeout: 10}
+      faraday_options = {request: {timeout: 10}}
       allow_any_instance_of(KeycloakAdmin::Configuration).to receive(:faraday_options).and_return faraday_options
       stub_post
 
@@ -60,9 +60,8 @@ RSpec.describe KeycloakAdmin::TokenClient do
     end
 
     def stub_post
-      response = double
-      allow(response).to receive(:body).and_return '{"access_token":"test_access_token"}'
-      allow_any_instance_of(KeycloakAdmin::Resource).to receive(:post).and_return response
+      stub_request(:post, "http://auth.service.io/auth/realms/valid-realm/protocol/openid-connect/token").
+        to_return(body: '{"access_token":"test_access_token"}')
     end
   end
 end
