@@ -42,6 +42,8 @@ jobs:
           -e KC_HOSTNAME_ADMIN=http://localhost:8080 \
           -e KC_HTTP_ENABLED=true \
           -e KC_DB=dev-file \
+          -e KC_HOSTNAME_STRICT=false \
+          -e KC_HOSTNAME_STRICT_HTTPS=false \
           quay.io/keycloak/keycloak:26.7.0 \
           start-dev
 
@@ -105,8 +107,13 @@ jobs:
           exit 1
         fi
 
-    - name: Run tests
-      run: bundle exec rspec
+    - name: Run unit tests
+      run: bundle exec rake spec
+
+    - name: Run integration tests
+      run: bundle exec rake integration
+      env:
+        GITHUB_ACTIONS: true
 
     # Builds the gem, pushes it to RubyGems.org and waits for it to be available.
     - uses: rubygems/release-gem@v1

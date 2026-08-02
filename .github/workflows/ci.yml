@@ -39,6 +39,8 @@ jobs:
           -e KC_HOSTNAME_ADMIN=http://localhost:8080 \
           -e KC_HTTP_ENABLED=true \
           -e KC_DB=dev-file \
+          -e KC_HOSTNAME_STRICT=false \
+          -e KC_HOSTNAME_STRICT_HTTPS=false \
           quay.io/keycloak/keycloak:${{ matrix.keycloak-version }} \
           start-dev
 
