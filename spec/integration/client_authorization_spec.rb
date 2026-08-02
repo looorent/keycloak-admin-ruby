@@ -49,6 +49,7 @@ RSpec.describe 'ClientAuthorization' do
       )
 
       expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).get(resource.id).scopes.count).to eql(2)
+      expect(KeycloakAdmin.realm(realm_name).authz_resources(client.id).get(resource.id).uris).to match_array(["/asdf/*", "/tmp/45"])
 
       begin
         policy_name = "Policy 1 #{SecureRandom.hex(4)}"

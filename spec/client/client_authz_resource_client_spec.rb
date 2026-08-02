@@ -72,12 +72,70 @@ RSpec.describe KeycloakAdmin::ClientAuthzResourceClient do
         to_return(body: '{"name":"Default Resource","type":"urn:delme-client-id:resources:default","owner":{"id":"d259b451-371b-432a-a526-3508f3a36f3b","name":"delme-client-id"},"ownerManagedAccess":false,"_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"]}')
     end
 
+    let(:resource_url) { "http://auth.service.io/auth/admin/realms/valid-realm/clients/valid-client-id/authz/resource-server/resource/valid-resource-id" }
+
+    def put_payload
+      payload = nil
+      expect(a_request(:put, resource_url).with { |request| payload = JSON.parse(request.body) }).to have_been_made
+      payload
+    end
+
     it "returns updated authz scope" do
       response = client_authz_resource.update(resource_id, {name: "Default Resource", type: "urn:delme-client-id:resources:default", uris: ["/tmp/*"], owner_managed_access: false, display_name: "Default Resource", scopes: []})
       expect(response.id).to eq "94643fe2-1973-4a36-8e1f-830ade186398"
       expect(response.name).to eq "Default Resource"
       expect(response.type).to eq  "urn:delme-client-id:resources:default"
       expect(response.owner_managed_access).to be_falsey
+    end
+
+    it "replaces the submitted uris instead of merging them with the stored ones" do
+      client_authz_resource.update(resource_id, {uris: ["/tmp/*"]})
+      expect(put_payload["uris"]).to eq ["/tmp/*"]
+    end
+
+    it "does not accumulate duplicates when the same uri is submitted twice" do
+      client_authz_resource.update(resource_id, {uris: ["/*"]})
+      expect(put_payload["uris"]).to eq ["/*"]
+    end
+
+    it "keeps the stored uris when the key is omitted" do
+      client_authz_resource.update(resource_id, {display_name: "Renamed"})
+      expect(put_payload["uris"]).to eq ["/*"]
+    end
+
+    it "clears the uris when an empty array is submitted" do
+      client_authz_resource.update(resource_id, {uris: []})
+      expect(put_payload["uris"]).to eq []
+    end
+
+    it "replaces the submitted scopes instead of merging them with the stored ones" do
+      stub_request(:get, resource_url).to_return(
+        body: '{"name":"Default Resource","_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"],"scopes":[{"id":"1","name":"stored"}]}'
+      )
+      client_authz_resource.update(resource_id, {scopes: [{name: "submitted"}]})
+      expect(put_payload["scopes"]).to eq [{"name" => "submitted"}]
+    end
+
+    it "keeps the stored scopes when the key is omitted" do
+      stub_request(:get, resource_url).to_return(
+        body: '{"name":"Default Resource","_id":"94643fe2-1973-4a36-8e1f-830ade186398","uris":["/*"],"scopes":[{"id":"1","name":"stored"}]}'
+      )
+      client_authz_resource.update(resource_id, {display_name: "Renamed"})
+      expect(put_payload["scopes"]).to eq [{"name" => "stored"}]
+    end
+
+    it "honours owner_managed_access set to false" do
+      stub_request(:get, resource_url).to_return(
+        body: '{"name":"Default Resource","_id":"94643fe2-1973-4a36-8e1f-830ade186398","ownerManagedAccess":true,"uris":["/*"]}'
+      )
+      client_authz_resource.update(resource_id, {owner_managed_access: false})
+      expect(put_payload["ownerManagedAccess"]).to eq false
+    end
+
+    it "raises ArgumentError when a submitted scope has no name" do
+      expect {
+        client_authz_resource.update(resource_id, {scopes: [{name: "ok"}, {id: "no-name"}]})
+      }.to raise_error(ArgumentError, /scope\[:name\] is mandatory/)
     end
   end
 

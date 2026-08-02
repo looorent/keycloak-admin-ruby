@@ -23,17 +23,20 @@ module KeycloakAdmin
     end
 
     def update(resource_id, client_authz_resource_representation)
-      raise "scope[:name] is mandatory and the only necessary attribute to add scope to resource" if client_authz_resource_representation[:scopes] && client_authz_resource_representation[:scopes].any?{|a| !a[:name]}
+      submitted = client_authz_resource_representation || {}
+      if submitted[:scopes]&.any? { |scope| !scope[:name] }
+        raise ArgumentError.new("scope[:name] is mandatory and the only necessary attribute to add scope to resource")
+      end
 
       existing_resource = get(resource_id)
       new_resource = build(
-        client_authz_resource_representation[:name] || existing_resource.name,
-        client_authz_resource_representation[:type] || existing_resource.type,
-        (client_authz_resource_representation[:uris] || [] ) + existing_resource.uris,
-        client_authz_resource_representation[:owner_managed_access] || existing_resource.owner_managed_access,
-        client_authz_resource_representation[:display_name] || existing_resource.display_name,
-        (client_authz_resource_representation[:scopes] || []) + existing_resource.scopes.map{|s| {name: s.name}},
-        client_authz_resource_representation[:attributes] || existing_resource.attributes
+        submitted.fetch(:name, existing_resource.name),
+        submitted.fetch(:type, existing_resource.type),
+        submitted.fetch(:uris, existing_resource.uris),
+        submitted.fetch(:owner_managed_access, existing_resource.owner_managed_access),
+        submitted.fetch(:display_name, existing_resource.display_name),
+        submitted.fetch(:scopes, existing_resource.scopes.map { |scope| {name: scope.name} }),
+        submitted.fetch(:attributes, existing_resource.attributes)
       )
 
       execute_http do
