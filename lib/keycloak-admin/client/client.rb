@@ -2,6 +2,7 @@ require "uri"
 
 module KeycloakAdmin
   class Client
+    include PathEncoding
 
     def initialize(configuration)
       @configuration = configuration

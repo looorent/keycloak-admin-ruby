@@ -37,7 +37,7 @@ module KeycloakAdmin
 
     def realm_url
       if @realm_name
-        "#{server_url}/realms/#{@realm_name}"
+        "#{server_url}/realms/#{encode_segment(@realm_name)}"
       else
         "#{server_url}/realms"
       end
@@ -45,7 +45,7 @@ module KeycloakAdmin
 
     def realm_admin_url
       if @realm_name
-        "#{server_url}/admin/realms/#{@realm_name}"
+        "#{server_url}/admin/realms/#{encode_segment(@realm_name)}"
       else
         "#{server_url}/admin/realms"
       end

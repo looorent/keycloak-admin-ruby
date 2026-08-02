@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+* [Fix] Identifiers are now percent-encoded before being interpolated into a URL path.
+
 * [Fix] `UserClient#update`, `#add_group` and `#remove_group` built their request outside `execute_http`. They were the only methods on this client that raised a bare `Faraday::Error` instead of the documented `KeycloakAdmin::ApiError` hierarchy, and the only ones that did not replay a request rejected on a stale `401`.
 * [Fix] `UserClient#create!` could return a different user than the one it had just created. It looked the new user up with `search(email)`, and Keycloak's `search` parameter matches a *substring* of the username, email, first name or last name: creating `pioupioux@email.com` while `vieuxpioupioux@email.com` already existed returned the pre-existing account. The new user's id is now read from the `Location` header of the creation response, like `GroupClient#create!` already did. Two consequences: a creation not answered with `201 Created` now raises `KeycloakAdmin::UnexpectedResponseError` instead of returning `nil`, and the returned representation is fetched by id.
 * [Fix] `UserClient#create!` wrote the `locale` into the very `attributes` hash it was given, mutating the caller's object.

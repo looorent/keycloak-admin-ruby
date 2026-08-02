@@ -55,11 +55,11 @@ module KeycloakAdmin
 
     def authz_permission_url(client_id, resource_id = nil, type = nil, id = nil)
       if resource_id
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/resource/#{resource_id}/permissions"
+        "#{@realm_client.realm_admin_url}/clients/#{encode_segment(client_id)}/authz/resource-server/resource/#{encode_segment(resource_id)}/permissions"
       elsif id
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/permission/#{type}/#{id}"
+        "#{@realm_client.realm_admin_url}/clients/#{encode_segment(client_id)}/authz/resource-server/permission/#{encode_segment(type)}/#{encode_segment(id)}"
       else
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/permission/#{type}"
+        "#{@realm_client.realm_admin_url}/clients/#{encode_segment(client_id)}/authz/resource-server/permission/#{encode_segment(type)}"
       end
     end
 

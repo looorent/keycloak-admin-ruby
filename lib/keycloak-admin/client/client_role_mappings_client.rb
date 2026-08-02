@@ -22,11 +22,11 @@ module KeycloakAdmin
     end
 
     def list_available_url
-      "#{@user_resource.resource_url}/role-mappings/clients/#{@client_id}/available"
+      "#{@user_resource.resource_url}/role-mappings/clients/#{encode_segment(@client_id)}/available"
     end
 
     def base_url
-      "#{@user_resource.resource_url}/role-mappings/clients/#{@client_id}"
+      "#{@user_resource.resource_url}/role-mappings/clients/#{encode_segment(@client_id)}"
     end
   end
 end

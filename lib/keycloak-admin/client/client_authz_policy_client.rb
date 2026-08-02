@@ -55,9 +55,9 @@ module KeycloakAdmin
 
     def authz_policy_url(client_id, type, id = nil)
       if id
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/policy/#{type}/#{id}"
+        "#{@realm_client.realm_admin_url}/clients/#{encode_segment(client_id)}/authz/resource-server/policy/#{encode_segment(type)}/#{encode_segment(id)}"
       else
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/policy/#{type}?permission=false"
+        "#{@realm_client.realm_admin_url}/clients/#{encode_segment(client_id)}/authz/resource-server/policy/#{encode_segment(type)}?permission=false"
       end
     end
 

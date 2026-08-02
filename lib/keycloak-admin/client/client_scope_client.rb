@@ -59,7 +59,7 @@ module KeycloakAdmin
     def client_scopes_url(client_scope_id = nil)
       base = "#{@realm_client.realm_admin_url}/client-scopes"
 
-      client_scope_id ? "#{base}/#{client_scope_id}" : base
+      client_scope_id ? "#{base}/#{encode_segment(client_scope_id)}" : base
     end
   end
 end

@@ -44,11 +44,11 @@ module KeycloakAdmin
 
     def authz_scopes_url(client_id, resource_id = nil, id = nil)
       if resource_id
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/resource/#{resource_id}/scopes"
+        "#{@realm_client.realm_admin_url}/clients/#{encode_segment(client_id)}/authz/resource-server/resource/#{encode_segment(resource_id)}/scopes"
       elsif id
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/scope/#{id}"
+        "#{@realm_client.realm_admin_url}/clients/#{encode_segment(client_id)}/authz/resource-server/scope/#{encode_segment(id)}"
       else
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/scope"
+        "#{@realm_client.realm_admin_url}/clients/#{encode_segment(client_id)}/authz/resource-server/scope"
       end
     end
 

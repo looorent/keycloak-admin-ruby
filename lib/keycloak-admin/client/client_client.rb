@@ -58,7 +58,7 @@ module KeycloakAdmin
 
     def clients_url(id=nil)
       if id
-        "#{@realm_client.realm_admin_url}/clients/#{id}"
+        "#{@realm_client.realm_admin_url}/clients/#{encode_segment(id)}"
       else
         "#{@realm_client.realm_admin_url}/clients"
       end

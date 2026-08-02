@@ -15,8 +15,6 @@ module KeycloakAdmin
 
     # Returns the role representation for the specified role name
     def get(name)
-      # allows special characters in the name like space
-      name = URI.encode_uri_component(name)
       response = execute_http do
         resource(role_name_url(name)).get(headers)
       end
@@ -25,8 +23,6 @@ module KeycloakAdmin
 
     # Lists all groups that have the specified role name assigned
     def list_groups(name)
-      # allows special characters in the name like space
-      name = URI.encode_uri_component(name)
       response = execute_http do
         resource("#{role_name_url(name)}/groups").get(headers)
       end
@@ -49,11 +45,11 @@ module KeycloakAdmin
     end
 
     def role_id_url(id)
-      "#{@realm_client.realm_admin_url}/roles-by-id/#{id}"
+      "#{@realm_client.realm_admin_url}/roles-by-id/#{encode_segment(id)}"
     end
     
     def role_name_url(name)
-      "#{@realm_client.realm_admin_url}/roles/#{name}"
+      "#{@realm_client.realm_admin_url}/roles/#{encode_segment(name)}"
     end
   end
 end

@@ -54,9 +54,9 @@ module KeycloakAdmin
     end
 
     def protocol_mappers_url(mapper_id = nil)
-      base = "#{@realm_client.realm_admin_url}/client-scopes/#{@client_scope_id}/protocol-mappers/models"
+      base = "#{@realm_client.realm_admin_url}/client-scopes/#{encode_segment(@client_scope_id)}/protocol-mappers/models"
 
-      mapper_id ? "#{base}/#{mapper_id}" : base
+      mapper_id ? "#{base}/#{encode_segment(mapper_id)}" : base
     end
   end
 end

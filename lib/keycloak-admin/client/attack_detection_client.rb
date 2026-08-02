@@ -33,7 +33,7 @@ module KeycloakAdmin
 
     def brute_force_url(user_id = nil)
       if user_id
-        "#{@realm_client.realm_admin_url}/attack-detection/brute-force/users/#{user_id}"
+        "#{@realm_client.realm_admin_url}/attack-detection/brute-force/users/#{encode_segment(user_id)}"
       else
         "#{@realm_client.realm_admin_url}/attack-detection/brute-force/users"
       end

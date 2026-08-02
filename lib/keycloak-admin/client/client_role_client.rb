@@ -14,7 +14,7 @@ module KeycloakAdmin
     end
 
     def clients_url(id)
-      "#{@realm_client.realm_admin_url}/clients/#{id}/roles"
+      "#{@realm_client.realm_admin_url}/clients/#{encode_segment(id)}/roles"
     end
   end
 end

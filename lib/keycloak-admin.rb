@@ -1,6 +1,7 @@
 require "logger"
 
 require_relative "keycloak-admin/error"
+require_relative "keycloak-admin/path_encoding"
 require_relative "keycloak-admin/configuration"
 require_relative "keycloak-admin/client/response"
 require_relative "keycloak-admin/client/resource"

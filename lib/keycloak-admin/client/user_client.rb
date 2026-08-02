@@ -41,7 +41,7 @@ module KeycloakAdmin
         Resource.execute(
           @configuration.faraday_options.merge(
             method: :put,
-            url: "#{users_url(user_id)}/groups/#{group_id}",
+            url: "#{users_url(user_id)}/groups/#{encode_segment(group_id)}",
             payload: create_payload({}),
             headers: headers,
             logger: @configuration.logger
@@ -55,7 +55,7 @@ module KeycloakAdmin
         Resource.execute(
           @configuration.faraday_options.merge(
             method: :delete,
-            url: "#{users_url(user_id)}/groups/#{group_id}",
+            url: "#{users_url(user_id)}/groups/#{encode_segment(group_id)}",
             headers: headers,
             logger: @configuration.logger
           )
@@ -231,14 +231,14 @@ module KeycloakAdmin
 
     def users_url(id=nil)
       if id
-        "#{@realm_client.realm_admin_url}/users/#{id}"
+        "#{@realm_client.realm_admin_url}/users/#{encode_segment(id)}"
       else
         "#{@realm_client.realm_admin_url}/users"
       end
     end
 
     def user_client_role_mappings_url(user_id, client_id)
-      "#{users_url(user_id)}/role-mappings/clients/#{client_id}"
+      "#{users_url(user_id)}/role-mappings/clients/#{encode_segment(client_id)}"
     end
 
     def reset_password_url(user_id)
@@ -269,7 +269,7 @@ module KeycloakAdmin
     def federated_identity_url(user_id, identity_provider)
       raise ArgumentError.new("user_id must be defined") if user_id.nil?
       raise ArgumentError.new("identity_provider must be defined") if identity_provider.nil?
-      "#{users_url(user_id)}/federated-identity/#{identity_provider}"
+      "#{users_url(user_id)}/federated-identity/#{encode_segment(identity_provider)}"
     end
 
     def logout_url(user_id)

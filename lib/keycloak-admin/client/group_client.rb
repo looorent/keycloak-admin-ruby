@@ -125,7 +125,7 @@ module KeycloakAdmin
 
     def groups_url(id=nil)
       if id
-        "#{@realm_client.realm_admin_url}/groups/#{id}"
+        "#{@realm_client.realm_admin_url}/groups/#{encode_segment(id)}"
       else
         "#{@realm_client.realm_admin_url}/groups"
       end

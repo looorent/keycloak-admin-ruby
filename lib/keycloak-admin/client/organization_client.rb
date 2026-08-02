@@ -69,7 +69,7 @@ module KeycloakAdmin
     def get_identity_provider(organization_id, identity_provider_alias)
       raise ArgumentError.new("identity_provider_alias must be defined") if identity_provider_alias.nil?
       response = execute_http do
-        resource("#{identity_providers_url(organization_id)}/#{identity_provider_alias}").get(headers)
+        resource(identity_provider_url(organization_id, identity_provider_alias)).get(headers)
       end
       IdentityProviderRepresentation.from_hash(JSON.parse(response))
     end
@@ -157,7 +157,7 @@ module KeycloakAdmin
 
     def organization_url(organization_id)
       raise ArgumentError.new("organization_id must be defined") if organization_id.nil?
-      "#{organizations_url}/#{organization_id}"
+      "#{organizations_url}/#{encode_segment(organization_id)}"
     end
 
     def identity_providers_url(organization_id)
@@ -166,7 +166,7 @@ module KeycloakAdmin
 
     def identity_provider_url(organization_id, identity_provider_alias)
       raise ArgumentError.new("identity_provider_alias must be defined") if identity_provider_alias.nil?
-      "#{identity_providers_url(organization_id)}/#{identity_provider_alias}"
+      "#{identity_providers_url(organization_id)}/#{encode_segment(identity_provider_alias)}"
     end
 
     def count_url(exact, query, search)
@@ -187,7 +187,7 @@ module KeycloakAdmin
     end
 
     def associated_with_member_url(member_id, brief_representation=true)
-      "#{organizations_url}/members/#{member_id}/organizations?#{build_query(briefRepresentation: brief_representation)}"
+      "#{organizations_url}/members/#{encode_segment(member_id)}/organizations?#{build_query(briefRepresentation: brief_representation)}"
     end
 
     def members_count_url(organization_id)
@@ -196,7 +196,7 @@ module KeycloakAdmin
 
     def member_url(organization_id, member_id)
       raise ArgumentError.new("member_id must be defined") if member_id.nil?
-      "#{organization_url(organization_id)}/members/#{member_id}"
+      "#{organization_url(organization_id)}/members/#{encode_segment(member_id)}"
     end
 
     def invite_existing_user_url(organization_id)

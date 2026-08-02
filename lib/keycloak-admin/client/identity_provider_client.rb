@@ -38,7 +38,7 @@ module KeycloakAdmin
 
     def identity_providers_url(internal_id_or_alias=nil)
       if internal_id_or_alias
-        "#{@realm_client.realm_admin_url}/identity-provider/instances/#{internal_id_or_alias}"
+        "#{@realm_client.realm_admin_url}/identity-provider/instances/#{encode_segment(internal_id_or_alias)}"
       else
         "#{@realm_client.realm_admin_url}/identity-provider/instances"
       end

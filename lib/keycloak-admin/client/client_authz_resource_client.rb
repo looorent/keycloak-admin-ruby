@@ -69,9 +69,9 @@ module KeycloakAdmin
 
     def authz_resources_url(client_id, id = nil)
       if id
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/resource/#{id}"
+        "#{@realm_client.realm_admin_url}/clients/#{encode_segment(client_id)}/authz/resource-server/resource/#{encode_segment(id)}"
       else
-        "#{@realm_client.realm_admin_url}/clients/#{client_id}/authz/resource-server/resource"
+        "#{@realm_client.realm_admin_url}/clients/#{encode_segment(client_id)}/authz/resource-server/resource"
       end
     end
 

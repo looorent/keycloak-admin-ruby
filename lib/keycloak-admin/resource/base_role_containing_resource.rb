@@ -1,5 +1,7 @@
 module KeycloakAdmin
   class BaseRoleContainingResource
+    include PathEncoding
+
     attr_reader :resource_id
 
     def initialize(configuration, realm_client, resource_id)
@@ -14,7 +16,7 @@ module KeycloakAdmin
     end
 
     def resource_url
-      "#{@realm_client.realm_admin_url}/#{resources_name}/#{@resource_id}"
+      "#{@realm_client.realm_admin_url}/#{resources_name}/#{encode_segment(@resource_id)}"
     end
 
     def client_role_mappings(client_id)
