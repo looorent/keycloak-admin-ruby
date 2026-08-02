@@ -294,7 +294,7 @@ module KeycloakAdmin
       user.username            = username
       user.email_verified      = email_verified
       user.enabled             = true
-      user.attributes          = attributes || {}
+      user.attributes          = (attributes || {}).dup
       user.attributes[:locale] = locale if locale
       user.add_credential(CredentialRepresentation.from_password(password)) if !password.nil?
       user

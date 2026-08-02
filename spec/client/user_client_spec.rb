@@ -687,6 +687,25 @@ RSpec.describe "KeycloakAdmin::UserClient#create!" do
     expect(request).to have_been_requested
   end
 
+  it "sends the locale as an attribute" do
+    request = stub_creation.with { |req| JSON.parse(req.body)["attributes"] == {"locale" => "en"} }
+    stub_fetch
+
+    user_client.create!("pioupioux", "pioupioux@email.com", "acme0", true, "en")
+
+    expect(request).to have_been_requested
+  end
+
+  it "does not modify the attributes hash it is given" do
+    stub_creation
+    stub_fetch
+    attributes = {department: "engineering"}
+
+    user_client.create!("pioupioux", "pioupioux@email.com", "acme0", true, "en", attributes)
+
+    expect(attributes).to eq({department: "engineering"})
+  end
+
   it "raises when the creation is not answered with 201 Created" do
     stub_creation(status: 204, location: nil)
 
